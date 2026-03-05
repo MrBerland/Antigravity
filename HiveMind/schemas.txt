@@ -1,0 +1,57 @@
+
+Schema for augos_warehouse.augos_points:
+	PointID (STRING)
+	Description (STRING)
+	Status (STRING)
+	SerialNumber (STRING)
+	InvoicingEntity (STRING)
+	IsVirtual (BOOLEAN)
+	IsSite (BOOLEAN)
+	XeroContactID (STRING)
+	LastUpdated (TIMESTAMP)
+	ParentPointID (INTEGER)
+	ServiceProvider (STRING)
+	isGenerator (BOOLEAN)
+	isSolar (BOOLEAN)
+	hasPfcUnit (BOOLEAN)
+	isPfcExposed (BOOLEAN)
+	SupplyAuthority (STRING)
+	TariffID (STRING)
+
+Schema for augos_warehouse.sites:
+	SiteID (STRING)
+	CompanyID (STRING)
+	SiteName (STRING)
+	Address (STRING)
+	City (STRING)
+	Country (STRING)
+	CreatedAt (TIMESTAMP)
+	UpdatedAt (TIMESTAMP)
+
+Schema for augos_warehouse.pfc_daily_peaks:
+	PointID (INTEGER)
+	PointName (STRING)
+	Date (DATE)
+	PeakKVA (FLOAT)
+	KWAtPeak (FLOAT)
+	PFAtPeak (FLOAT)
+	KVARAtPeak (FLOAT)
+	PeakTimestamp (TIMESTAMP)
+	SyncedAt (TIMESTAMP)
+
+Schema for augos_warehouse.master_tariffs:
+	TariffID (STRING)
+	Authority (STRING)
+	Structure (JSON)
+	CreatedAt (TIMESTAMP)
+
+Schema for augos_warehouse.devices:
+	SerialNumber (STRING)
+	PrimaryPointID (STRING)
+	PointCount (INTEGER)
+	DeviceDescription (STRING)
+	SiteName (STRING)
+	Status (STRING)
+	LastUpdated (TIMESTAMP)
+	HasSitePoint (BOOLEAN)
+	HasVirtualPoint (BOOLEAN)

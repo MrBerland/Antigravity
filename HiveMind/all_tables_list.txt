@@ -1,0 +1,86 @@
+Datasets in project augos-core-data:
+
+Dataset: augos_warehouse
+	Table: accepted_linkages
+	Table: augos_points
+	Table: augos_user_points
+	Table: augos_users
+	Table: business_taxonomy
+	Table: changelog
+	Table: companies
+	Table: contacts
+	Table: device_billing_status
+	Table: device_categories
+	Table: device_linkage_status
+	Table: device_linkage_view
+	Table: device_summary
+	Table: devices
+	Table: email_by_company
+	Table: email_entity_links
+	Table: email_messages
+	Table: email_pending_response
+	Table: email_privacy_config
+	Table: email_sync_status
+	Table: email_threads
+	Table: email_threads_business
+	Table: error_log
+	Table: faqs
+	Table: invoice_classification
+	Table: knowledge_base
+	Table: leads
+	Table: link_recommendations
+	Table: linkage_log
+	Table: master_tariffs
+	Table: mrr_summary
+	Table: notification_queue
+	Table: pfc_alerts
+	Table: pfc_applicable_points
+	Table: pfc_campaign_sites
+	Table: pfc_campaigns
+	Table: pfc_compliance
+	Table: pfc_daily_peaks
+	Table: recurring_revenue_health
+	Table: revenue_summary
+	Table: service_provider_summary
+	Table: site_linkage_view
+	Table: site_points
+	Table: sites
+	Table: strategic_objectives
+	Table: sync_log
+	Table: system_users
+	Table: user_summary
+	Table: v_executive_dashboard
+	Table: v_revenue_analysis
+	Table: v_unified_users
+	Table: virtual_points
+	Table: workflow_definitions
+	Table: workflow_instances
+	Table: xero_contacts
+	Table: xero_invoices
+	Table: xero_line_items
+
+Dataset: hive_mind_core
+	Table: best_responses
+	Table: dim_entities
+	Table: dim_governance_rules
+	Table: dim_models_meters
+	Table: dim_models_sites
+	Table: dim_models_tickets
+	Table: dim_user_attributes
+	Table: email_entity_links
+	Table: fact_email_entities
+	Table: fact_embeddings
+	Table: fact_questions
+	Table: fact_relationships
+	Table: fact_work_patterns
+	Table: hot_leads
+	Table: messages
+	Table: sales_leads
+	Table: staging_raw_emails
+	Table: support_thread_scores
+	Table: view_ops_bottlenecks
+	Table: view_team_pulse
+
+Dataset: marketing_data
+	Table: ad_campaign_performance
+	Table: web_traffic_sessions

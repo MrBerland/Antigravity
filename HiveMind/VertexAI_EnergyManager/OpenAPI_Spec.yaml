@@ -1,0 +1,83 @@
+openapi: 3.0.0
+info:
+  title: Augos Energy Manager API
+  version: 1.0.0
+servers:
+  - url: https://live.augos.io/api/v1
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+paths:
+  /measurement/points/list:
+    get:
+      operationId: searchSites
+      summary: List all sites/points to search for a specific ID by name
+      responses:
+        '200':
+          description: A list of all available measurement points
+  /measurement/points/point:
+    get:
+      operationId: getSiteDetails
+      summary: Get metadata for a specific site or point
+      parameters:
+        - name: pointId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+  /power-factor-demand:
+    get:
+      operationId: getPowerFactorReport
+      summary: Get Power Factor and Demand data
+      parameters:
+        - name: pointId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: startDateUTC
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: endDateUTC
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Telemetry data returned
+  /cost-breakdown:
+    get:
+      operationId: getCostBreakdown
+      summary: Get financial cost breakdown
+      parameters:
+        - name: pointId
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: startDateUTC
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: endDateUTC
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Financial data returned

@@ -1,0 +1,1034 @@
+--- KNOWLEDGE BASE OVERVIEW ---
+
+=== CATEGORIES ===
+None: 246
+tariff-billing: 38
+automation: 26
+demand: 14
+efficiency: 10
+
+=== INDUSTRIES ===
+None: 296
+agriculture: 4
+data centres: 4
+manufacturing: 2
+hospitality: 2
+healthcare: 2
+retail: 2
+commercial real estate: 2
+hotels resorts: 2
+industrial parks: 2
+mixed use properties: 2
+retail centres: 2
+bulk suppliers: 2
+commercial facilities: 2
+food and beverage: 2
+golf courses: 2
+hotels and resorts: 2
+mining: 2
+
+=== ALL TITLES AND SUMMARIES ===
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / golf courses] 
+-> None
+
+[None / None] 
+-> None
+
+[None / food and beverage] 
+-> None
+
+[None / food and beverage] 
+-> None
+
+[None / bulk suppliers] 
+-> None
+
+[None / bulk suppliers] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / golf courses] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] 
+-> None
+
+[None / None] A Practical Guide: Measuring the ROI of Normative Prompts on Guest Energy Use
+-> This practical guide outlines the 'Nudge & Analyse' Pilot framework for hotels, demonstrating why accurate kWh/ORN measurement is essential to verify behavioural energy savings from guest prompts.
+
+[None / None] A Practical Guide: Measuring the ROI of Normative Prompts on Guest Energy Use
+-> This practical guide outlines the 'Nudge & Analyse' Pilot framework for hotels, demonstrating why accurate kWh/ORN measurement is essential to verify behavioural energy savings from guest prompts.
+
+[None / None] About Augos Energy Intelligence | From Complexity to Clarity
+-> Learn about Augos Energy Intelligence. Our mission is to transform complex energy data into a strategic asset that drives smarter financial and operational decisions.
+
+[None / None] About Augos Energy Intelligence | From Complexity to Clarity
+-> Learn about Augos Energy Intelligence. Our mission is to transform complex energy data into a strategic asset that drives smarter financial and operational decisions.
+
+[None / None] About Augos IoT Sensing & Control | Our Mission & Expertise
+-> Learn about the mission and expertise behind the Augos IoT Sensing & Control platform. We provide the foundational hardware and software to connect your physical assets to your digital strategy.
+
+[None / None] About Augos IoT Sensing & Control | Our Mission & Expertise
+-> Learn about the mission and expertise behind the Augos IoT Sensing & Control platform. We provide the foundational hardware and software to connect your physical assets to your digital strategy.
+
+[None / None] About Augos Tenant Billing | Our Mission, Story, and Expertise
+-> Augos Tenant Billing provides the financial control landlords in South Africa need to ensure profitability and compliance in utility resale. Learn about our mission and expertise.
+
+[None / None] About Augos Tenant Billing | Our Mission, Story, and Expertise
+-> Augos Tenant Billing provides the financial control landlords in South Africa need to ensure profitability and compliance in utility resale. Learn about our mission and expertise.
+
+[None / None] About Augos Water Intelligence | Our Mission
+-> Learn about Augos Water Intelligence. Our mission is to provide leaders with the actionable intelligence needed to reduce cost, mitigate risk, and build resilient operations.
+
+[None / None] About Augos Water Intelligence | Our Mission
+-> Learn about Augos Water Intelligence. Our mission is to provide leaders with the actionable intelligence needed to reduce cost, mitigate risk, and build resilient operations.
+
+[None / None] About The Augos Attribution Engine | The Engine of Operational Truth
+-> Learn about the Augos Attribution Engine. Our mission is to replace ambiguous operational data with the verifiable, audit-grade truth needed to drive accountability and solve production loss.
+
+[None / None] About The Augos Attribution Engine | The Engine of Operational Truth
+-> Learn about the Augos Attribution Engine. Our mission is to replace ambiguous operational data with the verifiable, audit-grade truth needed to drive accountability and solve production loss.
+
+[None / None] Accurate Metering & Utility Cost Recovery Tenant Billing
+-> The Augos platform for complete utility cost recovery. We ensure profitability through accurate multi-utility, mixed-source, and common area billing.
+
+[None / None] Accurate Metering & Utility Cost Recovery Tenant Billing
+-> The Augos platform for complete utility cost recovery. We ensure profitability through accurate multi-utility, mixed-source, and common area billing.
+
+[None / None] Accurate Solar PV Assessments ZA: 3D Modelling, Financial Forecasts & Independent ROI
+-> Augos provides independent Solar PV assessments in ZA. We use integrated 3D design and financial modelling software to calculate accurate yield, shading analysis, ROI, and financing costs based on your real energy data.
+
+[None / None] Accurate Solar PV Assessments ZA: 3D Modelling, Financial Forecasts & Independent ROI
+-> Augos provides independent Solar PV assessments in ZA. We use integrated 3D design and financial modelling software to calculate accurate yield, shading analysis, ROI, and financing costs based on your real energy data.
+
+[None / None] Advanced Technical Analysis for Property Managers
+-> The Augos Technical Analysis tool for property managers in South Africa. Use granular data (kW, kVA, PF, Voltage) for advanced fault-finding and dispute resolution.
+
+[None / None] Advanced Technical Analysis for Property Managers
+-> The Augos Technical Analysis tool for property managers in South Africa. Use granular data (kW, kVA, PF, Voltage) for advanced fault-finding and dispute resolution.
+
+[None / agriculture] Agribusiness & Farm Energy Management Solutions
+-> Optimise energy costs across your entire agribusiness operation. Augos helps farms, processing plants, and mills manage demand, improve efficiency, and reduce overheads.
+
+[None / agriculture] Agribusiness & Farm Energy Management Solutions
+-> Optimise energy costs across your entire agribusiness operation. Augos helps farms, processing plants, and mills manage demand, improve efficiency, and reduce overheads.
+
+[None / None] Air Quality Monitoring (IAQ & Gas Detection)
+-> The Augos solution for professional air quality monitoring. Monitor Indoor Air Quality (IAQ) and detect toxic or combustible gases for industrial safety.
+
+[None / None] Air Quality Monitoring (IAQ & Gas Detection)
+-> The Augos solution for professional air quality monitoring. Monitor Indoor Air Quality (IAQ) and detect toxic or combustible gases for industrial safety.
+
+[None / None] Augos Energy Intelligence Platforms | Solutions for Business & Property
+-> Explore the Augos Energy Intelligence platforms. We offer dedicated solutions for business leaders, multi-site retailers, and property owners to gain strategic control of energy costs, profitability, and risk.
+
+[None / None] Augos Energy Intelligence Platforms | Solutions for Business & Property
+-> Explore the Augos Energy Intelligence platforms. We offer dedicated solutions for business leaders, multi-site retailers, and property owners to gain strategic control of energy costs, profitability, and risk.
+
+[None / None] Augos IoT Sensing & Control | Connect and Control Your Physical World
+-> The Augos IoT Sensing & Control platform. We provide the rugged hardware and intelligent software for businesses to monitor, analyze, and control their physical operations.
+
+[None / None] Augos IoT Sensing & Control | Connect and Control Your Physical World
+-> The Augos IoT Sensing & Control platform. We provide the rugged hardware and intelligent software for businesses to monitor, analyze, and control their physical operations.
+
+[None / None] Augos Tenant Billing: The Complete Utility Resale Platform for Landlords
+-> Discover the Augos Tenant Billing platform for landlords in South Africa. A complete solution for compliant metering, financial management, bulk supply optimisation, and data automation to ensure profitability.
+
+[None / None] Augos Tenant Billing: The Complete Utility Resale Platform for Landlords
+-> Discover the Augos Tenant Billing platform for landlords in South Africa. A complete solution for compliant metering, financial management, bulk supply optimisation, and data automation to ensure profitability.
+
+[None / None] Augos Triggers: Custom Alerts for Proactive Energy and Demand Charge Protection
+-> The Augos Triggers & Alerts functionality provides tailored, real-time notifications on power factor, demand, and voltage. Learn how a swift alert helped a client avoid a 12-month demand charge penalty.
+
+[None / None] Augos Triggers: Custom Alerts for Proactive Energy and Demand Charge Protection
+-> The Augos Triggers & Alerts functionality provides tailored, real-time notifications on power factor, demand, and voltage. Learn how a swift alert helped a client avoid a 12-month demand charge penalty.
+
+[None / None] Augos | Integrated Intelligence Platforms for Energy, Water & Operations in South Africa
+-> Augos transforms complex operational data into strategic assets. Discover our integrated intelligence platforms for Energy, Water, Manufacturing, and IoT in South Africa.
+
+[None / None] Baseload Reduction ZA: Guide to Cutting Hotel Fixed Energy Costs & Optimizing HVAC Plant
+-> A practical guide for ZA hotels to reduce fixed baseload energy costs. Use Augos granular data to identify 24/7 consumers (HVAC, lighting) and implement targeted efficiency and proactive maintenance strategies.
+
+[None / None] Baseload Reduction ZA: Guide to Cutting Hotel Fixed Energy Costs & Optimizing HVAC Plant
+-> A practical guide for ZA hotels to reduce fixed baseload energy costs. Use Augos granular data to identify 24/7 consumers (HVAC, lighting) and implement targeted efficiency and proactive maintenance strategies.
+
+[None / None] Case Study: Falke South Africa Achieves 20%+ Savings & R600k Tariff Optimisation in Bellville South
+-> Read how Augos partnered with Falke (Bellville South) to exceed 20% energy savings and unlock an additional R600,000 in annual savings through a data-driven tariff migration with the City of Cape Town.
+
+[None / None] Case Study: Falke South Africa Achieves 20%+ Savings & R600k Tariff Optimisation in Bellville South
+-> Read how Augos partnered with Falke (Bellville South) to exceed 20% energy savings and unlock an additional R600,000 in annual savings through a data-driven tariff migration with the City of Cape Town.
+
+[None / None] Case Study: Free State Broiler House Solves Capacity Limits with PFC
+-> Discover how a Free State broiler house overcame critical Eskom capacity limits and frequent breaker trips through strategic implementation of a Power Factor Correction system.
+
+[None / None] Case Study: Free State Broiler House Solves Capacity Limits with PFC
+-> Discover how a Free State broiler house overcame critical Eskom capacity limits and frequent breaker trips through strategic implementation of a Power Factor Correction system.
+
+[None / None] Case Study: Landlord Saves Tenant R85,000 with NMD & Tariff Optimisation
+-> See how Augos helped a property owner optimise the energy account for their tyre retail tenant, correcting an oversized NMD and sub-optimal tariff to unlock R85,000 in annual savings.
+
+[None / None] Case Study: Landlord Saves Tenant R85,000 with NMD & Tariff Optimisation
+-> See how Augos helped a property owner optimise the energy account for their tyre retail tenant, correcting an oversized NMD and sub-optimal tariff to unlock R85,000 in annual savings.
+
+[None / None] Case Study: Massive Billing Error Uncovered at a Luxury Hotel
+-> See how a 2000% meter under-read was identified at a major hotel, providing the data needed to prepare for an eventual multi-million rand billing correction.
+
+[None / None] Case Study: Massive Billing Error Uncovered at a Luxury Hotel
+-> See how a 2000% meter under-read was identified at a major hotel, providing the data needed to prepare for an eventual multi-million rand billing correction.
+
+[None / None] Case Study: One&Only Cape Town Achieves 35% Energy Savings
+-> Read how the prestigious One&Only Cape Town achieved a 35% reduction in energy usage in 3 months through zero-cost behavioral and operational interventions.
+
+[None / None] Case Study: One&Only Cape Town Achieves 35% Energy Savings
+-> Read how the prestigious One&Only Cape Town achieved a 35% reduction in energy usage in 3 months through zero-cost behavioral and operational interventions.
+
+[None / None] Case Study: Proactive Correction of Utility Underbilling
+-> See how an Augos investigation for a 24/7 retail site revealed an offline utility meter had caused a 57% underbill, protecting the client from a large future back-bill.
+
+[None / None] Case Study: Proactive Correction of Utility Underbilling
+-> See how an Augos investigation for a 24/7 retail site revealed an offline utility meter had caused a 57% underbill, protecting the client from a large future back-bill.
+
+[None / None] Case Study: Property Group Challenges 50% Utility Overbilling
+-> Learn how Augos' bill verification service identified a consistent 50% overbilling for a leading property group, providing the evidence needed to lodge a formal dispute with their municipal supplier.
+
+[None / None] Case Study: Property Group Challenges 50% Utility Overbilling
+-> Learn how Augos' bill verification service identified a consistent 50% overbilling for a leading property group, providing the evidence needed to lodge a formal dispute with their municipal supplier.
+
+[None / None] Case Study: Sandals Resorts & Augos Redefine Sustainable Luxury in the Caribbean
+-> Augos partners with Sandals Resorts to set new standards in sustainable luxury. Deploying state-of-the-art measurement tools to optimize electricity, water, and gas usage across Caribbean properties for a reduced carbon footprint.
+
+[None / None] Case Study: Sandals Resorts & Augos Redefine Sustainable Luxury in the Caribbean
+-> Augos partners with Sandals Resorts to set new standards in sustainable luxury. Deploying state-of-the-art measurement tools to optimize electricity, water, and gas usage across Caribbean properties for a reduced carbon footprint.
+
+[None / None] Case Study: Sanlam Reduces Energy Cost by 31% Exceeding Targets with Multi-Year Program
+-> Read how Augos helped Sanlam exceed its sustainability targets, achieving a cumulative energy consumption reduction of over 31% by strategically funding capital projects through savings from low-cost behavioral changes.
+
+[None / None] Case Study: Sanlam Reduces Energy Cost by 31% Exceeding Targets with Multi-Year Program
+-> Read how Augos helped Sanlam exceed its sustainability targets, achieving a cumulative energy consumption reduction of over 31% by strategically funding capital projects through savings from low-cost behavioral changes.
+
+[None / None] Case Study: Sanlam Sky Houghton Recovers R1.15M & Cuts Energy Use by 25% with Augos
+-> Read how Augos' multi-pronged strategy for Sanlam Sky Houghton achieved a 25% energy reduction (1.5-day payback), R10,000 monthly PFC savings, and secured a R1.15M council overbilling credit.
+
+[None / None] Case Study: Sanlam Sky Houghton Recovers R1.15M & Cuts Energy Use by 25% with Augos
+-> Read how Augos' multi-pronged strategy for Sanlam Sky Houghton achieved a 25% energy reduction (1.5-day payback), R10,000 monthly PFC savings, and secured a R1.15M council overbilling credit.
+
+[None / None] Case Study: Spier Estate Saves 55% Water by Eliminating Hotel Water Wastage in Stellenbosch
+-> Read how Augos helped Spier Estate in Stellenbosch achieve a 55% reduction in daily water consumption by using sub-meters to pinpoint and eliminate a severe 2000 l/hr hotel water leak.
+
+[None / None] Case Study: Spier Estate Saves 55% Water by Eliminating Hotel Water Wastage in Stellenbosch
+-> Read how Augos helped Spier Estate in Stellenbosch achieve a 55% reduction in daily water consumption by using sub-meters to pinpoint and eliminate a severe 2000 l/hr hotel water leak.
+
+[None / None] Case Study: Vineyard Hotel Reverses Council Billing Errors with Augos Meter Verification
+-> Vineyard Hotel used Augos meter data to prove inaccurate council kVA demand readings, successfully reversing incorrect utility charges. See how Augos provides the accurate data required for major billing disputes in the Hospitality sector.
+
+[None / None] Case Study: Vineyard Hotel Reverses Council Billing Errors with Augos Meter Verification
+-> Vineyard Hotel used Augos meter data to prove inaccurate council kVA demand readings, successfully reversing incorrect utility charges. See how Augos provides the accurate data required for major billing disputes in the Hospitality sector.
+
+[None / None] Cold Chain Monitoring & Traceability Solution
+-> The Augos Cold Chain Monitoring solution. Ensure product safety, quality, and full traceability with real-time temperature alerts, in-transit monitoring, and HACCP compliance.
+
+[None / None] Cold Chain Monitoring & Traceability Solution
+-> The Augos Cold Chain Monitoring solution. Ensure product safety, quality, and full traceability with real-time temperature alerts, in-transit monitoring, and HACCP compliance.
+
+[None / None] Complete Water Efficiency & Loss Prevention in South Africa
+-> A complete water efficiency solution for South Africa. Augos helps you verify bills, find leaks, analyze costs, monitor system integrity, and control infrastructure to save money.
+
+[None / None] Complete Water Efficiency & Loss Prevention in South Africa
+-> A complete water efficiency solution for South Africa. Augos helps you verify bills, find leaks, analyze costs, monitor system integrity, and control infrastructure to save money.
+
+[None / None] Complete Water Management Solutions
+-> Augos provides a complete suite of water management solutions. Reduce costs, ensure compliance, and mitigate risk with our intelligent data platform.
+
+[None / None] Complete Water Management Solutions
+-> Augos provides a complete suite of water management solutions. Reduce costs, ensure compliance, and mitigate risk with our intelligent data platform.
+
+[None / hotels resorts] Concessionaire Utility Billing for Hotels & Resorts
+-> The Augos solution for hotels & resorts. Accurately sub-meter and bill third-party concessionaires (restaurants, spas, shops) for their utility usage.
+
+[None / hotels resorts] Concessionaire Utility Billing for Hotels & Resorts
+-> The Augos solution for hotels & resorts. Accurately sub-meter and bill third-party concessionaires (restaurants, spas, shops) for their utility usage.
+
+[None / None] Critical Eskom Tariff Changes 2025: Strategic Cost Control for South African Businesses
+-> The 2025 Eskom pricing overhaul introduces the high-risk Legacy Charge and Capacity Charge. Learn the strategic steps required to protect your business from unnecessary costs in South Africa.
+
+[None / None] Critical Eskom Tariff Changes 2025: Strategic Cost Control for South African Businesses
+-> The 2025 Eskom pricing overhaul introduces the high-risk Legacy Charge and Capacity Charge. Learn the strategic steps required to protect your business from unnecessary costs in South Africa.
+
+[None / data centres] Data Centre Energy Management & PUE Optimisation
+-> Optimise your PUE and reduce your largest operating cost with Augos. Our platform provides the granular energy data needed for PUE calculation, power quality monitoring, and cooling efficiency.
+
+[None / data centres] Data Centre Energy Management & PUE Optimisation
+-> Optimise your PUE and reduce your largest operating cost with Augos. Our platform provides the granular energy data needed for PUE calculation, power quality monitoring, and cooling efficiency.
+
+[None / None] Effective Energy Management ZA: Data, Real-Time Monitoring & Strategic Cost Control
+-> Combat rising energy costs in ZA. Augos provides real-time monitoring and precise utility data to identify immediate issues, verify bills, analyse tariffs, and drive significant, measurable cost savings.
+
+[None / None] Effective Energy Management ZA: Data, Real-Time Monitoring & Strategic Cost Control
+-> Combat rising energy costs in ZA. Augos provides real-time monitoring and precise utility data to identify immediate issues, verify bills, analyse tariffs, and drive significant, measurable cost savings.
+
+[None / None] Electrical Risk Mitigation ZA: Fire Suppression, Safety Sensing & Harmonic Protection for PFC Systems
+-> Comprehensive guide for ZA facilities on electrical risk mitigation. Strategies include fire suppression, real-time temperature sensing, harmonic measurement, and annual surveys to protect assets and personnel.
+
+[None / None] Electrical Risk Mitigation ZA: Fire Suppression, Safety Sensing & Harmonic Protection for PFC Systems
+-> Comprehensive guide for ZA facilities on electrical risk mitigation. Strategies include fire suppression, real-time temperature sensing, harmonic measurement, and annual surveys to protect assets and personnel.
+
+[None / None] Energy Data Platform for Analytics
+-> Empower your analytics team with a reliable energy data platform. Augos provides clean, structured datasets, a robust API, and easy exports to speed up modeling and BI integration.
+
+[None / None] Energy Data Platform for Analytics
+-> Empower your analytics team with a reliable energy data platform. Augos provides clean, structured datasets, a robust API, and easy exports to speed up modeling and BI integration.
+
+[None / None] Energy Management Case Studies & Success Stories
+-> Explore real-world case studies showcasing how businesses across South Africa have saved millions through expert energy management, tariff optimisation, and bill verification.
+
+[None / None] Energy Management Case Studies & Success Stories
+-> Explore real-world case studies showcasing how businesses across South Africa have saved millions through expert energy management, tariff optimisation, and bill verification.
+
+[None / manufacturing] Energy Management for Manufacturing Plants
+-> Reduce your manufacturing plant's energy costs and improve uptime. The Augos platform provides the visibility you need to manage peak demand, monitor equipment health, and lower your energy intensity.
+
+[None / manufacturing] Energy Management for Manufacturing Plants
+-> Reduce your manufacturing plant's energy costs and improve uptime. The Augos platform provides the visibility you need to manage peak demand, monitor equipment health, and lower your energy intensity.
+
+[None / None] Environmental Monitoring IoT Sensing & Control
+-> The Augos solution for precision environmental monitoring. Measure, monitor, and analyze outdoor, natural, and agricultural conditions with our integrated IoT platform.
+
+[None / None] Environmental Monitoring IoT Sensing & Control
+-> The Augos solution for precision environmental monitoring. Measure, monitor, and analyze outdoor, natural, and agricultural conditions with our integrated IoT platform.
+
+[None / None] Eskom Tariff Changes ZA: Guide for LPUs on TOU, GCC & Strategic Load Management
+-> A comprehensive guide for South African LPUs on Eskom's modernizing tariff structures. Understand the Cost-to-Serve study, TOU changes, and the new Generation Capacity Charge (GCC) for strategic cost control.
+
+[None / None] Eskom Tariff Changes ZA: Guide for LPUs on TOU, GCC & Strategic Load Management
+-> A comprehensive guide for South African LPUs on Eskom's modernizing tariff structures. Understand the Cost-to-Serve study, TOU changes, and the new Generation Capacity Charge (GCC) for strategic cost control.
+
+[None / None] Eskom's Fixed Charge Shift: Navigating the New Generation Capacity Charge (GCC) for SA Businesses
+-> Eskom's new Generation Capacity Charge (GCC) increases fixed costs for South African businesses. See how Augos uses NMD Analysis and Tariff Optimisation to mitigate the financial risks and protect renewable energy ROI.
+
+[None / None] Eskom's Fixed Charge Shift: Navigating the New Generation Capacity Charge (GCC) for SA Businesses
+-> Eskom's new Generation Capacity Charge (GCC) increases fixed costs for South African businesses. See how Augos uses NMD Analysis and Tariff Optimisation to mitigate the financial risks and protect renewable energy ROI.
+
+[None / None] Fire Suppression in PFC Panels: Essential Risk Mitigation for Electrical Assets
+-> Don't overlook fire risk in your PFC system. Learn why dedicated fire suppression is crucial for protecting assets, ensuring safety, and maintaining compliance in electrical infrastructure.
+
+[None / None] Fire Suppression in PFC Panels: Essential Risk Mitigation for Electrical Assets
+-> Don't overlook fire risk in your PFC system. Learn why dedicated fire suppression is crucial for protecting assets, ensuring safety, and maintaining compliance in electrical infrastructure.
+
+[None / None] Frequently Asked Questions
+-> Find answers to common questions about Augos energy management, water monitoring, tenant billing, IoT solutions, and the Attribution Engine platform.
+
+[None / None] Frequently Asked Questions
+-> Find answers to common questions about Augos energy management, water monitoring, tenant billing, IoT solutions, and the Attribution Engine platform.
+
+[None / None] Guest Behaviour & Energy Use ZA: Unlocking Savings with Normative Prompts & Measurement
+-> Augos explores the surprising impact of guest behaviour on hotel energy bills. Learn how normative prompts (e.g., 'Most guests...') and precise measurement unlock significant, zero-cost savings in South African hotels.
+
+[None / None] Guest Behaviour & Energy Use ZA: Unlocking Savings with Normative Prompts & Measurement
+-> Augos explores the surprising impact of guest behaviour on hotel energy bills. Learn how normative prompts (e.g., 'Most guests...') and precise measurement unlock significant, zero-cost savings in South African hotels.
+
+[None / None] Harmonics and PFC: Protecting Your Power Factor Correction ROI in South Africa
+-> Harmonics, caused by non-linear loads, are silent threats that sabotage Power Factor Correction efficiency, causing equipment overheating and high costs. Learn the 5 ways harmonics affect PFC and how Augos can mitigate the risk with harmonic filtering.
+
+[None / None] Harmonics and PFC: Protecting Your Power Factor Correction ROI in South Africa
+-> Harmonics, caused by non-linear loads, are silent threats that sabotage Power Factor Correction efficiency, causing equipment overheating and high costs. Learn the 5 ways harmonics affect PFC and how Augos can mitigate the risk with harmonic filtering.
+
+[None / data centres] High-Precision Power Billing for Data Centres
+-> The Augos tenant billing solution for colocation data centres. Accurately bill clients for rack power and manage the PUE gap with high-precision metering.
+
+[None / data centres] High-Precision Power Billing for Data Centres
+-> The Augos tenant billing solution for colocation data centres. Accurately bill clients for rack power and manage the PUE gap with high-precision metering.
+
+[None / healthcare] Hospital Energy Management & Resilience Systems
+-> Improve your hospital's operational resilience and reduce costs with Augos. Our platform helps healthcare facilities manage critical power quality, optimise HVAC, and ensure 24/7 reliability.
+
+[None / healthcare] Hospital Energy Management & Resilience Systems
+-> Improve your hospital's operational resilience and reduce costs with Augos. Our platform helps healthcare facilities manage critical power quality, optimise HVAC, and ensure 24/7 reliability.
+
+[None / hospitality] Hotel Energy Management Solutions
+-> Reduce your hotel's operating costs without compromising guest comfort. Augos provides the data you need to manage HVAC, kitchen, and common area energy consumption effectively.
+
+[None / hospitality] Hotel Energy Management Solutions
+-> Reduce your hotel's operating costs without compromising guest comfort. Augos provides the data you need to manage HVAC, kitchen, and common area energy consumption effectively.
+
+[None / None] How Electricity Tariffs Work ZA: Consumption, Demand & Service Charges Explained
+-> Understand your South African electricity bill. Learn how Consumption (kWh), Maximum Demand (kVA), and Service Charges combine, and how your Power Factor affects your final cost.
+
+[None / None] How Electricity Tariffs Work ZA: Consumption, Demand & Service Charges Explained
+-> Understand your South African electricity bill. Learn how Consumption (kWh), Maximum Demand (kVA), and Service Charges combine, and how your Power Factor affects your final cost.
+
+[None / None] Inductive vs. Capacitive Loads: The Key to Power Factor Correction (PFC)
+-> Understand the core difference between Inductive (motors, transformers) and Capacitive (PFC banks) loads. Learn how capacitive loads are used to counteract the current lag caused by inductive loads, boosting efficiency and Power Factor.
+
+[None / None] Inductive vs. Capacitive Loads: The Key to Power Factor Correction (PFC)
+-> Understand the core difference between Inductive (motors, transformers) and Capacitive (PFC banks) loads. Learn how capacitive loads are used to counteract the current lag caused by inductive loads, boosting efficiency and Power Factor.
+
+[None / None] Industrial & Asset Monitoring IoT
+-> The Augos IoT solution for industrial and asset monitoring. Use our sensors to track machine health, enable predictive maintenance, and prevent costly unplanned downtime.
+
+[None / None] Industrial & Asset Monitoring IoT
+-> The Augos IoT solution for industrial and asset monitoring. Use our sensors to track machine health, enable predictive maintenance, and prevent costly unplanned downtime.
+
+[None / None] Industry-Specific Tenant Billing Solutions
+-> Augos provides specialized tenant billing solutions for every property type, from commercial and retail to industrial parks and data centres.
+
+[None / None] Industry-Specific Tenant Billing Solutions
+-> Augos provides specialized tenant billing solutions for every property type, from commercial and retail to industrial parks and data centres.
+
+[None / None] IoT Sensing & Control Resources
+-> Explore real-world case studies and articles showcasing how businesses have transformed their operations with Augos IoT Sensing & Control solutions.
+
+[None / None] IoT Sensing & Control Resources
+-> Explore real-world case studies and articles showcasing how businesses have transformed their operations with Augos IoT Sensing & Control solutions.
+
+[None / None] IoT Solutions for Business Sensing & Control
+-> Explore IoT solutions from Augos. We provide end-to-end solutions for Predictive Maintenance and Cold Chain Monitoring, and offer our dedicated platforms for Energy and Water Management.
+
+[None / None] IoT Solutions for Business Sensing & Control
+-> Explore IoT solutions from Augos. We provide end-to-end solutions for Predictive Maintenance and Cold Chain Monitoring, and offer our dedicated platforms for Energy and Water Management.
+
+[None / None] Karob Plastics Testimonial: Augos as a Vital Tool for ISO 50001 Certification Readiness
+-> Karob Plastics, a heavy energy-consuming manufacturer, shares why Augos is the vital component supporting their energy management system and their move toward full ISO 50001 certification.
+
+[None / None] Karob Plastics Testimonial: Augos as a Vital Tool for ISO 50001 Certification Readiness
+-> Karob Plastics, a heavy energy-consuming manufacturer, shares why Augos is the vital component supporting their energy management system and their move toward full ISO 50001 certification.
+
+[None / None] Landlord Energy Management for Profitability
+-> Learn how landlords in South Africa can increase tenant billing profitability by optimizing their bulk supply with Power Factor Correction, demand analysis, and more.
+
+[None / None] Landlord Energy Management for Profitability
+-> Learn how landlords in South Africa can increase tenant billing profitability by optimizing their bulk supply with Power Factor Correction, demand analysis, and more.
+
+[None / None] Multi-Site Wheeling ZA: Portfolio Strategy, Load Shedding Resilience & Data Compliance
+-> Augos empowers ZA multi-site portfolios for multi-year wheeling. We use critical profile data for asset diversification, contract flexibility, municipal reallocation, and Load Shedding resilience to ensure sustainable supply.
+
+[None / None] Multi-Site Wheeling ZA: Portfolio Strategy, Load Shedding Resilience & Data Compliance
+-> Augos empowers ZA multi-site portfolios for multi-year wheeling. We use critical profile data for asset diversification, contract flexibility, municipal reallocation, and Load Shedding resilience to ensure sustainable supply.
+
+[None / None] OEE Reimagined: The Augos Attribution Engine
+-> OEE provides a score. The Augos Attribution Engine provides the answer. We deliver the verifiable proof to diagnose and fix the human and systemic causes of production loss.
+
+[None / None] OEE Reimagined: The Augos Attribution Engine
+-> OEE provides a score. The Augos Attribution Engine provides the answer. We deliver the verifiable proof to diagnose and fix the human and systemic causes of production loss.
+
+[None / None] Performance Benchmarking: Measure Your Team's Effectiveness
+-> Go beyond machine metrics with Performance Benchmarking from Augos. Use Human Dynamics Analysis to compare teams, identify top performers, and build a more effective workforce.
+
+[None / None] Performance Benchmarking: Measure Your Team's Effectiveness
+-> Go beyond machine metrics with Performance Benchmarking from Augos. Use Human Dynamics Analysis to compare teams, identify top performers, and build a more effective workforce.
+
+[None / None] Predictive Maintenance Solution IoT
+-> The Augos Predictive Maintenance (PdM) solution. Use our vibration, temperature, pressure, and flow sensors to monitor machine health and prevent costly, unplanned downtime.
+
+[None / None] Predictive Maintenance Solution IoT
+-> The Augos Predictive Maintenance (PdM) solution. Use our vibration, temperature, pressure, and flow sensors to monitor machine health and prevent costly, unplanned downtime.
+
+[None / None] Price Volatility ZA: Tariff Optimisation, Bill Verification & Demand Management for Hotels
+-> Gain control over volatile hotel energy costs in ZA. Augos provides Bill Verification, Tariff Optimisation, and Smart Demand Management to actively mitigate financial risk from TOU rates and demand charges.
+
+[None / None] Price Volatility ZA: Tariff Optimisation, Bill Verification & Demand Management for Hotels
+-> Gain control over volatile hotel energy costs in ZA. Augos provides Bill Verification, Tariff Optimisation, and Smart Demand Management to actively mitigate financial risk from TOU rates and demand charges.
+
+[None / None] Proactive Hotel Maintenance ZA: Smart Monitoring & Alerts for Infrastructure Reliability
+-> Move beyond reactive hotel maintenance in ZA. Augos Smart Triggers detect subtle equipment deviations (current, temperature) to prevent critical failures, protecting assets and ensuring a seamless guest experience.
+
+[None / None] Proactive Hotel Maintenance ZA: Smart Monitoring & Alerts for Infrastructure Reliability
+-> Move beyond reactive hotel maintenance in ZA. Augos Smart Triggers detect subtle equipment deviations (current, temperature) to prevent critical failures, protecting assets and ensuring a seamless guest experience.
+
+[None / None] Proactive Legionella Risk Mitigation ZA: Digital Monitoring for Water Safety & Compliance
+-> Safeguard guests and ensure legal compliance in ZA. Augos provides 24/7 digital monitoring and instant alerts for hot/cold water systems to proactively mitigate Legionella risk and automate compliance records.
+
+[None / None] Proactive Legionella Risk Mitigation ZA: Digital Monitoring for Water Safety & Compliance
+-> Safeguard guests and ensure legal compliance in ZA. Augos provides 24/7 digital monitoring and instant alerts for hot/cold water systems to proactively mitigate Legionella risk and automate compliance records.
+
+[None / None] Production Intelligence: See Your Full Production Story
+-> With Augos Production Intelligence tools, you can see the complete story of your production. Get granular, chronological reports for every job, shift, and minute of your day.
+
+[None / None] Production Intelligence: See Your Full Production Story
+-> With Augos Production Intelligence tools, you can see the complete story of your production. Get granular, chronological reports for every job, shift, and minute of your day.
+
+[None / None] Property Utility P&L Analytics Tenant Billing
+-> A deep dive into the Augos P&L Analytics suite for tenant billing. Use our Site Report and Portfolio View to track profitability across all your assets.
+
+[None / None] Property Utility P&L Analytics Tenant Billing
+-> A deep dive into the Augos P&L Analytics suite for tenant billing. Use our Site Report and Portfolio View to track profitability across all your assets.
+
+[None / None] Remote Control & Automation IoT Platform
+-> Close the loop with Augos Remote Control & Automation solutions. Turn sensor data into action by automatically controlling switches, valves, and industrial equipment.
+
+[None / None] Remote Control & Automation IoT Platform
+-> Close the loop with Augos Remote Control & Automation solutions. Turn sensor data into action by automatically controlling switches, valves, and industrial equipment.
+
+[None / retail] Retail Energy Management Solutions
+-> Reduce operating costs across your retail portfolio with Augos. Our platform helps you benchmark store performance, manage HVAC and lighting costs, and improve overall energy efficiency.
+
+[None / retail] Retail Energy Management Solutions
+-> Reduce operating costs across your retail portfolio with Augos. Our platform helps you benchmark store performance, manage HVAC and lighting costs, and improve overall energy efficiency.
+
+[None / None] Root Cause Analysis: Find Why Production Stops
+-> Move beyond simple downtime alerts. Augos provides a suite of Root Cause Analysis tools to diagnose why production stops, attributing every loss to a specific systemic or procedural failure.
+
+[None / None] Root Cause Analysis: Find Why Production Stops
+-> Move beyond simple downtime alerts. Augos provides a suite of Root Cause Analysis tools to diagnose why production stops, attributing every loss to a specific systemic or procedural failure.
+
+[None / None] South African Retail Giant's PFC Safety Transformation: Mitigating Fire Risk in 500+ Stores
+-> See how a major South African retail giant successfully addressed catastrophic fire risk from faulty Power Factor Correction (PFC) equipment by implementing PFC Surveys, safety upgrades, and dedicated fire suppression systems across 500+ sites.
+
+[None / None] South African Retail Giant's PFC Safety Transformation: Mitigating Fire Risk in 500+ Stores
+-> See how a major South African retail giant successfully addressed catastrophic fire risk from faulty Power Factor Correction (PFC) equipment by implementing PFC Surveys, safety upgrades, and dedicated fire suppression systems across 500+ sites.
+
+[None / None] Strategic vs. Non-Strategic Load Curtailment: The Software Mandate for South African Business
+-> Understand the critical difference between disruptive non-strategic load shedding and financially-incentivized Strategic Load Curtailment. Learn how software enables compliance and real-time control for Aggregated and Virtual Load Curtailment.
+
+[None / None] Strategic vs. Non-Strategic Load Curtailment: The Software Mandate for South African Business
+-> Understand the critical difference between disruptive non-strategic load shedding and financially-incentivized Strategic Load Curtailment. Learn how software enables compliance and real-time control for Aggregated and Virtual Load Curtailment.
+
+[None / None] Tenant Billing Financial Management & Profitability
+-> The financial heart of the Augos Tenant Billing platform. Tools for P&L analytics, bulk tariff optimisation, and NERSA-compliant tariff management to ensure profitability.
+
+[None / None] Tenant Billing Financial Management & Profitability
+-> The financial heart of the Augos Tenant Billing platform. Tools for P&L analytics, bulk tariff optimisation, and NERSA-compliant tariff management to ensure profitability.
+
+[None / commercial real estate] Tenant Billing for Commercial Real Estate
+-> The Augos tenant billing solution for commercial real estate. Maximize profitability and tenant retention in your office parks and buildings with automated, compliant utility billing.
+
+[None / commercial real estate] Tenant Billing for Commercial Real Estate
+-> The Augos tenant billing solution for commercial real estate. Maximize profitability and tenant retention in your office parks and buildings with automated, compliant utility billing.
+
+[None / industrial parks] Tenant Billing for Industrial Parks
+-> The Augos tenant billing solution for industrial parks. Manage high-consumption tenants, reduce bulk supply costs like kVA, and ensure profitability.
+
+[None / industrial parks] Tenant Billing for Industrial Parks
+-> The Augos tenant billing solution for industrial parks. Manage high-consumption tenants, reduce bulk supply costs like kVA, and ensure profitability.
+
+[None / retail centres] Tenant Billing for Retail Centres & Malls
+-> The Augos tenant billing solution for retail centres. Manage complex CAM reconciliation, diverse tenant tariffs, and generator billing with auditable accuracy.
+
+[None / retail centres] Tenant Billing for Retail Centres & Malls
+-> The Augos tenant billing solution for retail centres. Manage complex CAM reconciliation, diverse tenant tariffs, and generator billing with auditable accuracy.
+
+[None / None] Tenant's Guide to Electricity Billing Rights: Approved Tariffs & NERSA Compliance in South Africa
+-> As a South African tenant, you have the right to fair billing, FBE, and approved tariffs. Learn the 10 critical rights you must know, including dispute procedures and NERSA regulations, to ensure transparent utility costs.
+
+[None / None] Tenant's Guide to Electricity Billing Rights: Approved Tariffs & NERSA Compliance in South Africa
+-> As a South African tenant, you have the right to fair billing, FBE, and approved tariffs. Learn the 10 critical rights you must know, including dispute procedures and NERSA regulations, to ensure transparent utility costs.
+
+[None / None] The Augos Energy Intelligence Platform
+-> Augos is the energy intelligence platform for business leaders. Control costs, improve operational efficiency, and unlock valuable data with actionable insights.
+
+[None / None] The Augos Energy Intelligence Platform
+-> Augos is the energy intelligence platform for business leaders. Control costs, improve operational efficiency, and unlock valuable data with actionable insights.
+
+[None / None] The Augos IoT Intelligence Platform | Cloud Software
+-> Discover the Augos IoT Intelligence Platform, the central cloud software that unifies your sensors, data, and analytics into a single, powerful, and easy-to-use application.
+
+[None / None] The Augos IoT Intelligence Platform | Cloud Software
+-> Discover the Augos IoT Intelligence Platform, the central cloud software that unifies your sensors, data, and analytics into a single, powerful, and easy-to-use application.
+
+[None / None] The Occupancy Myth ZA: Why Hotel Energy Bills Are Driven By Baseload, Not Just Guests
+-> Debunk the Occupancy Myth: Learn why 60%+ of your ZA hotel's energy bill is fixed baseload (HVAC, lighting, pumps). Augos' precise measurement unlocks control and savings hidden within constant operations.
+
+[None / None] The Occupancy Myth ZA: Why Hotel Energy Bills Are Driven By Baseload, Not Just Guests
+-> Debunk the Occupancy Myth: Learn why 60%+ of your ZA hotel's energy bill is fixed baseload (HVAC, lighting, pumps). Augos' precise measurement unlocks control and savings hidden within constant operations.
+
+[None / None] Time of Use (TOU) Analysis for Landlords & Tenants
+-> Learn how Time of Use analysis in South Africa helps landlords reduce bulk supply costs and empowers tenants to lower their monthly bills by shifting usage to off-peak times.
+
+[None / None] Time of Use (TOU) Analysis for Landlords & Tenants
+-> Learn how Time of Use analysis in South Africa helps landlords reduce bulk supply costs and empowers tenants to lower their monthly bills by shifting usage to off-peak times.
+
+[None / mixed use properties] Unified Tenant Billing for Mixed-Use Properties
+-> The Augos tenant billing solution for complex mixed-use properties. Unify billing for residential, retail, and commercial tenants in a single, compliant platform.
+
+[None / mixed use properties] Unified Tenant Billing for Mixed-Use Properties
+-> The Augos tenant billing solution for complex mixed-use properties. Unify billing for residential, retail, and commercial tenants in a single, compliant platform.
+
+[None / None] Utility Cost Management for Finance Leaders
+-> Gain evidence-based control of your utility spend. Augos provides finance leaders with the tools to verify bills, optimise tariffs, and improve budgeting and forecasting accuracy.
+
+[None / None] Utility Cost Management for Finance Leaders
+-> Gain evidence-based control of your utility spend. Augos provides finance leaders with the tools to verify bills, optimise tariffs, and improve budgeting and forecasting accuracy.
+
+[None / None] Utility Data Integration ZA: Connect PMS, BMS & CMMS for Hotel Optimization
+-> Break down data silos in your ZA hotel. Augos integrates granular utility data with PMS, BMS, and CMMS insights, providing the holistic KPIs needed for optimal efficiency and maintenance.
+
+[None / None] Utility Data Integration ZA: Connect PMS, BMS & CMMS for Hotel Optimization
+-> Break down data silos in your ZA hotel. Augos integrates granular utility data with PMS, BMS, and CMMS insights, providing the holistic KPIs needed for optimal efficiency and maintenance.
+
+[None / None] Utility Management for Operations Leaders
+-> Gain live visibility and control over your site's utilities. Augos helps operations leaders detect issues early, reduce downtime, improve efficiency, and ensure asset reliability.
+
+[None / None] Utility Management for Operations Leaders
+-> Gain live visibility and control over your site's utilities. Augos helps operations leaders detect issues early, reduce downtime, improve efficiency, and ensure asset reliability.
+
+[None / None] Verifiable Hotel ESG Reporting ZA: Avoid Greenwashing with Scope 1 & 2 Data
+-> Combat greenwashing in South Africa's hospitality sector. Augos provides accurate sub-metering data to calculate verifiable Scope 1 & 2 emissions, ensuring credible ESG reports and building stakeholder trust.
+
+[None / None] Verifiable Hotel ESG Reporting ZA: Avoid Greenwashing with Scope 1 & 2 Data
+-> Combat greenwashing in South Africa's hospitality sector. Augos provides accurate sub-metering data to calculate verifiable Scope 1 & 2 emissions, ensuring credible ESG reports and building stakeholder trust.
+
+[None / None] Water Cost Breakdown Report Platform Feature
+-> Explore the Water Cost Breakdown report. A feature of the Augos platform that shows you exactly which areas or equipment are driving your water costs.
+
+[None / None] Water Cost Breakdown Report Platform Feature
+-> Explore the Water Cost Breakdown report. A feature of the Augos platform that shows you exactly which areas or equipment are driving your water costs.
+
+[None / None] Water Data Analytics & Reporting Toolkit in South Africa
+-> Transform water data into actionable insights in South Africa with the Augos toolkit. Use AI-ready data, custom APIs, automated alerts, and advanced reporting.
+
+[None / None] Water Data Analytics & Reporting Toolkit in South Africa
+-> Transform water data into actionable insights in South Africa with the Augos toolkit. Use AI-ready data, custom APIs, automated alerts, and advanced reporting.
+
+[None / None] Water Data Analytics & Reporting Toolkit in South Africa
+-> Transform water data into actionable insights in South Africa with the Augos toolkit. Use AI-ready data, custom APIs, automated alerts, and advanced reporting.
+
+[None / None] Water Data Analytics & Reporting Toolkit in South Africa
+-> Transform water data into actionable insights in South Africa with the Augos toolkit. Use AI-ready data, custom APIs, automated alerts, and advanced reporting.
+
+[None / None] Water Infrastructure Automation & Control in South Africa
+-> Remotely control pumps, valves, and more in South Africa with Augos. Automate your water infrastructure based on real-time data to reduce risk, save energy, and cut labor costs.
+
+[None / None] Water Infrastructure Automation & Control in South Africa
+-> Remotely control pumps, valves, and more in South Africa with Augos. Automate your water infrastructure based on real-time data to reduce risk, save energy, and cut labor costs.
+
+[None / None] Water Management Case Studies & Articles
+-> Explore real-world case studies and articles showcasing how businesses across South Africa have transformed their water management with Augos.
+
+[None / None] Water Management Case Studies & Articles
+-> Explore real-world case studies and articles showcasing how businesses across South Africa have transformed their water management with Augos.
+
+[None / None] Water Management Solutions for All Industries
+-> Augos provides specialized water management solutions for industries like agriculture, mining, commercial facilities, hotels, and more. Find your industry.
+
+[None / None] Water Management Solutions for All Industries
+-> Augos provides specialized water management solutions for industries like agriculture, mining, commercial facilities, hotels, and more. Find your industry.
+
+[None / agriculture] Water Management for Agriculture
+-> Augos provides specialized water management solutions for agriculture. Use our technology for precision irrigation, frost alerts, and storage monitoring.
+
+[None / agriculture] Water Management for Agriculture
+-> Augos provides specialized water management solutions for agriculture. Use our technology for precision irrigation, frost alerts, and storage monitoring.
+
+[None / commercial facilities] Water Management for Commercial Facilities
+-> Augos offers water management for commercial facilities. Solutions for tenant billing, leak detection, and utility bill verification for offices & malls.
+
+[None / commercial facilities] Water Management for Commercial Facilities
+-> Augos offers water management for commercial facilities. Solutions for tenant billing, leak detection, and utility bill verification for offices & malls.
+
+[None / hotels and resorts] Water Management for Hotels & Resorts
+-> Augos provides water management solutions for hotels and resorts. Reduce costs, detect leaks, and improve sustainability scores with our platform.
+
+[None / hotels and resorts] Water Management for Hotels & Resorts
+-> Augos provides water management solutions for hotels and resorts. Reduce costs, detect leaks, and improve sustainability scores with our platform.
+
+[None / mining] Water Management for the Mining Industry
+-> Augos offers rugged water management solutions for the mining industry. Monitor dewatering, processing circuits, TSF levels, and discharge compliance.
+
+[None / mining] Water Management for the Mining Industry
+-> Augos offers rugged water management solutions for the mining industry. Monitor dewatering, processing circuits, TSF levels, and discharge compliance.
+
+[None / None] Water Monitoring Dashboards Platform
+-> Explore the monitoring dashboards of the Augos platform. See how the Utilities Dashboard and IoT Dashboard give you a complete, real-time view of your water data.
+
+[None / None] Water Monitoring Dashboards Platform
+-> Explore the monitoring dashboards of the Augos platform. See how the Utilities Dashboard and IoT Dashboard give you a complete, real-time view of your water data.
+
+[None / None] Water System Integrity Monitoring Platform
+-> Learn how Augos helps you monitor the 'vital signs' of your water network. Track real-time water level, pressure, and flow to ensure system integrity.
+
+[None / None] Water System Integrity Monitoring Platform
+-> Learn how Augos helps you monitor the 'vital signs' of your water network. Track real-time water level, pressure, and flow to ensure system integrity.
+
+[None / None] Water Technical Analysis Tools Platform
+-> A deep dive into the Augos Technical Analysis tools. Empower your engineers with granular data on flow, pressure, and trends for advanced fault-finding.
+
+[None / None] Water Technical Analysis Tools Platform
+-> A deep dive into the Augos Technical Analysis tools. Empower your engineers with granular data on flow, pressure, and trends for advanced fault-finding.
+
+[automation / None] 
+-> None
+
+[automation / None] 
+-> None
+
+[automation / None] 
+-> None
+
+[automation / None] 
+-> None
+
+[automation / None] AI-Ready Data for Property Portfolio Analysis
+-> Use plain English to analyze your property portfolio. Learn how AI-Ready Data lets you use AI assistants like ChatGPT to ask questions about P&L, tenant costs, and asset performance.
+
+[automation / None] AI-Ready Data for Property Portfolio Analysis
+-> Use plain English to analyze your property portfolio. Learn how AI-Ready Data lets you use AI assistants like ChatGPT to ask questions about P&L, tenant costs, and asset performance.
+
+[automation / None] AI-Ready Data for Property Portfolio Analysis
+-> Use plain English to analyze your property portfolio. Learn how AI-Ready Data lets you use AI assistants like ChatGPT to ask questions about P&L, tenant costs, and asset performance.
+
+[automation / None] AI-Ready Data for Property Portfolio Analysis
+-> Use plain English to analyze your property portfolio. Learn how AI-Ready Data lets you use AI assistants like ChatGPT to ask questions about P&L, tenant costs, and asset performance.
+
+[automation / None] Automated Equipment & Demand Control Solutions
+-> Use automated equipment control to actively manage your energy costs. Our platform allows you to implement demand control, load shifting, and baseload control strategies using intelligent, data-driven rules.
+
+[automation / None] Automated Equipment & Demand Control Solutions
+-> Use automated equipment control to actively manage your energy costs. Our platform allows you to implement demand control, load shifting, and baseload control strategies using intelligent, data-driven rules.
+
+[automation / None] Automation Toolkit for Energy Management
+-> The Augos Automation Toolkit is a suite of advanced features to connect, analyse, alert, and control your energy data. Move from passive reporting to active, automated energy management.
+
+[automation / None] Automation Toolkit for Energy Management
+-> The Augos Automation Toolkit is a suite of advanced features to connect, analyse, alert, and control your energy data. Move from passive reporting to active, automated energy management.
+
+[automation / None] Export Property Data & Build Custom Utility Reports
+-> Get your property utility data in the format you need. The Augos platform allows you to export tables to Excel, download tenant reports as PDFs, and build custom charts.
+
+[automation / None] Export Property Data & Build Custom Utility Reports
+-> Get your property utility data in the format you need. The Augos platform allows you to export tables to Excel, download tenant reports as PDFs, and build custom charts.
+
+[automation / None] Proactive Property Alerts (Water Leaks, Vacant Units)
+-> Use the Augos Alerts system to protect your property's P&L. Get instant SMS or email alerts for water leaks, unusual consumption in vacant units, and more.
+
+[automation / None] Proactive Property Alerts (Water Leaks, Vacant Units)
+-> Use the Augos Alerts system to protect your property's P&L. Get instant SMS or email alerts for water leaks, unusual consumption in vacant units, and more.
+
+[automation / None] Proactive Property Alerts (Water Leaks, Vacant Units)
+-> Use the Augos Alerts system to protect your property's P&L. Get instant SMS or email alerts for water leaks, unusual consumption in vacant units, and more.
+
+[automation / None] Proactive Property Alerts (Water Leaks, Vacant Units)
+-> Use the Augos Alerts system to protect your property's P&L. Get instant SMS or email alerts for water leaks, unusual consumption in vacant units, and more.
+
+[automation / None] Tenant Billing API & Integrations (MDA, Xero, Sage)
+-> Connect the Augos platform to your existing property management systems. Our API enables seamless integration with MDA Property Manager, Xero, Sage, and other ERPs.
+
+[automation / None] Tenant Billing API & Integrations (MDA, Xero, Sage)
+-> Connect the Augos platform to your existing property management systems. Our API enables seamless integration with MDA Property Manager, Xero, Sage, and other ERPs.
+
+[automation / None] Tenant Billing API & Integrations (MDA, Xero, Sage)
+-> Connect the Augos platform to your existing property management systems. Our API enables seamless integration with MDA Property Manager, Xero, Sage, and other ERPs.
+
+[automation / None] Tenant Billing API & Integrations (MDA, Xero, Sage)
+-> Connect the Augos platform to your existing property management systems. Our API enables seamless integration with MDA Property Manager, Xero, Sage, and other ERPs.
+
+[automation / None] The Landlord's Automation Toolkit for Tenant Billing
+-> Explore the Augos Automation Toolkit. Use proactive alerts for water leaks, API integrations with MDA, and AI-ready data to streamline your property management workflow.
+
+[automation / None] The Landlord's Automation Toolkit for Tenant Billing
+-> Explore the Augos Automation Toolkit. Use proactive alerts for water leaks, API integrations with MDA, and AI-ready data to streamline your property management workflow.
+
+[automation / None] Utility Management Dashboard
+-> Get a live, single-pane-of-glass view of your site's performance. The Augos utility management dashboard tracks electricity, water, gas, and fuel in one place to spot issues fast.
+
+[automation / None] Utility Management Dashboard
+-> Get a live, single-pane-of-glass view of your site's performance. The Augos utility management dashboard tracks electricity, water, gas, and fuel in one place to spot issues fast.
+
+[demand / None] 
+-> None
+
+[demand / None] 
+-> None
+
+[demand / None] 
+-> None
+
+[demand / None] 
+-> None
+
+[demand / None] 
+-> None
+
+[demand / None] 
+-> None
+
+[demand / None] Case Study: Bokomo Foods Achieves 16-Month ROI on Power Factor Correction in Johannesburg ZA
+-> See how Augos used the Energy Intelligence platform to diagnose and eliminate costly Reactive Energy Charges at Bokomo Savoury Foods, securing an exceptional 16-month financial payback in Johannesburg.
+
+[demand / None] Case Study: Bokomo Foods Achieves 16-Month ROI on Power Factor Correction in Johannesburg ZA
+-> See how Augos used the Energy Intelligence platform to diagnose and eliminate costly Reactive Energy Charges at Bokomo Savoury Foods, securing an exceptional 16-month financial payback in Johannesburg.
+
+[demand / None] Power Factor & Demand Analysis for Landlords
+-> Learn how analyzing Power Factor and Peak Demand on your bulk supply in South Africa can drastically reduce costs and increase the profitability of your tenant billing operation.
+
+[demand / None] Power Factor & Demand Analysis for Landlords
+-> Learn how analyzing Power Factor and Peak Demand on your bulk supply in South Africa can drastically reduce costs and increase the profitability of your tenant billing operation.
+
+[demand / None] Power Factor Survey Process: Maintenance, Efficiency, and Risk Mitigation
+-> A comprehensive guide to our Power Factor survey process: from initial bill assessment to component testing, data logging, and maintenance recommendations to ensure peak efficiency and asset longevity.
+
+[demand / None] Power Factor Survey Process: Maintenance, Efficiency, and Risk Mitigation
+-> A comprehensive guide to our Power Factor survey process: from initial bill assessment to component testing, data logging, and maintenance recommendations to ensure peak efficiency and asset longevity.
+
+[demand / None] What is Power Factor Correction (PFC)? The 6-Step Guide to Energy Efficiency ROI
+-> Power Factor Correction (PFC) uses capacitors to eliminate demand penalties caused by reactive power (kVA). Learn the 6 essential steps—from Survey to Monitoring—to ensure maximum efficiency and guaranteed cost savings.
+
+[demand / None] What is Power Factor Correction (PFC)? The 6-Step Guide to Energy Efficiency ROI
+-> Power Factor Correction (PFC) uses capacitors to eliminate demand penalties caused by reactive power (kVA). Learn the 6 essential steps—from Survey to Monitoring—to ensure maximum efficiency and guaranteed cost savings.
+
+[efficiency / None] Business Energy Efficiency Solutions
+-> Improve your business's energy efficiency with Augos. Our solutions help you analyse consumption, manage demand, optimise schedules, and gain full visibility of your energy usage.
+
+[efficiency / None] Business Energy Efficiency Solutions
+-> Improve your business's energy efficiency with Augos. Our solutions help you analyse consumption, manage demand, optimise schedules, and gain full visibility of your energy usage.
+
+[efficiency / None] Consumption Breakdown & Energy Balance for Landlords
+-> Use the Augos Consumption Breakdown tool in South Africa to perform an energy balance on your property. Account for every kWh to eliminate financial leakage and boost profitability.
+
+[efficiency / None] Consumption Breakdown & Energy Balance for Landlords
+-> Use the Augos Consumption Breakdown tool in South Africa to perform an energy balance on your property. Account for every kWh to eliminate financial leakage and boost profitability.
+
+[efficiency / None] Custom Energy Reporting & Data Export Tools
+-> Unlock your energy data with Augos. Our custom reporting tools let you export to CSV/Excel, build custom charts, download PDFs, and create AI-ready files for deep analysis.
+
+[efficiency / None] Custom Energy Reporting & Data Export Tools
+-> Unlock your energy data with Augos. Our custom reporting tools let you export to CSV/Excel, build custom charts, download PDFs, and create AI-ready files for deep analysis.
+
+[efficiency / None] Energy Consumption Analysis & Breakdown
+-> Identify your biggest energy users with Augos' consumption analysis. Our platform breaks down electricity usage by area or equipment, helping you target efficiency projects.
+
+[efficiency / None] Energy Consumption Analysis & Breakdown
+-> Identify your biggest energy users with Augos' consumption analysis. Our platform breaks down electricity usage by area or equipment, helping you target efficiency projects.
+
+[efficiency / None] Water Consumption Breakdown Report Platform
+-> Explore the Water Consumption Breakdown report. A feature of the Augos platform that shows you exactly which areas or equipment are your biggest water users.
+
+[efficiency / None] Water Consumption Breakdown Report Platform
+-> Explore the Water Consumption Breakdown report. A feature of the Augos platform that shows you exactly which areas or equipment are your biggest water users.
+
+[tariff-billing / None] 
+-> None
+
+[tariff-billing / None] 
+-> None
+
+[tariff-billing / None] 
+-> None
+
+[tariff-billing / None] 
+-> None
+
+[tariff-billing / None] Bill Verification ZA: Protect Against Overbilling & Underbilling Risks in Electricity Tariffs
+-> Bill Verification is crucial for ZA businesses. Use the Augos platform to compare measured data against your supplier's billing, checking line-by-line for overbilling and mitigating 36-month underbilling risks.
+
+[tariff-billing / None] Bill Verification ZA: Protect Against Overbilling & Underbilling Risks in Electricity Tariffs
+-> Bill Verification is crucial for ZA businesses. Use the Augos platform to compare measured data against your supplier's billing, checking line-by-line for overbilling and mitigating 36-month underbilling risks.
+
+[tariff-billing / None] Bulk Municipal Bill Verification for Landlords
+-> For landlords in South Africa, verifying your bulk municipal bill is key to profitability. Learn how the Augos platform finds errors to protect your tenant billing P&L.
+
+[tariff-billing / None] Bulk Municipal Bill Verification for Landlords
+-> For landlords in South Africa, verifying your bulk municipal bill is key to profitability. Learn how the Augos platform finds errors to protect your tenant billing P&L.
+
+[tariff-billing / None] Business Electricity Tariff Switching Service
+-> Switching business electricity tariffs? Our expert support service manages the entire migration process, from application to verification, ensuring a smooth transition and validated savings.
+
+[tariff-billing / None] Business Electricity Tariff Switching Service
+-> Switching business electricity tariffs? Our expert support service manages the entire migration process, from application to verification, ensuring a smooth transition and validated savings.
+
+[tariff-billing / None] Business Energy Tariff and Billing Management
+-> Take control of your energy costs with Augos. Our services cover everything from bill verification and tariff optimisation to detailed cost allocation for your business.
+
+[tariff-billing / None] Business Energy Tariff and Billing Management
+-> Take control of your energy costs with Augos. Our services cover everything from bill verification and tariff optimisation to detailed cost allocation for your business.
+
+[tariff-billing / None] Case Study: Jumeirah Group Achieves Accurate Cooling Cost Allocation with Augos BTU Metering
+-> Discover how the Jumeirah Group used Augos BTU metering to solve complex cost allocation challenges for their centralized chilled water plant, ensuring fair billing and financial transparency across four luxury properties.
+
+[tariff-billing / None] Case Study: Jumeirah Group Achieves Accurate Cooling Cost Allocation with Augos BTU Metering
+-> Discover how the Jumeirah Group used Augos BTU metering to solve complex cost allocation challenges for their centralized chilled water plant, ensuring fair billing and financial transparency across four luxury properties.
+
+[tariff-billing / None] Case Study: Libstar Saves R515,000 Annually with Tariff Optimisation
+-> See how a data-driven tariff analysis for Libstar's Montagu Barlinka site led to a switch to a Time of Use tariff, resulting in verified annual savings of R515,000.
+
+[tariff-billing / None] Case Study: Libstar Saves R515,000 Annually with Tariff Optimisation
+-> See how a data-driven tariff analysis for Libstar's Montagu Barlinka site led to a switch to a Time of Use tariff, resulting in verified annual savings of R515,000.
+
+[tariff-billing / None] Case Study: Much Asphalt Saves R500,000 with Tariff Optimisation
+-> See how Augos' expert tariff optimisation service helped Much Asphalt's Benoni plant identify and switch to a more cost-effective tariff, unlocking R500,000 in projected annual savings.
+
+[tariff-billing / None] Case Study: Much Asphalt Saves R500,000 with Tariff Optimisation
+-> See how Augos' expert tariff optimisation service helped Much Asphalt's Benoni plant identify and switch to a more cost-effective tariff, unlocking R500,000 in projected annual savings.
+
+[tariff-billing / None] Electricity Meter Accuracy Testing & Verification
+-> Ensure your utility bills are based on accurate data with our meter verification service. We cross-check your main meter against independent measurements to identify and report faults.
+
+[tariff-billing / None] Electricity Meter Accuracy Testing & Verification
+-> Ensure your utility bills are based on accurate data with our meter verification service. We cross-check your main meter against independent measurements to identify and report faults.
+
+[tariff-billing / None] Energy Cost Allocation Software for Tenants & Departments
+-> Fairly and accurately allocate energy costs to tenants, departments, or equipment with Augos' cost allocation software. Eliminate disputes and improve accountability.
+
+[tariff-billing / None] Energy Cost Allocation Software for Tenants & Departments
+-> Fairly and accurately allocate energy costs to tenants, departments, or equipment with Augos' cost allocation software. Eliminate disputes and improve accountability.
+
+[tariff-billing / None] Expert Utility Bill Dispute Support
+-> Challenge and win utility billing disputes with expert support from Augos. We provide the data, documentation, and negotiation assistance needed to resolve errors and recover funds.
+
+[tariff-billing / None] Expert Utility Bill Dispute Support
+-> Challenge and win utility billing disputes with expert support from Augos. We provide the data, documentation, and negotiation assistance needed to resolve errors and recover funds.
+
+[tariff-billing / None] Expert Water Bill Verification Feature
+-> A deep dive into the Augos Water Bill Verification feature. Compare supplier charges against real-time data to identify errors and recover costs.
+
+[tariff-billing / None] Expert Water Bill Verification Feature
+-> A deep dive into the Augos Water Bill Verification feature. Compare supplier charges against real-time data to identify errors and recover costs.
+
+[tariff-billing / None] Fair Share Billing ZA: Master Utility Cost Allocation in Complex Hotel & Mixed-Use Properties
+-> Stop disputes and revenue loss in your ZA hotel. Augos sub-meters ensure fair utility billing and cost recovery for tenants and departments, accurately managing generator costs during load shedding.
+
+[tariff-billing / None] Fair Share Billing ZA: Master Utility Cost Allocation in Complex Hotel & Mixed-Use Properties
+-> Stop disputes and revenue loss in your ZA hotel. Augos sub-meters ensure fair utility billing and cost recovery for tenants and departments, accurately managing generator costs during load shedding.
+
+[tariff-billing / None] Managed Utility Bill Verification Service
+-> Save time and recover costs with our managed utility bill verification service. Our energy experts handle the entire process, ensuring you only pay for what you've consumed.
+
+[tariff-billing / None] Managed Utility Bill Verification Service
+-> Save time and recover costs with our managed utility bill verification service. Our energy experts handle the entire process, ensuring you only pay for what you've consumed.
+
+[tariff-billing / None] NMD Analysis & Optimisation Service
+-> Optimise your Notified Maximum Demand (NMD) with our expert analysis and support. We help you set the correct NMD level to avoid penalties and reduce fixed energy charges.
+
+[tariff-billing / None] NMD Analysis & Optimisation Service
+-> Optimise your Notified Maximum Demand (NMD) with our expert analysis and support. We help you set the correct NMD level to avoid penalties and reduce fixed energy charges.
+
+[tariff-billing / None] Tariff Optimisation Software & Analysis
+-> Use our tariff optimisation software to analyse your consumption profile against all available tariffs and ensure you are on the most cost-effective structure for your business.
+
+[tariff-billing / None] Tariff Optimisation Software & Analysis
+-> Use our tariff optimisation software to analyse your consumption profile against all available tariffs and ensure you are on the most cost-effective structure for your business.
+
+[tariff-billing / None] Utility Bill Verification Software
+-> Ensure financial control with our utility bill verification software. We compare supplier charges against your measured data to identify overcharges and fix billing errors.
+
+[tariff-billing / None] Utility Bill Verification Software
+-> Ensure financial control with our utility bill verification software. We compare supplier charges against your measured data to identify overcharges and fix billing errors.
+
+[tariff-billing / None] Water Cost Allocation & Tenant Billing Feature
+-> Learn about the Augos Water Cost Allocation tool. Automate departmental charge-backs and tenant billing using real consumption data for fairness and accuracy.
+
+[tariff-billing / None] Water Cost Allocation & Tenant Billing Feature
+-> Learn about the Augos Water Cost Allocation tool. Automate departmental charge-backs and tenant billing using real consumption data for fairness and accuracy.
+
+=== FAQS OVERVIEW ===

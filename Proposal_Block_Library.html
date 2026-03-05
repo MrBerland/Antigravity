@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Augos Proposal Block Library</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        :root {
+            /* DARK MODE (Default for Proposal) */
+            --bg-base: #020617;
+            /* Slate 950 */
+            --bg-surface: #0f172a;
+            /* Slate 900 */
+            --bg-glass: rgba(15, 23, 42, 0.6);
+            --text-main: #cbd5e1;
+            /* Slate 300 */
+            --text-muted: #94a3b8;
+            /* Slate 400 */
+            --text-heading: #ffffff;
+            --accent: #00d1ff;
+            /* Augos Cyan */
+            --accent-glow: rgba(0, 209, 255, 0.2);
+            --primary: #2463eb;
+            /* Royal Blue */
+            --border-light: rgba(255, 255, 255, 0.08);
+            --border: rgba(255, 255, 255, 0.15);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            padding: 40px;
+        }
+
+        .header {
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: var(--text-heading);
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* BLOCK CONTAINER */
+        .block-wrapper {
+            max-width: 1200px;
+            margin: 0 auto 80px auto;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .block-label {
+            background: rgba(36, 99, 235, 0.15);
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .block-content {
+            padding: 60px;
+            position: relative;
+        }
+
+        /* SECTION TYPOGRAPHY */
+        .section-header {
+            margin-bottom: 32px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .section-icon {
+            color: var(--accent);
+            background: rgba(0, 209, 255, 0.1);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(0, 209, 255, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .section-desc {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 700px;
+        }
+
+        /* GRIDS & LAYOUTS */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        /* CARDS */
+        .feature-card {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 20px var(--accent-glow);
+        }
+
+        .card-stat {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-heading);
+            margin-bottom: 12px;
+        }
+
+        .card-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* TIMELINE / ROADMAP */
+        .timeline {
+            position: relative;
+            padding-left: 32px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-light);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 32px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -37px;
+            top: 6px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--bg-surface);
+            border: 2px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover::before {
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* LISTS */
+        .check-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .check-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .check-list svg {
+            color: var(--success);
+            flex-shrink: 0;
+            margin-top: 3px;
+        }
+
+        /* EFFECTS */
+        .glow-text {
+            color: var(--accent);
+            text-shadow: 0 0 15px rgba(0, 209, 255, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Augos Proposal Intelligence Modules</h1>
+        <p>A library of specialized presentation blocks dynamically mapped from the Augos Knowledge Base. Ready to
+            copy-paste into future dynamic proposals based on specific client industry needs.</p>
+    </div>
+
+    <!-- MODULE 1: HISTORICAL RISK RECOVERY -->
+    <div class="block-wrapper">
+        <div class="block-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+                <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+            </svg>
+            Module 1: Historical Risk Recovery (Bill Verification)
+        </div>
+        <div class="block-content">
+            <div class="section-header">
+                <div class="section-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="section-title">Historical Utility Bill Arbitration</h2>
+                    <p class="section-desc">Municipal bills are not absolute truths. Augos algorithmically audits your
+                        supplier's historical charges line-by-line against high-resolution empirical data to recover
+                        massive overbilling.</p>
+                </div>
+            </div>
+
+            <div class="grid-3" style="margin-top: 40px;">
+                <div class="feature-card">
+                    <div
+                        style="color:var(--text-muted); font-size: 0.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">
+                        Case Study: Luxury Hotel</div>
+                    <div class="card-stat">2,000%</div>
+                    <div class="card-title">Meter Under-read Detected</div>
+                    <div class="card-text">Identified a catastrophic municipal meter failure, proactively protecting the
+                        client from a devastating multi-million rand back-bill before it cascaded.</div>
+                </div>
+                <div class="feature-card"
+                    style="border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05);">
+                    <div
+                        style="color:var(--text-muted); font-size: 0.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">
+                        Case Study: Property Group</div>
+                    <div class="card-stat glow-text" style="color: var(--accent);">50%</div>
+                    <div class="card-title">Consistent Overbilling Reversed</div>
+                    <div class="card-text">Provided the precise digital evidence required to challenge and reverse a
+                        consistent 50% council overbilling error across a major property portfolio.</div>
+                </div>
+                <div class="feature-card">
+                    <div
+                        style="color:var(--text-muted); font-size: 0.8rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">
+                        The Augos Guarantee</div>
+                    <div class="card-stat" style="color: var(--text-heading);">36<span
+                            style="font-size:1rem;font-weight:500;">mo</span></div>
+                    <div class="card-title">Historical Liability Protection</div>
+                    <div class="card-text">We defend you against arbitrary 36-month municipal back-billing by
+                        maintaining an immutable, audit-grade record of your true consumption.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODULE 2: TARIFF & NMD OPTIMISATION -->
+    <div class="block-wrapper">
+        <div class="block-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+            Module 2: Tariff Restructuring (Finance & Ops)
+        </div>
+        <div class="block-content">
+            <div class="section-header">
+                <div class="section-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="section-title">Strategic Tariff & NMD Restructuring</h2>
+                    <p class="section-desc">Transition from "using less" to "buying better". Augos leverages your
+                        real-time consumption profile to mathematically determine the optimal municipal tariff structure
+                        and Notified Maximum Demand (NMD) threshold.</p>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="feature-card"
+                    style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 class="card-title" style="font-size: 1.25rem;">The Penalty Eradication Playbook</h3>
+                        <p class="card-text" style="margin-bottom: 24px;">Our engineering team processes your profile
+                            against every available NERSA-approved tariff structure to eliminate punitive fixed charges,
+                            including the new Generation Capacity Charge (GCC).</p>
+
+                        <ul class="check-list">
+                            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg> <strong>Time of Use (TOU) Transition:</strong> Migrate to off-peak weighted
+                                structures.</li>
+                            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg> <strong>NMD Rightsizing:</strong> Eliminate unused capacity penalties.</li>
+                            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg> <strong>End-to-End Migration:</strong> We handle council paperwork and
+                                validation.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div
+                    style="background: var(--bg-surface); padding: 32px; border-radius: var(--radius-md); border: 1px dashed var(--border);">
+                    <div
+                        style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); margin-bottom: 16px;">
+                        // VERIFIED COST REDUCTION MODELS</div>
+
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div style="padding-bottom: 16px; border-bottom: 1px solid var(--border-light);">
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Industrial Manufacturer (Benoni)
+                            </div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">R500,000 / year
+                            </div>
+                            <div style="font-size: 0.85rem; color: var(--text-main); margin-top: 4px;">Unlocked via
+                                flat-rate to Time of Use (TOU) restructuring.</div>
+                        </div>
+                        <div style="padding-bottom: 16px; border-bottom: 1px solid var(--border-light);">
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Commercial Retail Tenant</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">R85,000 / year
+                            </div>
+                            <div style="font-size: 0.85rem; color: var(--text-main); margin-top: 4px;">Saved by
+                                correcting an oversized Notified Maximum Demand (NMD).</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Falke South Africa</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">R600,000 / year
+                            </div>
+                            <div style="font-size: 0.85rem; color: var(--text-main); margin-top: 4px;">Additional
+                                savings through City of Cape Town tariff migration.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODULE 3: AUTOMATED ESG & COMPLIANCE -->
+    <div class="block-wrapper">
+        <div class="block-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            Module 3: Defensible ESG Reporting & Compliance
+        </div>
+        <div class="block-content">
+            <div class="grid-2" style="align-items: center;">
+                <div>
+                    <h2 class="section-title">Automated, Audit-Grade Sustainability</h2>
+                    <p class="section-desc" style="margin-bottom: 24px;">Eradicate the risk of 'greenwashing'. Augos
+                        telemetry transforms raw electricity and water data into legally defensible, automated
+                        environmental reporting. Built for the scrutiny of modern corporate governance.</p>
+
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <h4 style="color: var(--text-heading); font-size: 1.05rem; margin-bottom: 4px;">Scope 1 & 2
+                                Emissions Data</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Automated carbon footprint
+                                calculation for Carbon Tax Phase 2 compliance based on granular kilowatt-hour tracking.
+                            </p>
+                        </div>
+                        <div class="timeline-item">
+                            <h4 style="color: var(--text-heading); font-size: 1.05rem; margin-bottom: 4px;">EPC & ISO
+                                50001 Readiness</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Directly supports the systemic
+                                tracking required for SANS 1544 Energy Performance Certificates and ISO 50001
+                                accreditation.</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h4 style="color: var(--text-heading); font-size: 1.05rem; margin-bottom: 4px;">Legionella
+                                Risk Mitigation</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Constant 24/7 digital thermodynamic
+                                monitoring of hot/cold water infrastructure ensures verifiable health and safety
+                                compliance.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    style="position: relative; height: 100%; min-height: 350px; background: rgba(36, 99, 235, 0.05); border-radius: var(--radius-md); border: 1px solid rgba(36, 99, 235, 0.2); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    <!-- Decorative background elements -->
+                    <div
+                        style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(16, 185, 129, 0.2); filter: blur(40px); border-radius: 50%;">
+                    </div>
+                    <div
+                        style="position: absolute; bottom: -50px; left: -50px; width: 200px; height: 200px; background: rgba(36, 99, 235, 0.2); filter: blur(50px); border-radius: 50%;">
+                    </div>
+
+                    <div
+                        style="background: var(--bg-surface); border: 1px solid var(--border); padding: 32px; border-radius: var(--radius-sm); z-index: 10; box-shadow: 0 20px 40px rgba(0,0,0,0.5); width: 80%;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                            <span
+                                style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">LIVE
+                                ESG PIPELINE</span>
+                            <span
+                                style="background: rgba(16, 185, 129, 0.15); color: var(--success); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">COMPLIANT</span>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="font-size: 0.9rem; color: var(--text-main);">Portfolio Carbon
+                                    Intensity</span>
+                                <span
+                                    style="font-family:var(--font-mono); font-size: 0.9rem; color: var(--text-heading);">14.2
+                                    kgCO₂/m²</span>
+                            </div>
+                            <div
+                                style="width: 100%; height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden;">
+                                <div
+                                    style="width: 65%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent));">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="font-size: 0.9rem; color: var(--text-main);">ISO 50001 Data Coverage</span>
+                                <span
+                                    style="font-family:var(--font-mono); font-size: 0.9rem; color: var(--text-heading);">98.5%</span>
+                            </div>
+                            <div
+                                style="width: 100%; height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden;">
+                                <div style="width: 98%; height: 100%; background: var(--success);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODULE 4: REVENUE PROTECTION (TENANT BILLING) -->
+    <div class="block-wrapper">
+        <div class="block-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 1v22"></path>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+            Module 4: Revenue & Resale Optimization (Real Estate)
+        </div>
+        <div class="block-content">
+            <div class="section-header">
+                <div class="section-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="section-title">Fair-Share Tenant & Departmental Billing</h2>
+                    <p class="section-desc">Eradicate margin erosion in mixed-use properties and multi-department
+                        facilities. The Augos platform automates utility cost recovery with NERSA-compliant precision,
+                        linking seamlessly with your ERP.</p>
+                </div>
+            </div>
+
+            <div class="grid-3" style="margin-top: 32px;">
+                <div class="feature-card" style="padding: 32px 24px; text-align: center;">
+                    <div
+                        style="background: rgba(36, 99, 235, 0.1); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: var(--primary);">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Automated PDF Statements</h3>
+                    <p class="card-text">Generate professional, indisputable utility statements for tenants or
+                        concessions automatically. Eliminates manual spreadsheet errors and tenant disputes.</p>
+                </div>
+                <div class="feature-card" style="padding: 32px 24px; text-align: center;">
+                    <div
+                        style="background: rgba(245, 158, 11, 0.1); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: var(--warning);">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                            <line x1="12" y1="8" x2="12" y2="16"></line>
+                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">Generator & CAM Apportionment</h3>
+                    <p class="card-text">Accurately distribute complex common area and diesel generator costs during
+                        load shedding based on proportional volumetric consumption.</p>
+                </div>
+                <div class="feature-card" style="padding: 32px 24px; text-align: center;">
+                    <div
+                        style="background: rgba(16, 185, 129, 0.1); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: var(--success);">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </div>
+                    <h3 class="card-title">API & ERP Integration</h3>
+                    <p class="card-text">Seamless bi-directional syncing via our native API with property management
+                        systems including MDA, Xero, and Sage to streamline ledger accounting.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODULE 5: PHASE 2 IOT & WATER ROADMAP -->
+    <div class="block-wrapper">
+        <div class="block-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 16 16 12 12 8"></polyline>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+            Module 5: Future Scaling (Phase 2 Roadmap)
+        </div>
+        <div class="block-content">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">The Foundation for Complete Asset Intelligence</h2>
+                    <p class="section-desc">Electric monitoring is just the gateway. The Edge infrastructure we deploy
+                        today natively supports Phase 2 scaling—allowing you to plug-and-play Water, Environmental, and
+                        Operational IoT sensors into the exact same dashboard.</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; display: flex; gap: 16px; align-items: stretch; height: 200px;">
+                <!-- Step 1 -->
+                <div
+                    style="flex: 1; background: var(--bg-glass); border-radius: var(--radius-md); border: 1px solid var(--accent); padding: 24px; position: relative;">
+                    <div
+                        style="position: absolute; top: -12px; left: 24px; background: var(--accent); color: var(--bg-base); font-size: 0.75rem; font-weight: 800; padding: 4px 12px; border-radius: 12px;">
+                        PHASE 01 (CURRENT)</div>
+                    <h3 style="color: var(--text-heading); font-size: 1.1rem; margin-top: 12px; margin-bottom: 8px;">
+                        Energy Intelligence</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">Baseload profiling, peak
+                        demand arbitration, and reactive power management.</p>
+                </div>
+
+                <div style="display: flex; align-items: center; color: var(--border);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </div>
+
+                <!-- Step 2 -->
+                <div
+                    style="flex: 1; background: var(--bg-surface); border-radius: var(--radius-md); border: 1px solid var(--border-light); padding: 24px; position: relative; opacity: 0.7; transition: opacity 0.3s ease;">
+                    <div
+                        style="position: absolute; top: -12px; left: 24px; background: var(--border-light); color: var(--text-main); font-size: 0.75rem; font-weight: 800; padding: 4px 12px; border-radius: 12px;">
+                        PHASE 02</div>
+                    <h3 style="color: var(--text-heading); font-size: 1.1rem; margin-top: 12px; margin-bottom: 8px;">
+                        Water Loss Prevention</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">High-resolution flow rate
+                        monitoring to detect, alert, and eliminate catastrophic property leaks instantaneously.</p>
+                </div>
+
+                <div style="display: flex; align-items: center; color: var(--border);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </div>
+
+                <!-- Step 3 -->
+                <div
+                    style="flex: 1; background: var(--bg-surface); border-radius: var(--radius-md); border: 1px solid var(--border-light); padding: 24px; position: relative; opacity: 0.5;">
+                    <div
+                        style="position: absolute; top: -12px; left: 24px; background: var(--border-light); color: var(--text-main); font-size: 0.75rem; font-weight: 800; padding: 4px 12px; border-radius: 12px;">
+                        PHASE 03</div>
+                    <h3 style="color: var(--text-heading); font-size: 1.1rem; margin-top: 12px; margin-bottom: 8px;">
+                        Predictive Maintenance</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">Vibration and temperature
+                        sensing on critical mechanical infrastructure to predict failures before they happen.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

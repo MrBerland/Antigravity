@@ -1,0 +1,132 @@
+Beyond the Hike: Why Energy 
+Intelligence is the New "Survival Kit" for 
+South African Retail 
+For South African automotive retail and showrooms, the 2025/2026 electricity landscape has 
+moved past a simple "cost of doing business." With municipal small business rates averaging 
+over 
+ (including 15% VAT), the most expensive energy is no longer the units 
+you use—it's the units you waste because you can't see them.1 
+At CFAO Mobility, the path to sustainability isn't just about adding new generation; it's about 
+Energy Intelligence: a high-fidelity measurement system that uses benchmarking and critical 
+load signals to turn "dark data" into operational savings. 
+⚡ The 2025/2026 Energy Baseline 
+To build an accurate business case, we must use the current national weighted average for 
+small power users: 
+●​ Weighted National Average (Excl. VAT): 
+ 4 
+●​ Effective National Unit Cost (Incl. 15% VAT): 
+ 2 
+🛠️ System Investment Breakdown 
+The barrier to entry for energy intelligence is exceptionally low compared to the potential 
+savings. 
+●​ Hardware (Meter, Antennae, CT's, Shipping): 
+ 
+●​ Estimated Installation Cost: 
+ 
+●​ Total Upfront Capital (Capex): 
+ 
+●​ Monthly Intelligence Fee (SaaS): 
+ 
+The Economics of Intelligence: ROI Payback Scenarios 
+The following scenarios demonstrate how small, data-driven adjustments translate into 
+immediate bottom-line improvements. 
+Scenario 1: The "Baseload Burn" (1 kW Reduction) 
+The Goal: Identify and eliminate 1 kW of "always-on" waste (e.g., showroom lighting or HVAC left 
+on overnight). 
+●​ Annual Units Saved: 
+ 
+●​ Annual Cash Saving: 
+ 
+●​ Net Monthly Saving (incl. Fee): 
+ 
+●​ Payback Period: 
+ 
+●​ The Intelligence Factor: A 1 kW leak is invisible on a standard monthly municipal bill. 
+Identifying this single "leak" covers the entire annual cost of the platform within the first 
+quarter. 
+Scenario 2: Critical Load Signaling (15% Efficiency Gain) 
+The Goal: Using real-time alerts to manage "Maximum Demand" and optimized load profiles 
+across a medium-sized dealership. 
+●​ Average Site Consumption: 
+ (Typical retail hub) 5 
+●​ Annual Energy Saving: 
+ 
+●​ Annual Cash Saving (Incl. VAT): 
+ 
+●​ Net Monthly Saving (incl. Fee): 
+ 
+●​ Payback Period: 
+ 
+Scenario 3: Maximum Demand Clipping (Simple Peak Shaving) 
+The Goal: Using critical load signals to prevent non-essential equipment (e.g., valet pumps or 
+geysers) from running during peak demand spikes. 
+●​ The Problem: In Joburg and other metros, network capacity charges rose by over 
+ 
+this year.5 
+●​ The ROI: Clipping just 
+ from your notified demand can yield over 
+ in 
+monthly fixed-cost savings alone, irrespective of how many units (kWh) you use. 
+Municipal Savings Matrix: 24/7 Baseload Reduction 
+The matrix below shows the annual cash impact (ZAR) of reducing your always-on baseload. 
+●​ Interactivity: Hover over any cell to see the specific formula and the municipal unit rate 
+used for that calculation. 
+ 
+ 
+ 
+Why "Wait and See" is a R200,000 Mistake 
+The "Cost of Inaction" is currently at its highest point in South African history. Following the 
+2026 NERSA redetermination, electricity prices are projected to rise by a compound 
+ 
+over the next 24 months (
+ in 2026/27 and 
+ in 2027/28).6 
+Energy Intelligence provides three critical advantages for 2026: 
+1.​ Benchmarking: Compare your Toyota, Mitsubishi, and Suzuki sites side-by-side. If one 
+site has a baseload of 
+ while another has 
+, you have found your first 
+ in annual savings. 
+2.​ Unbundling Protection: As municipalities move toward high fixed "Generation Capacity 
+Charges," the only way to lower your bill is to decrease your notified demand (kVA). You 
+cannot manage what you do not measure.4 
+3.​ The "Death Spiral" Hedge: As more businesses leave the grid, utilities are raising fixed 
+costs for those who remain. Intelligence allows you to stay "lean" on the grid, minimizing 
+your exposure to these systemic shifts.9 
+Conclusion: Data as a Clean Fuel 
+For CFAO Mobility, the implementation of a retail-focused measurement system is the first step 
+in converting high-cost utility bills into high-value operational data. In an environment of 
+, data isn't just information—it's the most profitable fuel you have. 
+Works cited 
+1.​ ENERGY REGULATOR OF SOUTH AFRICA - NERSA, accessed on February 20, 
+2026, https://www.nersa.org.za/file/5862 
+2.​ tariff increases - EThekwini Municipality, accessed on February 20, 2026, 
+https://www.durban.gov.za/uploads/0000/13/2025/10/27/tarrif-booklet-2025-26.p
+df 
+3.​ PUBLIC NOTICE FINAL WSLM ELECTRICITY TARIFFS 2025/2026, accessed on 
+February 20, 2026, 
+https://wslm.gov.za/storage/documents/67e710942b7d4dd0f41c4777f592d4ef.pd
+f 
+4.​ Tariffs and Charges Booklet 2025 - 2026 - Eskom, accessed on February 20, 
+2026, 
+https://www.eskom.co.za/distribution/wp-content/uploads/2025/07/Tariff-booklet
+2.pdf 
+5.​ Breaking down the new City Power tariffs: What you need to know, accessed on 
+February 20, 2026, 
+https://risingsunnewspapers.co.za/313004/breaking-down-the-new-city-power-t
+ariffs-what-you-need-to-know/ 
+6.​ South Africa: Nersa Announces Electricity Price Hike - allAfrica.com, accessed on 
+February 20, 2026, https://allafrica.com/stories/202602090325.html 
+7.​ Eskom gets more big electricity price increases - MyBroadband, accessed on 
+February 20, 2026, 
+https://mybroadband.co.za/news/energy/628361-eskom-gets-more-big-electricit
+y-price-increases.html 
+8.​ Schedule of Standard prices for Eskom Tariffs, accessed on February 20, 2026, 
+https://www.eskom.co.za/distribution/wp-content/uploads/2025/03/20250401-Sc
+hedule-of-standard-prices-2025_26.pdf 
+9.​ Eskom's 2025/26 Tariff Restructuring - Get Off Grid, accessed on February 20, 
+2026, https://www.getoffgrid.co.za/eskoms-2025-26-tariff-restructuring/ 
+10.​Eskom Electricity Tariff Increases for 2025/2026: What South African, accessed on 
+February 20, 2026, 
+https://www.powertime.co.za/online/eskom-electricity-tariff-increases-for-20252
+026-what-south-african-homes-and-businesses-need-to-know/ 

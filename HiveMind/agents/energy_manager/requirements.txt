@@ -1,0 +1,14 @@
+# Energy Manager Agent Dependencies
+
+# Google ADK (Agent Development Kit)
+google-adk>=0.3.0
+
+# API Requests
+requests>=2.31.0
+
+# Google Cloud (for deployment)
+google-cloud-aiplatform>=1.38.0
+
+# Optional: Data processing
+pandas>=2.0.0
+numpy>=1.24.0
