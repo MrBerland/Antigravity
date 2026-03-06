@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="https://schema.org/TechArticle">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charting — Augos Knowledge Base</title>
+    <meta name="description"
+        content="Ad-hoc custom parameter visualisation allowing user-configurable charts with independent resolution controls per panel.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..600;1,14..32,400&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #06080A;
+            --bg-surface: #0E1116;
+            --bg-surface-raised: #151A21;
+            --text-main: #E2E8F0;
+            --text-muted: #94A3B8;
+            --text-faint: #475569;
+            --border-faint: rgba(255, 255, 255, 0.06);
+            --border-light: rgba(255, 255, 255, 0.12);
+            --accent-primary: #F59E0B;
+            --accent-dim: rgba(245, 158, 11, 0.15);
+            --code-bg: #0D1017;
+            --cat-npt: #22C55E;
+            --font-body: 'Inter', sans-serif;
+            --font-heading: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            line-height: 1.75;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased
+        }
+
+        .page-wrapper {
+            display: grid;
+            grid-template-columns: minmax(240px, 1fr) minmax(auto, 800px) minmax(240px, 1fr);
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 32px
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 92px;
+            height: calc(100vh - 132px);
+            padding-right: 48px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -ms-overflow-style: none;
+            scrollbar-width: none
+        }
+
+        .sidebar::-webkit-scrollbar {
+            display: none
+        }
+
+        .brand {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: .02em;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 64px;
+            text-decoration: none
+        }
+
+        .brand-logo {
+            width: 20px;
+            height: 20px;
+            background: var(--text-main);
+            border-radius: 2px;
+            position: relative
+        }
+
+        .brand-logo::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: var(--bg-base)
+        }
+
+        .toc-menu {
+            list-style: none;
+            font-size: .85rem
+        }
+
+        .toc-menu li {
+            margin-bottom: 16px
+        }
+
+        .toc-menu a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color .2s ease;
+            display: block
+        }
+
+        .toc-menu a:hover,
+        .toc-menu a.active {
+            color: var(--text-main)
+        }
+
+        .toc-category {
+            text-transform: uppercase;
+            font-size: .7rem;
+            letter-spacing: .05em;
+            color: var(--text-faint);
+            margin: 32px 0 12px 0;
+            font-weight: 600
+        }
+
+        .article-content {
+            padding: 48px 0 120px 0;
+            min-width: 0
+        }
+
+        header.document-header {
+            margin-bottom: 80px;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 48px
+        }
+
+        .doc-meta {
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px
+        }
+
+        .doc-meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            font-weight: 500;
+            line-height: 1.1;
+            letter-spacing: -.03em;
+            color: #fff;
+            margin-bottom: 24px
+        }
+
+        .abstract {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-weight: 300;
+            max-width: 90%
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: #fff;
+            margin: 64px 0 24px 0;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-faint);
+            letter-spacing: -.02em
+        }
+
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #fff;
+            margin: 40px 0 16px 0
+        }
+
+        p {
+            margin-bottom: 20px
+        }
+
+        strong {
+            color: #fff;
+            font-weight: 500
+        }
+
+        figure.exhibit {
+            margin: 48px 0;
+            border: 1px solid var(--border-light);
+            background: var(--bg-surface);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, .5)
+        }
+
+        .exhibit-header {
+            background: rgba(255, 255, 255, .02);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-light);
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between
+        }
+
+        .exhibit-img-wrap {
+            padding: 1px;
+            background: #000
+        }
+
+        .exhibit img {
+            display: block;
+            width: 100%;
+            height: auto
+        }
+
+        figcaption {
+            padding: 16px 20px;
+            font-size: .85rem;
+            color: var(--text-muted);
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border-faint);
+            line-height: 1.5
+        }
+
+        .callout {
+            margin: 32px 0;
+            padding: 24px 32px;
+            border-left: 2px solid var(--accent-primary);
+            background: linear-gradient(90deg, var(--accent-dim) 0%, transparent 100%)
+        }
+
+        .callout-title {
+            font-family: var(--font-heading);
+            font-size: .9rem;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 8px
+        }
+
+        .callout p:last-child {
+            margin-bottom: 0
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 32px 0;
+            font-size: .85rem
+        }
+
+        .data-table th,
+        .data-table td {
+            text-align: left;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-faint)
+        }
+
+        .data-table th {
+            color: var(--text-muted);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-light);
+            font-family: var(--font-heading);
+            text-transform: uppercase;
+            letter-spacing: .02em;
+            font-size: .75rem
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(255, 255, 255, .02)
+        }
+
+        ul.text-list {
+            list-style: disc;
+            padding-left: 24px;
+            margin-bottom: 24px
+        }
+
+        ul.text-list li {
+            margin-bottom: 8px;
+            padding-left: 8px
+        }
+
+        ul.text-list li::marker {
+            color: var(--text-faint)
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-light);
+            padding: 24px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            line-height: 1.6;
+            color: #A6ACCD;
+            margin: 32px 0
+        }
+
+        .meta-sidebar {
+            position: sticky;
+            top: 92px;
+            padding-left: 48px;
+            font-size: .85rem
+        }
+
+        .meta-group {
+            margin-bottom: 32px;
+            border-top: 1px solid var(--border-light);
+            padding-top: 16px
+        }
+
+        .meta-group-title {
+            font-family: var(--font-heading);
+            color: #fff;
+            font-size: .85rem;
+            margin-bottom: 12px
+        }
+
+        .meta-item {
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between
+        }
+
+        .meta-val {
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: .75rem
+        }
+
+        @media(max-width:1200px) {
+            .page-wrapper {
+                grid-template-columns: 240px 1fr
+            }
+
+            .meta-sidebar {
+                display: none
+            }
+        }
+
+        @media(max-width:900px) {
+            .page-wrapper {
+                grid-template-columns: 1fr
+            }
+
+            .sidebar {
+                display: none
+            }
+        }
+    
+/* ═══ BREADCRUMB NAV BAR ═══ */
+.kb-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(6, 8, 10, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 0 32px;
+}
+.kb-topbar-inner {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 44px;
+    gap: 16px;
+}
+.kb-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #94A3B8;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 4px 12px 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.kb-back-btn:hover {
+    color: #E2E8F0;
+    border-color: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+}
+.kb-back-btn svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+.kb-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    overflow: hidden;
+    white-space: nowrap;
+    min-width: 0;
+}
+.kb-breadcrumb a {
+    color: #64748B;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+}
+.kb-breadcrumb a:hover {
+    color: #F59E0B;
+}
+.kb-breadcrumb .bc-sep {
+    color: #334155;
+    margin: 0 8px;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+}
+.kb-breadcrumb .bc-current {
+    color: #E2E8F0;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.kb-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.kb-home-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    color: #64748B;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+.kb-home-btn:hover {
+    color: #E2E8F0;
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.08);
+}
+@media (max-width: 640px) {
+    .kb-breadcrumb .bc-mid { display: none; }
+    .kb-breadcrumb .bc-mid-sep { display: none; }
+}
+
+    </style>
+</head>
+
+<body>
+    <nav class="kb-topbar" aria-label="Breadcrumb">
+        <div class="kb-topbar-inner">
+            <a href="energy-intelligence.html" class="kb-back-btn" title="Back to Energy">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd"/></svg>
+                <span>Energy</span>
+            </a>
+            <div class="kb-breadcrumb">
+                <a href="index.html">AUGOS Docs</a>
+                <span class="bc-sep">›</span>
+                <a href="energy-intelligence.html" class="bc-mid">Energy Intelligence</a>
+                <span class="bc-sep bc-mid-sep">›</span>
+                <span class="bc-current">Charting</span>
+            </div>
+            <div class="kb-topbar-actions">
+                <a href="index.html" class="kb-home-btn" title="Knowledge Base Home">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd"/></svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+        <aside class="sidebar">
+            <a href="index.html" class="brand">
+                <div class="brand-logo"></div>AUGOS Docs
+            </a>
+            <div class="toc-category">Energy Intelligence</div>
+            <ul class="toc-menu">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="technical-analysis.html">Technical Analysis</a></li>
+                <li><a href="consumption-breakdown.html">Consumption Breakdown</a></li>
+                <li><a href="cost-breakdown.html">Cost Breakdown</a></li>
+                <li><a href="cost-allocation.html">Cost Allocation</a></li>
+                <li><a href="bill-verification.html">Bill Verification</a></li>
+                <li><a href="power-factor-demand.html">Power Factor & Demand</a></li>
+                <li><a href="time-of-use.html">Time of Use</a></li>
+                <li><a href="tariff-comparison.html">Tariff Comparison</a></li>
+                <li><a href="load-curtailment.html">Load Curtailment</a></li>
+                <li><a href="charting.html" class="active">Charting</a></li>
+                <li><a href="data-download.html">Data Download</a></li>
+                <li><a href="triggers.html">Triggers</a></li>
+            </ul>
+            <div class="toc-category">Article Contents</div>
+            <ul class="toc-menu">
+                <li><a href="#abstract">Abstract</a></li>
+                <li><a href="#capability">1. Capability & Purpose</a></li>
+                <li><a href="#outputs">2. Visual Walkthrough</a></li>
+                <li><a href="#architecture">3. Data Architecture</a></li>
+            </ul>
+        </aside>
+
+        <main class="article-content">
+            <header class="document-header" id="abstract">
+                <div class="doc-meta"><span>Energy Intelligence</span><span>Report 11 of 13</span><span>Version
+                        1.0</span></div>
+                <h1>Charting</h1>
+                <p class="abstract">The most flexible tool in the platform. Build ad-hoc custom parameter visualisations
+                    by selecting measurement points and parameters, then render them as independent Highcharts panels
+                    with per-chart resolution controls.</p>
+            </header>
+
+            <section id="capability">
+                <h2>1. Capability & Purpose</h2>
+                <p>While other reports serve predefined analytical views, Charting gives energy managers the freedom to
+                    investigate any hypothesis. Select a measurement point, choose parameters (consumption, demand,
+                    power factor, voltage), and generate custom chart panels — each with independent resolution
+                    controls.</p>
+                <ul class="text-list">
+                    <li><strong>Parameter Selection Wizard:</strong> Multi-step flow — Search point → Select parameters
+                        (checkbox) → Generate.</li>
+                    <li><strong>Dynamic Chart Panels:</strong> One Highcharts panel per selected parameter. Each with
+                        independent Min / Halfhour / Day / Month resolution tabs.</li>
+                    <li><strong>Edit/Delete Per Panel:</strong> Add or remove charts without page reload — iterate
+                        quickly between hypotheses.</li>
+                    <li><strong>Highcharts Engine:</strong> Unlike other reports that use Recharts, Charting uses
+                        Highcharts for maximum interactivity (zoom, tooltip, export).</li>
+                </ul>
+            </section>
+
+            <section id="outputs">
+                <h2>2. Visual Walkthrough</h2>
+                <figure class="exhibit">
+                    <div class="exhibit-header"><span>EXHIBIT A: CONSUMPTION BAR CHART</span><span>kWh |
+                            HALF-HOURLY</span></div>
+                    <div class="exhibit-img-wrap"><img
+                            src="../report-audit/11-charting/screenshots/01-initial-setup.png"
+                            alt="Charting parameter selection wizard" loading="lazy"></div>
+                    <figcaption><strong>Setup:</strong> The parameter selection wizard showing available measurement
+                        points and parameters to select for chart generation.</figcaption>
+                </figure>
+                <figure class="exhibit">
+                    <div class="exhibit-header"><span>EXHIBIT B: RENDERED CHART</span><span>CUSTOM VISUALIZATION</span>
+                    </div>
+                    <div class="exhibit-img-wrap"><img
+                            src="../report-audit/11-charting/screenshots/02-chart-rendered.png"
+                            alt="Rendered Highcharts panel with resolution tabs" loading="lazy"></div>
+                    <figcaption><strong>Output:</strong> A rendered Highcharts panel with resolution tabs
+                        (Min/Halfhour/Day/Month). Each panel operates independently — add multiple parameters and
+                        compare side by side.</figcaption>
+                </figure>
+            </section>
+
+            <section id="architecture">
+                <h2>3. Data Architecture</h2>
+                <pre><code>{
+  "endpoint": "/api/v1/charting",
+  "method": "GET",
+  "parameters": {
+    "pointId": 8323,
+    "startDateUTC": "...",
+    "endDateUTC": "...",
+    "parameterID": "consumption",
+    "resolution": "halfhour"
+  },
+  "response": {
+    "series": [
+      { "timestamp": "2026-02-25T00:00:00Z", "value": 42.5 },
+      { "timestamp": "2026-02-25T00:30:00Z", "value": 38.2 }
+    ],
+    "chartType": "bar",
+    "unit": "kWh"
+  }
+}</code></pre>
+            </section>
+        </main>
+
+        <aside class="meta-sidebar">
+            <div class="meta-group">
+                <div class="meta-group-title">Module Context</div>
+                <div class="meta-item"><span>Status</span><span class="meta-val"
+                        style="color:var(--cat-npt)">Production</span></div>
+                <div class="meta-item"><span>Report ID</span><span class="meta-val">NRG_011</span></div>
+                <div class="meta-item"><span>AI-Ready</span><span class="meta-val"
+                        style="color:var(--text-faint)">N/A</span></div>
+            </div>
+            <div class="meta-group">
+                <div class="meta-group-title">Chart Engine</div>
+                <div class="meta-item"><span>Library</span><span class="meta-val">Highcharts</span></div>
+                <div class="meta-item"><span>Resolutions</span><span class="meta-val">4</span></div>
+            </div>
+        </aside>
+    </div>
+</body>
+
+</html>

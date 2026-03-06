@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="https://schema.org/Article">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Intelligence — Augos Knowledge Base | 13 Reports, Cost Analytics, Power Factor Management</title>
+    <meta name="description"
+        content="Complete documentation for Augos Energy Intelligence: 13 reports covering consumption, cost breakdown, tariff comparison, power factor, load curtailment, and 342+ automated triggers. With screenshots, API reference, and ROI analysis.">
+    <meta property="og:title" content="Augos Energy Intelligence — Complete Product Knowledge Base">
+    <meta property="og:description"
+        content="13-report analytical suite transforming raw metering data into actionable energy insights across consumption, cost, efficiency, compliance, and opportunity.">
+    <link rel="stylesheet" href="styles.css">
+    <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Augos Energy Intelligence — Complete Product Knowledge Base",
+    "description": "Comprehensive documentation of the Augos Energy Intelligence module: 13 reports, 65 screenshots, API endpoints, ROI framework, and operational case study.",
+    "datePublished": "2026-02-24",
+    "dateModified": "2026-02-24",
+    "publisher": { "@type": "Organization", "name": "Augos (Pty) Ltd" },
+    "about": {
+      "@type": "SoftwareApplication",
+      "name": "Augos Energy Intelligence",
+      "applicationCategory": "Energy Management Software"
+    }
+  }
+  </script>
+    <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "What does the Augos Energy Dashboard show?", "acceptedAnswer": { "@type": "Answer", "text": "The Dashboard provides a single-screen operational health check with 4 summary KPI cards, a 6-month consumption heatmap calendar, a technical analysis table showing meter health (last activity, consumption, demand, power factor), and inline Highcharts demand/power charts with a 2-year historical range slider." }},
+      { "@type": "Question", "name": "How does Cost Breakdown work?", "acceptedAnswer": { "@type": "Answer", "text": "Cost Breakdown dissects the electricity bill into 7 tariff charge components: Standard consumption, Peak consumption, Off-peak consumption, Demand charge, Network access, Service charge, and Feed-in credits. Each has 12-month sparklines showing cost trends, plus sub-meter cost attribution." }},
+      { "@type": "Question", "name": "What is Power Factor and why does it matter?", "acceptedAnswer": { "@type": "Answer", "text": "Power Factor (PF) is the ratio of useful power (kW) to total apparent power (kVA). A PF below 0.96 means the facility draws more current than necessary, causing cable heating, transformer stress, and utility penalties. The Power Factor & Demand report quantifies actual financial losses — One & Only Cape Town lost R62,201 over 24 months from suboptimal PF." }},
+      { "@type": "Question", "name": "How does Augos detect billing errors?", "acceptedAnswer": { "@type": "Answer", "text": "The Bill Verification report compares every municipal utility bill against Augos-calculated estimates using measured consumption, demand, and the applied tariff rates. Variances are flagged with ✅ (acceptable) or ❌ (excessive). Periods with 100% variance indicate missing data or potential overcharges." }},
+      { "@type": "Question", "name": "What are Augos Triggers?", "acceptedAnswer": { "@type": "Answer", "text": "Triggers are automated alert rules that monitor electrical parameters in real-time. The platform supports 342+ active triggers across all sites, monitoring Peak Demand (>kVA thresholds), Power Factor (<target), Voltage anomalies, Device connectivity (offline detection), and Consumption spikes. Each trigger has configurable durations from instantaneous to 7 days." }}
+    ]
+  }
+  </script>
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav class="top-nav" role="navigation" aria-label="Main navigation">
+        <div class="top-nav-inner">
+            <a href="index.html" class="nav-brand"><span class="brand-dot"></span>AUGOS Knowledge Base</a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link" id="nav-home">Hub</a>
+                <a href="energy-intelligence.html" class="nav-link active" id="nav-energy">Energy Intelligence <span
+                        class="nav-tag energy">13 Reports</span></a>
+                <a href="manufacturing-intelligence.html" class="nav-link" id="nav-mfg">Manufacturing <span
+                        class="nav-tag mfg">OEE</span></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- BREADCRUMB -->
+    <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="index.html">Knowledge Base</a> <span>›</span> <strong style="color: var(--brand-cyan);">Energy
+                Intelligence</strong>
+        </nav>
+    </div>
+
+    <!-- PAGE HERO -->
+    <header class="page-hero">
+        <div class="container">
+            <div class="hero-badge"><span class="badge-dot"></span>Augos/Energy</div>
+            <h1
+                style="background: linear-gradient(135deg, var(--text-primary) 40%, var(--brand-cyan) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                Energy Intelligence</h1>
+            <p class="page-hero-desc">Transform raw half-hourly metering data into a 13-report analytical suite that
+                answers every question a facility manager, energy manager, or CFO might ask about energy — from "what
+                did we consume today?" to "should we switch tariffs?"</p>
+            <div class="page-hero-meta">
+                <div class="page-hero-meta-item">📊 <strong>13 Reports</strong></div>
+                <div class="page-hero-meta-item">📸 <strong>65 Screenshots</strong></div>
+                <div class="page-hero-meta-item">🔌 <strong>13 API Endpoints</strong></div>
+                <div class="page-hero-meta-item">🏨 <strong>Audited: One &amp; Only Cape Town</strong></div>
+                <div class="page-hero-meta-item">📅 <strong>24 Feb 2026</strong></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- TABLE OF CONTENTS -->
+    <div class="container">
+        <nav class="toc" aria-label="Table of Contents">
+            <h3>📑 Table of Contents</h3>
+            <ul class="toc-list">
+                <li><a href="#overview"><span class="toc-num">1</span> What Is Energy Intelligence?</a></li>
+                <li><a href="#dimensions"><span class="toc-num">2</span> Five Dimensions of Visibility</a></li>
+                <li><a href="#reports"><span class="toc-num">3</span> 13 Reports — Complete Reference</a></li>
+                <li><a href="#kpis"><span class="toc-num">4</span> Key Metrics &amp; Parameters</a></li>
+                <li><a href="#api"><span class="toc-num">5</span> API Architecture</a></li>
+                <li><a href="#ai"><span class="toc-num">6</span> AI &amp; Data Intelligence</a></li>
+                <li><a href="#roi"><span class="toc-num">7</span> Strategic ROI Framework</a></li>
+                <li><a href="#case-study"><span class="toc-num">8</span> Case Study: One &amp; Only</a></li>
+                <li><a href="#personas"><span class="toc-num">9</span> Target Market &amp; Buyer Personas</a></li>
+                <li><a href="#glossary"><span class="toc-num">10</span> Glossary</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- ═══ §1 OVERVIEW ═══ -->
+    <section id="overview">
+        <div class="container">
+            <div class="section-header"><span class="section-tag energy">The Problem &amp; The Answer</span>
+                <h2>What Is Energy Intelligence?</h2>
+            </div>
+            <div class="content-block reveal">
+                <h4>The 5 Problems Energy Intelligence Solves</h4>
+                <div class="card-grid cols-3" style="margin-top: 20px;">
+                    <div class="card energy-card">
+                        <div class="card-icon energy">📄</div>
+                        <h4 class="card-title">Monthly PDF Bills</h4>
+                        <p class="card-desc">A single number with no context, no granularity, and no actionable insight.
+                            You pay it and move on.</p>
+                    </div>
+                    <div class="card energy-card">
+                        <div class="card-icon energy">⏰</div>
+                        <h4 class="card-title">Invisible Peak Demand</h4>
+                        <p class="card-desc">One 30-minute window sets your demand charge for the entire month. Nobody
+                            noticed it happened.</p>
+                    </div>
+                    <div class="card energy-card">
+                        <div class="card-icon energy">🔌</div>
+                        <h4 class="card-title">Unread Sub-Meters</h4>
+                        <p class="card-desc">You know total consumption but can't attribute it to departments, tenants,
+                            or equipment.</p>
+                    </div>
+                    <div class="card energy-card">
+                        <div class="card-icon energy">💸</div>
+                        <h4 class="card-title">Opaque Tariff Structures</h4>
+                        <p class="card-desc">Organisations stay on suboptimal tariffs because nobody models the
+                            alternatives.</p>
+                    </div>
+                    <div class="card energy-card">
+                        <div class="card-icon energy">⚡</div>
+                        <h4 class="card-title">Silent PF Penalties</h4>
+                        <p class="card-desc">Facilities pay reactive power surcharges they don't even know exist —
+                            compounding monthly.</p>
+                    </div>
+                    <div class="card energy-card">
+                        <div class="card-icon energy">📊</div>
+                        <h4 class="card-title">No Continuous Monitoring</h4>
+                        <p class="card-desc">Load shedding compliance, bill verification, and equipment health are
+                            checked reactively — or not at all.</p>
+                    </div>
+                </div>
+                <div class="insight-quote" style="margin-top: 24px;">
+                    "When you can see every kilowatt-hour, every half-hour, attributed to every sub-meter, priced at the
+                    actual tariff rate — you stop treating energy as a fixed cost and start treating it as a manageable
+                    one."
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ §2 DIMENSIONS ═══ -->
+    <section id="dimensions" style="background: rgba(255,255,255,0.01);">
+        <div class="container">
+            <div class="section-header"><span class="section-tag energy">Strategic Framework</span>
+                <h2>Five Dimensions of Energy Visibility</h2>
+                <p class="section-desc">Each dimension answers a fundamentally different question. Together, they
+                    provide 360° visibility.</p>
+            </div>
+            <div class="reveal">
+                <div class="dimension-row">
+                    <div class="dimension-label" style="background: rgba(59,130,246,0.1);">
+                        <div class="dim-icon">📊</div>
+                        <div class="dim-name" style="color: var(--brand-cyan);">Consumption</div>
+                    </div>
+                    <div class="dimension-content"><strong>"How much are we using?"</strong> — Total site consumption
+                        with sub-meter attribution. The Consumption Breakdown tree shows One & Only's Main Switch 1
+                        carries 56% of load, with AC1 and AC2 alone consuming 29.4%. The <span
+                            style="color: var(--brand-rose);">"Not measured"</span> values (18.8% + 16.5%) reveal 35% of
+                        energy is unattributed — unmonitored equipment, electrical losses, or unauthorised use.</div>
+                </div>
+                <div class="dimension-row">
+                    <div class="dimension-label" style="background: rgba(59,130,246,0.1);">
+                        <div class="dim-icon">💰</div>
+                        <div class="dim-name" style="color: var(--brand-cyan);">Cost</div>
+                    </div>
+                    <div class="dimension-content"><strong>"How much are we spending, and why?"</strong> — January bill
+                        of <strong style="color: var(--brand-cyan);">R1,381,685</strong> split into 7 tariff components:
+                        Standard (36.3%), Peak (20.9%), Off-peak (34.3%), Demand (6.8%), Network (1.6%), Service (0.2%),
+                        Feed-in (-0.0%). The demand charge of R93,619 was set by <em>one 30-minute peak</em> at 1,234
+                        kVA.</div>
+                </div>
+                <div class="dimension-row">
+                    <div class="dimension-label" style="background: rgba(59,130,246,0.1);">
+                        <div class="dim-icon">⚙️</div>
+                        <div class="dim-name" style="color: var(--brand-cyan);">Efficiency</div>
+                    </div>
+                    <div class="dimension-content"><strong>"Are we wasting energy?"</strong> — Power Factor at 0.96
+                        (declined from 0.99 in Oct 2025). System flagged as <strong
+                            style="color: var(--brand-rose);">"Under Capacity — 329.42 kVAr"</strong> requiring
+                        attention. Actual losses: R62,201 over 24 months. Per-phase demand analysis reveals load
+                        imbalance opportunities.</div>
+                </div>
+                <div class="dimension-row">
+                    <div class="dimension-label" style="background: rgba(59,130,246,0.1);">
+                        <div class="dim-icon">✅</div>
+                        <div class="dim-name" style="color: var(--brand-cyan);">Compliance</div>
+                    </div>
+                    <div class="dimension-content"><strong>"Are we meeting our obligations?"</strong> — Load Curtailment
+                        provides 1-minute resolution tracking against CBL targets during Eskom load shedding events.
+                        Bill Verification compares 18 billing periods with ✅/❌ status, flagging 100% variance months.
+                    </div>
+                </div>
+                <div class="dimension-row">
+                    <div class="dimension-label" style="background: rgba(59,130,246,0.1);">
+                        <div class="dim-icon">🎯</div>
+                        <div class="dim-name" style="color: var(--brand-cyan);">Opportunity</div>
+                    </div>
+                    <div class="dimension-content"><strong>"Where can we save?"</strong> — Tariff Comparison confirmed
+                        current scheme saves <strong style="color: var(--brand-green);">R2,298,705/year</strong>. TOU
+                        reveals moving 10% of Peak to Off-peak saves ~R22K/month. PF correction (329 kVAr) eliminates
+                        R31K/year in penalties. Sub-metering the 35% unattributed load is the biggest untapped
+                        opportunity.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ §3 REPORTS ═══ -->
+    <section id="reports">
+        <div class="container">
+            <div class="section-header"><span class="section-tag energy">13 Reports</span>
+                <h2>Complete Report Reference</h2>
+                <p class="section-desc">Click any report to expand full documentation — components, screenshots, live
+                    data, and operational value.</p>
+            </div>
+            <div class="accordion reveal" id="reportAccordion">
+
+                <!-- REPORT 01: Dashboard -->
+                <div class="accordion-item" data-report="01">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <div class="trigger-left">
+                            <span class="trigger-icon" style="background: rgba(59,130,246,0.15);">📊</span>
+                            <div>
+                                <div>Dashboard</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">Overview
+                                    KPIs • Heatmap • Meter Health</div>
+                            </div>
+                        </div>
+                        <div class="trigger-meta"><span class="badge badge-green">AI ✅</span><span
+                                class="badge badge-blue">4 Screenshots</span><span class="accordion-chevron">▼</span>
+                        </div>
+                    </button>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <h4>Purpose</h4>
+                            <p>Single-screen operational health check — data flow, consumption, demand, power factor for
+                                all measurement points at a site. The first thing an energy manager opens every morning.
+                            </p>
+                            <h4>Key Components</h4>
+                            <ul>
+                                <li><strong>4 Summary Cards</strong> — KPI metrics with stacked bar mini-charts showing
+                                    historical trend</li>
+                                <li><strong>Consumption Heatmap Calendar</strong> — 6-month bubble chart (Mon–Sun ×
+                                    weeks), colour-coded green→red. Toggles: Consumption / Demand-Power / Power Factor
+                                </li>
+                                <li><strong>Technical Analysis Table</strong> — Point name, Last Activity, Consumption
+                                    (kWh), Demand (kVA), PF, Show Statistics toggle</li>
+                                <li><strong>Inline Demand/Power Chart</strong> — Highcharts time-series with 2-year
+                                    range slider</li>
+                                <li><strong>Full Meter Hierarchy</strong> — Expandable rows: Site → Main Switches →
+                                    Sub-meters</li>
+                            </ul>
+                            <div class="insight-quote">A facility manager checks the Dashboard at 08:00 every morning.
+                                In 10 seconds they confirm: all meters are reporting (fresh timestamps), yesterday's
+                                consumption was normal (no red heatmap cells), demand peaked at 803 kVA (within budget),
+                                and PF is 0.99 (healthy). If anything is wrong, they see it immediately — before it
+                                becomes a crisis.</div>
+                            <h4>Screenshots</h4>
+                            <div class="screenshot-gallery">
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/01-dashboard/screenshots/01-full-page-top.png"
+                                        alt="Dashboard — Header, fuel tabs, date controls, AI banner, summary cards"
+                                        loading="lazy">
+                                    <div class="screenshot-caption"><strong>01:</strong> Header, fuel tabs, date
+                                        controls, AI banner, summary cards</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/01-dashboard/screenshots/02-charts-and-technical-analysis.png"
+                                        alt="Dashboard — Stacked bar charts, heatmap, TA table" loading="lazy">
+                                    <div class="screenshot-caption"><strong>02:</strong> Stacked bar charts, heatmap
+                                        calendar, technical analysis table</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/01-dashboard/screenshots/03-demand-chart-and-meter-list.png"
+                                        alt="Dashboard — Demand/Power chart with range slider" loading="lazy">
+                                    <div class="screenshot-caption"><strong>03:</strong> Demand/Power chart with 2-year
+                                        range slider, sub-meters</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/01-dashboard/screenshots/04-meter-list-and-heatmap.png"
+                                        alt="Dashboard — Main Switch 2 sub-meters, heatmap calendar" loading="lazy">
+                                    <div class="screenshot-caption"><strong>04:</strong> Main Switch 2 sub-meters,
+                                        heatmap calendar</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REPORT 02: Technical Analysis -->
+                <div class="accordion-item" data-report="02">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <div class="trigger-left"><span class="trigger-icon"
+                                style="background: rgba(59,130,246,0.15);">🔬</span>
+                            <div>
+                                <div>Technical Analysis</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">Demand
+                                    Profiling • Per-Phase Stats • Reactive Power</div>
+                            </div>
+                        </div>
+                        <div class="trigger-meta"><span class="badge badge-green">AI ✅</span><span
+                                class="badge badge-blue">5 Screenshots</span><span class="accordion-chevron">▼</span>
+                        </div>
+                    </button>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <h4>Purpose</h4>
+                            <p>Deep technical inspection — demand profiling, power factor, per-phase balance, and
+                                reactive power analysis. The engineer's report.</p>
+                            <h4>Unique Capability: Per-Phase Demand</h4>
+                            <p>The Statistics Table (expandable) shows phase-level demand: <strong>Phase A (Red): 295.9
+                                    kVA</strong>, Phase B (White), Phase C (Blue). This is critical for identifying load
+                                imbalance that causes transformer overheating and cable losses.</p>
+                            <h4>Statistics Table Data</h4>
+                            <ul>
+                                <li>Consumption Total: 5,047 kWh · Demand Max: 803.3 kVA at 07:00</li>
+                                <li>Power at Peak: 792.5 kW · PF at Peak: 0.99</li>
+                                <li>Reactive Power at Peak: 131.3 kVAr · Reactive Energy Total: 865.6 kVArh</li>
+                            </ul>
+                            <div class="insight-quote">An electrical engineer suspects phase imbalance causing
+                                transformer overheating. They open Technical Analysis, expand the Statistics table, and
+                                see Phase A at 295.9 kVA vs lower values on B and C. Confirmed — single-phase loads are
+                                concentrated on Phase A. They redistribute circuits to balance the load.</div>
+                            <h4>Screenshots</h4>
+                            <div class="screenshot-gallery">
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/02-technical-analysis/screenshots/01-full-page-top.png"
+                                        alt="Technical Analysis — Full page top view" loading="lazy">
+                                    <div class="screenshot-caption"><strong>01:</strong> Full page — demand chart,
+                                        header, parameter selectors</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/02-technical-analysis/screenshots/02-demand-chart-and-meter-list.png"
+                                        alt="Technical Analysis — Demand chart and meter list" loading="lazy">
+                                    <div class="screenshot-caption"><strong>02:</strong> Demand chart with range slider,
+                                        meter hierarchy list</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/02-technical-analysis/screenshots/04-statistics-table-expanded.png"
+                                        alt="Technical Analysis — Statistics table expanded" loading="lazy">
+                                    <div class="screenshot-caption"><strong>03:</strong> Statistics table expanded —
+                                        per-phase demand breakdown</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/02-technical-analysis/screenshots/05-show-statistics-toggle.png"
+                                        alt="Technical Analysis — Show Statistics toggle" loading="lazy">
+                                    <div class="screenshot-caption"><strong>04:</strong> Show Statistics toggle and
+                                        detailed consumption data</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REPORT 03: Consumption Breakdown -->
+                <div class="accordion-item" data-report="03">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <div class="trigger-left"><span class="trigger-icon"
+                                style="background: rgba(59,130,246,0.15);">🌳</span>
+                            <div>
+                                <div>Consumption Breakdown</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">Hierarchy
+                                    Tree • "Not Measured" • Sub-Meter Attribution</div>
+                            </div>
+                        </div>
+                        <div class="trigger-meta"><span class="badge badge-green">AI ✅</span><span
+                                class="badge badge-blue">4 Screenshots</span><span class="accordion-chevron">▼</span>
+                        </div>
+                    </button>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <h4>Purpose</h4>
+                            <p>Visual attribution of energy consumption across the full meter hierarchy. The only report
+                                that shows where energy physically flows.</p>
+                            <h4>The Hierarchy Tree</h4>
+                            <p>Interactive SVG tree diagram: Root → Main Switches → Sub-meters. Each node shows kWh
+                                value and % of parent. <strong style="color: var(--brand-rose);">"Not measured" labels
+                                    in red</strong> where children don't sum to parent — revealing unmetered loads.</p>
+                            <h4>Live Data (Last 7 Days)</h4>
+                            <p>Cape Town (137,517 kWh total): Main Switch 1 carries 56.09% (77,127 kWh) with <strong>AC1
+                                    + AC2 = 40,438 kWh (29.4%)</strong> — the single biggest consumer. "Not measured"
+                                gaps: 25,810 kWh (18.77%) on SW1 and 22,709 kWh (16.51%) on SW2.</p>
+                            <div class="insight-quote">The "Not measured" values are a smoking gun. Nearly 35% of energy
+                                passes through main switches but isn't attributed to any sub-meter. This is either
+                                unmonitored equipment, electrical losses, or potentially unauthorised consumption.
+                                Either way, it's invisible without this tree view.</div>
+                            <h4>Screenshots</h4>
+                            <div class="screenshot-gallery">
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/03-consumption-breakdown/screenshots/01-hierarchy-tree.png"
+                                        alt="Consumption Breakdown — Hierarchy tree diagram" loading="lazy">
+                                    <div class="screenshot-caption"><strong>01:</strong> Interactive hierarchy tree —
+                                        Site → Main Switches → Sub-meters with "Not measured" labels</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/03-consumption-breakdown/screenshots/02-stacked-bar-and-donut-chart.png"
+                                        alt="Consumption Breakdown — Stacked bar and donut chart" loading="lazy">
+                                    <div class="screenshot-caption"><strong>02:</strong> Stacked bar chart and donut
+                                        chart showing site total split</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/03-consumption-breakdown/screenshots/03-consumption-log-table-top.png"
+                                        alt="Consumption Breakdown — Consumption log table" loading="lazy">
+                                    <div class="screenshot-caption"><strong>03:</strong> Consumption log table — meter
+                                        register readings over time</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/03-consumption-breakdown/screenshots/04-consumption-log-table-full.png"
+                                        alt="Consumption Breakdown — Full consumption log" loading="lazy">
+                                    <div class="screenshot-caption"><strong>04:</strong> Full consumption log with all
+                                        meter readings</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REPORT 04: Cost Breakdown -->
+                <div class="accordion-item" data-report="04">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <div class="trigger-left"><span class="trigger-icon"
+                                style="background: rgba(59,130,246,0.15);">💰</span>
+                            <div>
+                                <div>Cost Breakdown</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">7-Component
+                                    Tariff • Sparklines • Sub-Meter Costs</div>
+                            </div>
+                        </div>
+                        <div class="trigger-meta"><span class="badge badge-green">AI ✅</span><span
+                                class="badge badge-blue">7 Screenshots</span><span class="accordion-chevron">▼</span>
+                        </div>
+                    </button>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <h4>Purpose</h4>
+                            <p>Financial dissection of the electricity bill by tariff charge type. Shows exactly what
+                                you're paying, how much, and why — with 12-month trend context.</p>
+                            <h4>Live Cost Data — January 2026 (R1,381,685)</h4>
+                            <ul>
+                                <li>Standard: 231,072 kWh × R2.17/kWh = <strong>R501,610 (36.3%)</strong></li>
+                                <li>Off-peak: 269,877 kWh × R1.76/kWh = <strong>R473,986 (34.3%)</strong></li>
+                                <li>Peak: 86,392 kWh × R3.34/kWh = <strong>R288,516 (20.9%)</strong></li>
+                                <li>Demand: 1,234 kVA × R75.89/kVA = <strong>R93,619 (6.8%)</strong></li>
+                                <li>Network: 1,234 kVA × R17.47 = R21,550 · Service: R2,405/month</li>
+                            </ul>
+                            <div class="insight-quote">Peak consumption is only 15% of usage volume but 21% of cost — a
+                                90% rate premium (R3.34 vs R1.76). Moving just 10% of peak usage to off-peak saves
+                                R2,295/month. The demand charge of R93,619 was set by a single 30-minute peak — demand
+                                management could cut this 10–15%.</div>
+                            <h4>Screenshots</h4>
+                            <div class="screenshot-gallery">
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/04-cost-breakdown/screenshots/01-distribution-bar-and-cost-table.png"
+                                        alt="Cost Breakdown — Distribution bar and cost table" loading="lazy">
+                                    <div class="screenshot-caption"><strong>01:</strong> Distribution bar and
+                                        7-component cost table with sparklines</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/04-cost-breakdown/screenshots/02-totals-and-sub-measurement.png"
+                                        alt="Cost Breakdown — Totals and sub-measurement" loading="lazy">
+                                    <div class="screenshot-caption"><strong>02:</strong> Totals row and sub-measurement
+                                        point cost attribution</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/04-cost-breakdown/screenshots/03-cost-and-aggregate-charts.png"
+                                        alt="Cost Breakdown — Cost and aggregate charts" loading="lazy">
+                                    <div class="screenshot-caption"><strong>03:</strong> Monthly cost trend and
+                                        aggregate charts</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/04-cost-breakdown/screenshots/04-consumption-and-demand-charts.png"
+                                        alt="Cost Breakdown — Consumption and demand charts" loading="lazy">
+                                    <div class="screenshot-caption"><strong>04:</strong> Consumption and demand overlay
+                                        charts</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REPORT 05: Cost Allocation -->
+                <div class="accordion-item" data-report="05">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <div class="trigger-left"><span class="trigger-icon"
+                                style="background: rgba(59,130,246,0.15);">🏢</span>
+                            <div>
+                                <div>Cost Allocation</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">Multi-Tenant
+                                    Billing • 17 Business Units • Tariff Detail</div>
+                            </div>
+                        </div>
+                        <div class="trigger-meta"><span class="badge badge-green">AI ✅</span><span
+                                class="badge badge-blue">4 Screenshots</span><span class="accordion-chevron">▼</span>
+                        </div>
+                    </button>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <h4>Purpose</h4>
+                            <p>Distribute site energy costs to individual business units, tenants, or departments based
+                                on sub-meter consumption and demand. Audited at Babylonstoren (17 units,
+                                R1,598,376/month).</p>
+                            <h4>How It Works</h4>
+                            <p>Each business unit's row shows: Consumption (kWh), Peak Demand (kVA), Cost (ZAR),
+                                Adjustment (ZAR), Allocation (ZAR), and % share. Each row expands to reveal the tariff
+                                line items (Standard/Peak/Off-peak rates + demand charge).</p>
+                            <div class="insight-quote">A property manager at Babylonstoren needs to invoice 17 units for
+                                their share of R1.6M monthly electricity. Without Augos, this requires manual meter
+                                readings and Excel calculations. With Cost Allocation, each unit's consumption, demand,
+                                and cost — broken down by tariff component — is available instantly and ready for
+                                invoicing.</div>
+                            <h4>Screenshots</h4>
+                            <div class="screenshot-gallery">
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/05-cost-allocation/screenshots/02-distribution-bar-and-table-top.png"
+                                        alt="Cost Allocation — Distribution bar and table" loading="lazy">
+                                    <div class="screenshot-caption"><strong>01:</strong> Distribution bar and allocation
+                                        table — 17 business units</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/05-cost-allocation/screenshots/03-all-units-and-totals.png"
+                                        alt="Cost Allocation — All units and totals" loading="lazy">
+                                    <div class="screenshot-caption"><strong>02:</strong> All units listed with
+                                        consumption, demand, cost, and % share</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/05-cost-allocation/screenshots/04-expanded-row-tariff-detail.png"
+                                        alt="Cost Allocation — Expanded row with tariff detail" loading="lazy">
+                                    <div class="screenshot-caption"><strong>03:</strong> Expanded row — tariff line item
+                                        breakdown per unit</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/05-cost-allocation/screenshots/01-not-configured.png"
+                                        alt="Cost Allocation — Not configured state" loading="lazy">
+                                    <div class="screenshot-caption"><strong>04:</strong> "Not configured" empty state —
+                                        before units are assigned</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REPORT 06: Bill Verification -->
+                <div class="accordion-item" data-report="06">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <div class="trigger-left"><span class="trigger-icon"
+                                style="background: rgba(59,130,246,0.15);">🔍</span>
+                            <div>
+                                <div>Bill Verification</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">Bill vs
+                                    Estimate • Variance Flags • 18 Historical Periods</div>
+                            </div>
+                        </div>
+                        <div class="trigger-meta"><span class="badge badge-green">AI ✅</span><span
+                                class="badge badge-blue">5 Screenshots</span><span class="accordion-chevron">▼</span>
+                        </div>
+                    </button>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <h4>Purpose</h4>
+                            <p>Compare every utility bill against Augos-calculated estimates to detect overcharges,
+                                undercharges, and missing billing periods. Spans all historical data (no date filter).
+                            </p>
+                            <h4>Unique Components</h4>
+                            <ul>
+                                <li><strong>Trend Combo Chart</strong> — Orange bars (estimate) vs Blue bars (actual
+                                    bill) vs Red line (variance %)</li>
+                                <li><strong>3 Action Cards</strong> — "Bill Verification Overdue" (red), "Tariff
+                                    Opportunity" (orange), "Add Bill" (blue)</li>
+                                <li><strong>Comparison Table</strong> — Bill vs Estimate vs Variance for Consumption,
+                                    Demand, and Cost per period</li>
+                                <li><strong>Gap Detection</strong> — Orange "ADD PERIOD" prompts for missing
+                                    verification periods</li>
+                            </ul>
+                            <div class="insight-quote">Finance submits January's bill (R926,182) and Augos calculates it
+                                should be R921,996 — 0.5% variance (✅). But September shows bill=R0, estimate=R698,614 —
+                                100% variance (❌). Either the municipality missed the bill, or it was paid without
+                                verification. Over 18 periods, these discrepancies are quantified and tracked.</div>
+                            <h4>Screenshots</h4>
+                            <div class="screenshot-gallery">
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/06-bill-verification/screenshots/01-trend-chart-and-action-cards.png"
+                                        alt="Bill Verification — Trend chart and action cards" loading="lazy">
+                                    <div class="screenshot-caption"><strong>01:</strong> Trend combo chart (estimate vs
+                                        actual) and 3 action cards</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/06-bill-verification/screenshots/02-report-comparison-table.png"
+                                        alt="Bill Verification — Comparison table" loading="lazy">
+                                    <div class="screenshot-caption"><strong>02:</strong> Bill vs Estimate comparison
+                                        table with ✅/❌ variance flags</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/06-bill-verification/screenshots/03-historical-records-and-pagination.png"
+                                        alt="Bill Verification — Historical records" loading="lazy">
+                                    <div class="screenshot-caption"><strong>03:</strong> Historical records across 18
+                                        billing periods with pagination</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/06-bill-verification/screenshots/05-fuel-consultant-modal.png"
+                                        alt="Bill Verification — Fuel consultant modal" loading="lazy">
+                                    <div class="screenshot-caption"><strong>04:</strong> Fuel consultant modal — bill
+                                        entry interface</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REPORT 07: Power Factor & Demand -->
+                <div class="accordion-item" data-report="07">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <div class="trigger-left"><span class="trigger-icon"
+                                style="background: rgba(59,130,246,0.15);">⚡</span>
+                            <div>
+                                <div>Power Factor &amp; Demand</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">24-Month PF
+                                    Trend • R62K Losses • System Status</div>
+                            </div>
+                        </div>
+                        <div class="trigger-meta"><span class="badge badge-green">AI ✅</span><span
+                                class="badge badge-blue">4 Screenshots</span><span class="accordion-chevron">▼</span>
+                        </div>
+                    </button>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <h4>Purpose</h4>
+                            <p>Analyse power factor performance, peak demand, and the financial impact of poor PF over
+                                time. The longest default range in the platform — 24 months.</p>
+                            <h4>4 KPI Cards</h4>
+                            <ul>
+                                <li><strong>Actual Loss:</strong> R62,201 over 24 months (R3,721 this month)</li>
+                                <li><strong>Potential Loss:</strong> R64,154 (what losses would be if PF were corrected)
+                                </li>
+                                <li><strong>PF Performance:</strong> 0.96 at peak (last 30 days). Max demand: 1,233.53
+                                    kVA</li>
+                                <li><strong>System Status:</strong> <span
+                                        style="color: var(--brand-rose); font-weight: 600;">"Under Capacity — Requires
+                                        Attention — 329.42 kVAr"</span></li>
+                            </ul>
+                            <div class="insight-quote">That System Status card is a business case: install 329 kVAr of
+                                capacitor banks (~R150,000 CapEx) and eliminate R31,000/year in penalties, achieving
+                                payback in under 5 years. The "Potential Loss" column even models what savings would
+                                look like if PF were corrected.</div>
+                            <h4>Screenshots</h4>
+                            <div class="screenshot-gallery">
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/07-power-factor-demand/screenshots/01-peak-demand-trend-chart.png"
+                                        alt="Power Factor — Peak demand trend chart" loading="lazy">
+                                    <div class="screenshot-caption"><strong>01:</strong> 24-month peak demand trend
+                                        chart with PF overlay</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/07-power-factor-demand/screenshots/02-kpi-cards-and-contribution-charts.png"
+                                        alt="Power Factor — KPI cards and contribution charts" loading="lazy">
+                                    <div class="screenshot-caption"><strong>02:</strong> 4 KPI cards (Actual Loss,
+                                        Potential, PF, System Status) + per-switch contribution</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/07-power-factor-demand/screenshots/03-performance-table-top.png"
+                                        alt="Power Factor — Performance table" loading="lazy">
+                                    <div class="screenshot-caption"><strong>03:</strong> Monthly performance table —
+                                        Actual vs Potential loss per month</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/07-power-factor-demand/screenshots/04-performance-table-totals.png"
+                                        alt="Power Factor — Performance table totals" loading="lazy">
+                                    <div class="screenshot-caption"><strong>04:</strong> Performance table totals —
+                                        R62,201 cumulative loss over 24 months</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REPORT 08: Time of Use -->
+                <div class="accordion-item" data-report="08">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <div class="trigger-left"><span class="trigger-icon"
+                                style="background: rgba(59,130,246,0.15);">🕐</span>
+                            <div>
+                                <div>Time of Use</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">24×7 Heatmap
+                                    • TOU Breakdown • Seasonal Tracking</div>
+                            </div>
+                        </div>
+                        <div class="trigger-meta"><span class="badge badge-green">AI ✅</span><span
+                                class="badge badge-blue">5 Screenshots</span><span class="accordion-chevron">▼</span>
+                        </div>
+                    </button>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <h4>Purpose</h4>
+                            <p>Analyse consumption patterns by TOU period. Shows when energy is used and what it costs
+                                by Standard/Peak/Off-peak.</p>
+                            <h4>Key Insight</h4>
+                            <p><strong>Peak is 15% of consumption but 23% of cost.</strong> Sunday is the highest
+                                consumption day (hotel leisure peak) but cheapest per kWh (R1.79). High season months
+                                (Jun–Aug) cost 30% more per kWh.</p>
+                            <h4>Unique Components</h4>
+                            <ul>
+                                <li><strong>24×7 Heatmap</strong> — 24 rows (hours) × 7 cols (days), colour-coded
+                                    green→red. 4 views: Consumption, Cost, TOU Consumption, TOU Cost.</li>
+                                <li><strong>7-Line Trend Chart</strong> — One line per day of week (00:00–24:00). Sunday
+                                    clearly elevated.</li>
+                                <li><strong>12-Month TOU Table</strong> — Season column (High/Low), average cost per kWh
+                                    per month.</li>
+                            </ul>
+                            <div class="insight-quote">The heatmap instantly reveals the building's energy signature:
+                                ramp-up at 06:00, plateau through business hours, wind-down after 20:00. "Why not
+                                schedule heavy laundry loads for Sunday when rates are lowest?" — that single scheduling
+                                change could shift thousands of kWh from Peak to Off-peak.</div>
+                            <h4>Screenshots</h4>
+                            <div class="screenshot-gallery">
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/08-time-of-use/screenshots/01-consumption-vs-cost-summary.png"
+                                        alt="Time of Use — Consumption vs cost summary" loading="lazy">
+                                    <div class="screenshot-caption"><strong>01:</strong> Consumption vs Cost summary —
+                                        Standard/Peak/Off-peak split</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/08-time-of-use/screenshots/02-average-daily-heatmap.png"
+                                        alt="Time of Use — 24×7 heatmap" loading="lazy">
+                                    <div class="screenshot-caption"><strong>02:</strong> 24×7 average daily heatmap —
+                                        hours vs days, colour-coded intensity</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/08-time-of-use/screenshots/03-heatmap-bottom-and-trend.png"
+                                        alt="Time of Use — Heatmap and 7-day trend" loading="lazy">
+                                    <div class="screenshot-caption"><strong>03:</strong> Heatmap bottom and 7-line
+                                        day-of-week energy distribution trend</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/08-time-of-use/screenshots/04-tou-breakdowns-table-top.png"
+                                        alt="Time of Use — TOU breakdowns table" loading="lazy">
+                                    <div class="screenshot-caption"><strong>04:</strong> 12-month TOU breakdown table
+                                        with season column and average cost/kWh</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REPORT 09: Tariff Comparison -->
+                <div class="accordion-item" data-report="09">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <div class="trigger-left"><span class="trigger-icon"
+                                style="background: rgba(59,130,246,0.15);">📈</span>
+                            <div>
+                                <div>Tariff Comparison</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">
+                                    Switch-or-Stay • R2.3M Savings Confirmed</div>
+                            </div>
+                        </div>
+                        <div class="trigger-meta"><span class="badge badge-green">AI ✅</span><span
+                                class="badge badge-blue">4 Screenshots</span><span class="accordion-chevron">▼</span>
+                        </div>
+                    </button>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <h4>Purpose</h4>
+                            <p>Model the financial impact of switching tariff schemes. Provides a clear
+                                <strong>switch-or-stay verdict</strong> with monthly granularity.
+                            </p>
+                            <h4>Result</h4>
+                            <p>Current tariff: <strong>R16,432,048/year</strong>. Alternative "Small Power Users 1":
+                                <strong>R18,730,753/year</strong>. Verdict: <span
+                                    style="color: var(--brand-green); font-weight: 600;">"No apparent benefit"</span> —
+                                current tariff saves R2,298,705.
+                            </p>
+                            <div class="insight-quote">"Should we switch tariffs?" — definitive answer: No. But the
+                                report also reveals the alternative IS cheaper in June–August (winter high-season
+                                structure). If consumption patterns shift significantly, this report will immediately
+                                surface the opportunity.</div>
+                            <h4>Screenshots</h4>
+                            <div class="screenshot-gallery">
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/09-tariff-comparison/screenshots/01-comparison-chart-and-action-cards.png"
+                                        alt="Tariff Comparison — Comparison chart and action cards" loading="lazy">
+                                    <div class="screenshot-caption"><strong>01:</strong> Current vs Alternative tariff
+                                        bar chart + savings verdict cards</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/09-tariff-comparison/screenshots/02-cumulative-savings-and-total-cost.png"
+                                        alt="Tariff Comparison — Cumulative savings" loading="lazy">
+                                    <div class="screenshot-caption"><strong>02:</strong> Cumulative savings chart and
+                                        total cost comparison</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/09-tariff-comparison/screenshots/03-comparison-table-middle.png"
+                                        alt="Tariff Comparison — Monthly comparison table" loading="lazy">
+                                    <div class="screenshot-caption"><strong>03:</strong> Monthly comparison table —
+                                        current vs alternative per billing period</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/09-tariff-comparison/screenshots/04-comparison-table-totals.png"
+                                        alt="Tariff Comparison — Table totals" loading="lazy">
+                                    <div class="screenshot-caption"><strong>04:</strong> Comparison table totals —
+                                        R2,298,705 annual savings confirmed</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REPORT 10: Load Curtailment -->
+                <div class="accordion-item" data-report="10">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <div class="trigger-left"><span class="trigger-icon"
+                                style="background: rgba(59,130,246,0.15);">🔋</span>
+                            <div>
+                                <div>Load Curtailment</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">1-Min
+                                    Resolution • CBL Compliance • Trading Dashboard</div>
+                            </div>
+                        </div>
+                        <div class="trigger-meta"><span class="badge badge-green">AI ✅</span><span
+                                class="badge badge-blue">4 Screenshots</span><span class="accordion-chevron">▼</span>
+                        </div>
+                    </button>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <h4>Purpose</h4>
+                            <p>Real-time load shedding compliance. The only report that defaults to "today" — this is an
+                                operational tool, not an analytical one.</p>
+                            <h4>Unique Features</h4>
+                            <ul>
+                                <li><strong>Stage Status Header</strong> — Real-time Eskom load shedding stage (0–8)
+                                </li>
+                                <li><strong>1-Minute Resolution</strong> — Ultra-granular (most reports use 30-min)</li>
+                                <li><strong>6-Tab Performance Section</strong> — Site/Node Performance, CBL Calculation,
+                                    Node Contribution, Trade Capacity, Trading Dashboard</li>
+                                <li><strong>12-Month Compliance Calendar</strong> — Every load shedding event, public
+                                    holiday, abnormal exclusion day</li>
+                            </ul>
+                            <h4>Screenshots</h4>
+                            <div class="screenshot-gallery">
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/10-load-curtailment/screenshots/01-kpi-cards-and-chart-header.png"
+                                        alt="Load Curtailment — KPI cards and chart header" loading="lazy">
+                                    <div class="screenshot-caption"><strong>01:</strong> KPI cards, stage status header,
+                                        and real-time compliance chart</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/10-load-curtailment/screenshots/02-chart-performance-tabs.png"
+                                        alt="Load Curtailment — Performance tabs" loading="lazy">
+                                    <div class="screenshot-caption"><strong>02:</strong> 6-tab performance section —
+                                        Site Performance view</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/10-load-curtailment/screenshots/03-compliance-calendar-mar-oct.png"
+                                        alt="Load Curtailment — Compliance calendar Mar-Oct" loading="lazy">
+                                    <div class="screenshot-caption"><strong>03:</strong> 12-month compliance calendar —
+                                        March to October events</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/10-load-curtailment/screenshots/04-compliance-calendar-nov-feb.png"
+                                        alt="Load Curtailment — Compliance calendar Nov-Feb" loading="lazy">
+                                    <div class="screenshot-caption"><strong>04:</strong> Compliance calendar — November
+                                        to February, holiday markers</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REPORT 11: Charting -->
+                <div class="accordion-item" data-report="11">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <div class="trigger-left"><span class="trigger-icon"
+                                style="background: rgba(59,130,246,0.15);">📉</span>
+                            <div>
+                                <div>Charting</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">Ad-Hoc •
+                                    Custom Parameters • Per-Chart Resolution</div>
+                            </div>
+                        </div>
+                        <div class="trigger-meta"><span class="badge badge-green">AI ✅</span><span
+                                class="badge badge-blue">6 Screenshots</span><span class="accordion-chevron">▼</span>
+                        </div>
+                    </button>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <h4>Purpose</h4>
+                            <p>The most flexible visualisation tool in the platform. Select any measurement point, any
+                                combination of parameters, any time range — and generate independent Highcharts panels
+                                with per-chart resolution control (Min / Halfhour / Day / Month).</p>
+                            <p>Unlike fixed reports, users can combine any parameters they need, switch measurement
+                                points without leaving the page, and delete/add chart panels dynamically.</p>
+                            <h4>Screenshots</h4>
+                            <div class="screenshot-gallery">
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/11-charting/screenshots/01-consumption-bar-chart.png"
+                                        alt="Charting — Consumption bar chart" loading="lazy">
+                                    <div class="screenshot-caption"><strong>01:</strong> Consumption bar chart with
+                                        daily resolution and parameter selector</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/11-charting/screenshots/02-peak-demand-line-chart.png"
+                                        alt="Charting — Peak demand line chart" loading="lazy">
+                                    <div class="screenshot-caption"><strong>02:</strong> Peak demand line chart —
+                                        independent panel with own resolution</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/11-charting/screenshots/03-full-page-bottom.png"
+                                        alt="Charting — Full page bottom" loading="lazy">
+                                    <div class="screenshot-caption"><strong>03:</strong> Multi-panel layout with
+                                        measurement point search</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REPORT 12: Data Download -->
+                <div class="accordion-item" data-report="12">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <div class="trigger-left"><span class="trigger-icon"
+                                style="background: rgba(59,130,246,0.15);">📥</span>
+                            <div>
+                                <div>Data Download</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">Bulk Export
+                                    • CSV/Excel • By-Phase Option</div>
+                            </div>
+                        </div>
+                        <div class="trigger-meta"><span class="badge badge-rose">No AI</span><span
+                                class="badge badge-blue">2 Screenshots</span><span class="accordion-chevron">▼</span>
+                        </div>
+                    </button>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>A pure configuration→download utility tool. No charts, no tables — select a measurement
+                                point, choose phase option (By Phase / Summed), format (CSV / Excel), date range, and
+                                download. Critical for exporting raw data to external tools like Excel models, ERP
+                                systems, or billing departments.</p>
+                            <h4>Screenshots</h4>
+                            <div class="screenshot-gallery">
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/12-data-download/screenshots/01-download-config.png"
+                                        alt="Data Download — Configuration panel" loading="lazy">
+                                    <div class="screenshot-caption"><strong>01:</strong> Download configuration —
+                                        measurement point, phase selection, format</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/12-data-download/screenshots/02-date-range-and-download.png"
+                                        alt="Data Download — Date range and download" loading="lazy">
+                                    <div class="screenshot-caption"><strong>02:</strong> Date range picker and download
+                                        button</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REPORT 13: Triggers -->
+                <div class="accordion-item" data-report="13">
+                    <button class="accordion-trigger" onclick="toggleAccordion(this)">
+                        <div class="trigger-left"><span class="trigger-icon"
+                                style="background: rgba(59,130,246,0.15);">🔔</span>
+                            <div>
+                                <div>Triggers</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">342 Alert
+                                    Rules • Organisation-Wide • CRUD</div>
+                            </div>
+                        </div>
+                        <div class="trigger-meta"><span class="badge badge-rose">No AI</span><span
+                                class="badge badge-blue">4 Screenshots</span><span class="accordion-chevron">▼</span>
+                        </div>
+                    </button>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <h4>Purpose</h4>
+                            <p>Alert configuration and management — <strong>342+ active rules</strong> across all sites.
+                                Organisation-wide scope (not point-specific).</p>
+                            <h4>Trigger Types Monitored</h4>
+                            <ul>
+                                <li><strong>Peak Demand</strong> > 500–2,300 kVA (Instantaneous–15 min)</li>
+                                <li><strong>Power Factor</strong>
+                                    < 0.90–0.95 (2–10 minutes)</li>
+                                <li><strong>Voltage (3-phase)</strong>
+                                    < 10 V (Instantaneous: total loss detection)</li>
+                                <li><strong>Voltage per Phase</strong> > 250 V (spike detection per A/B/C)</li>
+                                <li><strong>Device Comms</strong> = Offline (5 min – 7 days: connectivity monitoring)
+                                </li>
+                                <li><strong>Consumption</strong> > 1 kWh per half-hour (abnormal usage detection)</li>
+                            </ul>
+                            <h4>Screenshots</h4>
+                            <div class="screenshot-gallery">
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/13-triggers/screenshots/01-header-and-first-triggers.png"
+                                        alt="Triggers — Header and first triggers" loading="lazy">
+                                    <div class="screenshot-caption"><strong>01:</strong> Header and first trigger cards
+                                        — name, type, threshold, duration</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/13-triggers/screenshots/02-countrybird-triggers.png"
+                                        alt="Triggers — Countrybird triggers" loading="lazy">
+                                    <div class="screenshot-caption"><strong>02:</strong> Countrybird site triggers —
+                                        demand and PF monitoring</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/13-triggers/screenshots/03-varied-trigger-types.png"
+                                        alt="Triggers — Varied trigger types" loading="lazy">
+                                    <div class="screenshot-caption"><strong>03:</strong> Varied trigger types — voltage,
+                                        comms, consumption anomalies</div>
+                                </div>
+                                <div class="screenshot-item" onclick="openLightbox(this)">
+                                    <img src="../report-audit/13-triggers/screenshots/04-pagination-342-total.png"
+                                        alt="Triggers — Pagination showing 342 total" loading="lazy">
+                                    <div class="screenshot-caption"><strong>04:</strong> Pagination footer — 342 total
+                                        triggers across all sites</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ §4 KEY METRICS ═══ -->
+    <section id="kpis" style="background: rgba(255,255,255,0.01);">
+        <div class="container">
+            <div class="section-header"><span class="section-tag energy">Parameters</span>
+                <h2>Key Measurement Parameters</h2>
+            </div>
+            <div class="data-table-wrap reveal">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Unit</th>
+                            <th>Resolution</th>
+                            <th>Reports</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Consumption</strong></td>
+                            <td>kWh</td>
+                            <td>Half-hourly</td>
+                            <td>All 13</td>
+                            <td>Active energy consumed</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Peak Demand</strong></td>
+                            <td>kVA</td>
+                            <td>Half-hourly</td>
+                            <td>01, 02, 04, 07</td>
+                            <td>Maximum apparent power in billing window</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Active Power</strong></td>
+                            <td>kW</td>
+                            <td>Half-hourly</td>
+                            <td>01, 02, 07</td>
+                            <td>Real power at any interval</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Power Factor</strong></td>
+                            <td>0–1.00</td>
+                            <td>Half-hourly</td>
+                            <td>01, 02, 07</td>
+                            <td>kW ÷ kVA efficiency ratio</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reactive Power</strong></td>
+                            <td>kVAr</td>
+                            <td>Half-hourly</td>
+                            <td>02, 07</td>
+                            <td>Wasted power component</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Voltage</strong></td>
+                            <td>V</td>
+                            <td>Sub-minute</td>
+                            <td>13</td>
+                            <td>Supply voltage (3-phase + per-phase)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Cost</strong></td>
+                            <td>ZAR</td>
+                            <td>Monthly</td>
+                            <td>04, 05, 06, 09</td>
+                            <td>Financial value of energy consumed</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Blended Rate</strong></td>
+                            <td>ZAR/kWh</td>
+                            <td>Monthly</td>
+                            <td>08</td>
+                            <td>Weighted average cost across TOU periods</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Actual/Potential Loss</strong></td>
+                            <td>ZAR</td>
+                            <td>Monthly</td>
+                            <td>07</td>
+                            <td>Financial impact from suboptimal power factor</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ §5 API ═══ -->
+    <section id="api">
+        <div class="container">
+            <div class="section-header"><span class="section-tag energy">Integration</span>
+                <h2>API Architecture</h2>
+            </div>
+            <div class="content-block reveal">
+                <div class="two-col">
+                    <div>
+                        <h4>Endpoint Map</h4>
+                        <pre
+                            style="background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 20px; font-size: 0.8rem; color: var(--brand-cyan); overflow-x: auto; line-height: 1.6;">Base: /api/v1/
+├── dashboard
+├── technical-analysis
+├── consumption-breakdown
+├── cost-breakdown
+├── cost-allocation
+├── bill-verification
+├── power-factor-demand
+├── electricity/
+│   ├── time-of-use
+│   └── tariff-comparison
+├── load-curtailment/
+│   └── get-load-curtailment
+├── charting
+├── data-download  → Binary
+└── triggers</pre>
+                    </div>
+                    <div>
+                        <h4>Technical Specs</h4>
+                        <ul class="schema-list">
+                            <li><span class="schema-key">Auth</span><span class="schema-val">Cookie-based session
+                                    token</span></li>
+                            <li><span class="schema-key">Format</span><span class="schema-val">JSON (ETag + 304
+                                    caching)</span></li>
+                            <li><span class="schema-key">Common Params</span><span class="schema-val">pointID,
+                                    startDateUTC, endDateUTC, productTypeID</span></li>
+                            <li><span class="schema-key">Naming</span><span class="schema-val">API slugs match URL slugs
+                                    exactly</span></li>
+                            <li><span class="schema-key">Special</span><span class="schema-val">TOU + Tariff under
+                                    /electricity/; Load Curtailment uses date+offset</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ §6 AI ═══ -->
+    <section id="ai" style="background: rgba(255,255,255,0.01);">
+        <div class="container">
+            <div class="section-header"><span class="section-tag energy">Intelligence</span>
+                <h2>AI &amp; Data Intelligence Layer</h2>
+            </div>
+            <div class="content-block reveal">
+                <p>20 of 22 reports generate downloadable AI-Ready files (.min.json, 30–454 KB). Each file contains
+                    structured data alongside 9 embedded LLM consumption guidelines — enabling AI copilots, chatbots,
+                    and analytics assistants to analyse the data accurately without hallucination.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ §7 ROI ═══ -->
+    <section id="roi">
+        <div class="container">
+            <div class="section-header"><span class="section-tag energy">Business Case</span>
+                <h2>Strategic ROI Framework</h2>
+                <p class="section-desc">Quantifiable savings opportunities identified from the One & Only Cape Town
+                    audit.</p>
+            </div>
+            <div class="data-table-wrap reveal">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Opportunity</th>
+                            <th>Source Report</th>
+                            <th>Annual Savings</th>
+                            <th>Investment Required</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>PF Correction (329 kVAr)</strong></td>
+                            <td>Power Factor & Demand</td>
+                            <td class="accent-green">R31,000/yr</td>
+                            <td>~R150,000 CapEx (5-yr payback)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Peak Load Shifting (10%)</strong></td>
+                            <td>Time of Use</td>
+                            <td class="accent-green">R265,000/yr</td>
+                            <td>Operational scheduling</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Demand Management</strong></td>
+                            <td>Cost Breakdown</td>
+                            <td class="accent-green">R112,000/yr</td>
+                            <td>Equipment startup sequencing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tariff Verification</strong></td>
+                            <td>Tariff Comparison</td>
+                            <td class="accent-green">R2.3M confirmed saved</td>
+                            <td>No action needed</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bill Error Detection</strong></td>
+                            <td>Bill Verification</td>
+                            <td class="accent-amber">Variable</td>
+                            <td>Process discipline</td>
+                        </tr>
+                        <tr>
+                            <td><strong>"Not Measured" Investigation</strong></td>
+                            <td>Consumption Breakdown</td>
+                            <td class="accent-amber">35% of load unattributed</td>
+                            <td>Additional sub-metering</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ §8 CASE STUDY ═══ -->
+    <section id="case-study" style="background: rgba(255,255,255,0.01);">
+        <div class="container">
+            <div class="section-header"><span class="section-tag energy">Real-World Application</span>
+                <h2>Case Study: One &amp; Only Cape Town</h2>
+            </div>
+            <div class="kpi-row reveal">
+                <div class="kpi-card">
+                    <div class="kpi-value blue">5-Star</div>
+                    <div class="kpi-label">Luxury Hotel</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value blue">R1.4M</div>
+                    <div class="kpi-label">Monthly Bill</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value blue">7.3M kWh</div>
+                    <div class="kpi-label">Annual Consumption</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value blue">14</div>
+                    <div class="kpi-label">Sub-Meters</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value rose">0.96 PF</div>
+                    <div class="kpi-label">Declining from 0.99</div>
+                </div>
+            </div>
+            <div class="card-grid cols-3 reveal" style="margin-top: 24px;">
+                <div class="card energy-card">
+                    <div class="card-icon energy">❄️</div>
+                    <h4 class="card-title">HVAC Dominates</h4>
+                    <p class="card-desc">AC1 and AC2 consume 29.4% of all energy — any efficiency initiative must start
+                        here.</p>
+                </div>
+                <div class="card energy-card">
+                    <div class="card-icon energy">⏱️</div>
+                    <h4 class="card-title">One-Moment Demand</h4>
+                    <p class="card-desc">R93,619/month demand charge set by a single 30-minute peak at 1,234 kVA.</p>
+                </div>
+                <div class="card energy-card">
+                    <div class="card-icon rose">❓</div>
+                    <h4 class="card-title">35% Unattributed</h4>
+                    <p class="card-desc">"Not measured" = 48,519 kWh/week passing through mains but not tracked by any
+                        sub-meter.</p>
+                </div>
+                <div class="card energy-card">
+                    <div class="card-icon rose">📉</div>
+                    <h4 class="card-title">PF Degrading</h4>
+                    <p class="card-desc">Dropped from 0.99 (Oct 2025) to 0.96 (Feb 2026). Action needed before reaching
+                        penalty threshold.</p>
+                </div>
+                <div class="card energy-card">
+                    <div class="card-icon green">☀️</div>
+                    <h4 class="card-title">Sunday Anomaly</h4>
+                    <p class="card-desc">Highest consumption day but cheapest rate (R1.79/kWh). Leisure guests drive
+                        weekend peaks.</p>
+                </div>
+                <div class="card energy-card">
+                    <div class="card-icon green">✅</div>
+                    <h4 class="card-title">Tariff Confirmed</h4>
+                    <p class="card-desc">Current "Large Power User MV TOU" saves R2.3M/year vs the alternative — no
+                        action needed.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ §9 PERSONAS ═══ -->
+    <section id="personas">
+        <div class="container">
+            <div class="section-header"><span class="section-tag energy">Who Uses This</span>
+                <h2>Target Market &amp; Buyer Personas</h2>
+            </div>
+            <div class="data-table-wrap reveal">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Persona</th>
+                            <th>Reports They Use</th>
+                            <th>Key Question</th>
+                            <th>Budget Authority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>CFO / Finance Director</strong></td>
+                            <td>Cost Breakdown, Bill Verification</td>
+                            <td>"What are we spending and is it correct?"</td>
+                            <td>CapEx approval</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Energy Manager</strong></td>
+                            <td>All 13</td>
+                            <td>"Where are the savings?"</td>
+                            <td>Operational energy budget</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Facility Manager</strong></td>
+                            <td>Dashboard, Technical Analysis</td>
+                            <td>"Is everything running normally?"</td>
+                            <td>Maintenance budget</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Property Manager</strong></td>
+                            <td>Cost Allocation, Bill Verification</td>
+                            <td>"How much does each tenant owe?"</td>
+                            <td>Billing infrastructure</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Electrical Engineer</strong></td>
+                            <td>Technical Analysis, PF & Demand</td>
+                            <td>"Is the supply healthy?"</td>
+                            <td>Technical projects</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sustainability Lead</strong></td>
+                            <td>Consumption Breakdown, TOU</td>
+                            <td>"What's our carbon footprint?"</td>
+                            <td>ESG reporting</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ §10 GLOSSARY ═══ -->
+    <section id="glossary" style="background: rgba(255,255,255,0.01);">
+        <div class="container">
+            <div class="section-header"><span class="section-tag energy">Reference</span>
+                <h2>Glossary of Energy Terms</h2>
+            </div>
+            <div class="data-table-wrap reveal">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 160px;">Term</th>
+                            <th>Definition</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>CBL</strong></td>
+                            <td>Curtailment Base Load — calculated reference load for load shedding compliance</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Demand</strong></td>
+                            <td>Peak apparent power (kVA) measured in any 30-minute window during the billing period
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Feed-in</strong></td>
+                            <td>Energy exported back to the grid (e.g., from solar PV), credited against the bill</td>
+                        </tr>
+                        <tr>
+                            <td><strong>kVA</strong></td>
+                            <td>Kilovolt-Ampere — apparent power (total power drawn including reactive component)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>kVAr</strong></td>
+                            <td>Kilovolt-Ampere Reactive — reactive power component (wasted capacity)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>kW</strong></td>
+                            <td>Kilowatt — real/active power (the power that does useful work)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>kWh</strong></td>
+                            <td>Kilowatt-hour — unit of energy consumption (what you pay for)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>NERSA</strong></td>
+                            <td>National Energy Regulator of South Africa — governs tariff structures</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Not Measured</strong></td>
+                            <td>Gap between main meter and sum of sub-meters — indicates unattributed consumption</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PF</strong></td>
+                            <td>Power Factor — ratio of kW to kVA. Target: ≥0.96. Below this incurs penalties.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TOU</strong></td>
+                            <td>Time of Use — tariff where rates vary by period (Peak/Standard/Off-peak) and season
+                                (High/Low)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section>
+        <div class="container">
+            <div class="cta-banner reveal"
+                style="background: var(--gradient-card-mfg); border-color: rgba(245,158,11,0.3);">
+                <h3>Also Available: Manufacturing Intelligence</h3>
+                <p>OEE-powered production analytics — 9 reports, operator benchmarking, downtime intelligence, and
+                    AI-Ready data.</p>
+                <a href="manufacturing-intelligence.html" class="btn btn-primary mfg">🏭 Explore Manufacturing
+                    Intelligence →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- LIGHTBOX OVERLAY -->
+    <div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox()">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <img id="lightboxImg" src="" alt="Enlarged screenshot">
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="site-footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-brand">AUGOS Knowledge Base</div>
+            <div class="footer-copy">© 2026 Augos (Pty) Ltd. Confidential — Internal Use Only.</div>
+            <div class="footer-links">
+                <a href="index.html">Hub</a>
+                <a href="energy-intelligence.html">Energy Intelligence</a>
+                <a href="manufacturing-intelligence.html">Manufacturing Intelligence</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleAccordion(btn) {
+            const item = btn.closest('.accordion-item');
+            const body = item.querySelector('.accordion-body');
+            const isOpen = item.classList.contains('open');
+            // Close all
+            document.querySelectorAll('.accordion-item.open').forEach(i => {
+                i.classList.remove('open');
+                i.querySelector('.accordion-body').style.maxHeight = null;
+            });
+            if (!isOpen) {
+                item.classList.add('open');
+                body.style.maxHeight = body.scrollHeight + 'px';
+                // Recalculate after lazy images load
+                const imgs = body.querySelectorAll('img');
+                imgs.forEach(img => {
+                    if (!img.complete) {
+                        img.addEventListener('load', () => {
+                            body.style.maxHeight = body.scrollHeight + 'px';
+                        });
+                    }
+                });
+            }
+        }
+
+        // Lightbox
+        function openLightbox(el) {
+            const img = el.querySelector('img');
+            if (!img) return;
+            document.getElementById('lightboxImg').src = img.src;
+            document.getElementById('lightboxOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() {
+            document.getElementById('lightboxOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+        // Scroll reveal
+        const revealEls = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); } });
+        }, { threshold: 0.1 });
+        revealEls.forEach(el => revealObserver.observe(el));
+    </script>
+</body>
+
+</html>

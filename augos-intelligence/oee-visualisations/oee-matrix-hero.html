@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>OEE Matrix Hero — Augos</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            background: #06080A;
+            color: #E2E8F0;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden
+        }
+
+        /* ───── HERO ───── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 60px 20px 80px
+        }
+
+        /* Ambient glow */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(245, 158, 11, .06) 0%, transparent 70%);
+            pointer-events: none
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(transparent, #06080A);
+            pointer-events: none;
+            z-index: 2
+        }
+
+        /* Grid lines bg */
+        .grid-bg {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, .015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, .015) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 80%);
+            -webkit-mask: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 80%)
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 700px;
+            margin-bottom: 48px
+        }
+
+        .hero-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            color: #F59E0B;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeUp .8s ease .2s forwards
+        }
+
+        .hero-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(4rem, 12vw, 9rem);
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #F59E0B 0%, #FB923C 40%, #EF4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            animation: fadeUp .8s ease .4s forwards
+        }
+
+        .hero-unit {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: 300;
+            color: #64748B;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: fadeUp .8s ease .6s forwards
+        }
+
+        .hero-desc {
+            font-size: 1.05rem;
+            color: #94A3B8;
+            line-height: 1.7;
+            max-width: 560px;
+            margin: 0 auto 32px;
+            opacity: 0;
+            animation: fadeUp .8s ease .8s forwards
+        }
+
+        .hero-desc strong {
+            color: #E2E8F0;
+            font-weight: 600
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: #F59E0B;
+            text-decoration: none;
+            padding: 12px 24px;
+            border: 1px solid rgba(245, 158, 11, .3);
+            border-radius: 8px;
+            transition: all .3s;
+            opacity: 0;
+            animation: fadeUp .8s ease 1s forwards
+        }
+
+        .hero-cta:hover {
+            background: rgba(245, 158, 11, .1);
+            border-color: rgba(245, 158, 11, .5);
+            transform: translateY(-2px)
+        }
+
+        .hero-cta .arrow {
+            transition: transform .3s;
+            font-size: .9rem
+        }
+
+        .hero-cta:hover .arrow {
+            transform: translateY(2px)
+        }
+
+        /* ───── FLOATING STAT CARDS ───── */
+        .stat-cards {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeUp .8s ease 1.1s forwards
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, .03);
+            border: 1px solid rgba(255, 255, 255, .06);
+            border-radius: 10px;
+            padding: 16px 24px;
+            text-align: center;
+            min-width: 140px;
+            transition: all .3s
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, .05);
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, .1)
+        }
+
+        .stat-card .sc-val {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 4px
+        }
+
+        .stat-card .sc-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .06em
+        }
+
+        /* ───── LIVE MATRIX ───── */
+        .matrix-section {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px;
+            opacity: 0;
+            transform: translateY(30px)
+        }
+
+        .matrix-section.visible {
+            animation: fadeUp .8s ease forwards
+        }
+
+        .matrix {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, .06);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow:
+                0 0 60px rgba(245, 158, 11, .03),
+                0 0 120px rgba(245, 158, 11, .02)
+        }
+
+        .matrix-header {
+            display: grid;
+            grid-template-columns: 4px 180px 120px 80px 80px 80px 1fr;
+            background: rgba(255, 255, 255, .02);
+            border-bottom: 1px solid rgba(255, 255, 255, .06)
+        }
+
+        .matrix-header .mh {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 12px 10px;
+            display: flex;
+            align-items: center
+        }
+
+        .group-row {
+            display: grid;
+            grid-template-columns: 4px 1fr;
+            border-bottom: 1px solid rgba(255, 255, 255, .04);
+            background: rgba(255, 255, 255, .015)
+        }
+
+        .gr-label {
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .gr-total {
+            font-weight: 600;
+            color: #94A3B8
+        }
+
+        .subgroup-row {
+            display: grid;
+            grid-template-columns: 4px 1fr;
+            border-bottom: 1px solid rgba(255, 255, 255, .02);
+            background: rgba(255, 255, 255, .008)
+        }
+
+        .sg-label {
+            padding: 5px 10px 5px 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: #3E4C5E;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .sg-line {
+            width: 12px;
+            height: 1px;
+            flex-shrink: 0
+        }
+
+        .matrix-row {
+            display: grid;
+            grid-template-columns: 4px 180px 120px 80px 80px 80px 1fr;
+            border-bottom: 1px solid rgba(255, 255, 255, .03);
+            transition: all .2s;
+            cursor: default
+        }
+
+        .matrix-row:hover {
+            background: rgba(255, 255, 255, .04)
+        }
+
+        .mr-band {
+            width: 4px
+        }
+
+        .mr-name {
+            padding: 10px;
+            font-size: .8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .mr-name .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            flex-shrink: 0;
+            transition: transform .2s
+        }
+
+        .matrix-row:hover .mr-name .dot {
+            transform: scale(1.4)
+        }
+
+        .mr-name .step {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: #475569;
+            background: rgba(255, 255, 255, .04);
+            border-radius: 3px;
+            padding: 1px 5px;
+            flex-shrink: 0;
+            min-width: 18px;
+            text-align: center
+        }
+
+        .mr-path {
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            color: #475569;
+            display: flex;
+            align-items: center
+        }
+
+        .mr-val {
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .mr-pct {
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748B
+        }
+
+        .mr-bar-cell {
+            padding: 10px 14px;
+            display: flex;
+            align-items: center
+        }
+
+        .mr-bar {
+            height: 18px;
+            border-radius: 4px;
+            min-width: 2px;
+            position: relative;
+            transition: width 1s cubic-bezier(.4, 0, .2, 1)
+        }
+
+        .mr-bar-label {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: rgba(255, 255, 255, .7)
+        }
+
+        .summary-row {
+            display: grid;
+            grid-template-columns: 4px 180px 120px 80px 80px 80px 1fr;
+            background: rgba(245, 158, 11, .04);
+            border-top: 1px solid rgba(245, 158, 11, .1)
+        }
+
+        .summary-row .mr-name {
+            font-weight: 700;
+            color: #F59E0B
+        }
+
+        .summary-row .mr-val {
+            font-weight: 700;
+            color: #F59E0B
+        }
+
+        /* ───── BELOW HERO ───── */
+        .below-hero {
+            padding: 80px 20px 60px;
+            text-align: center
+        }
+
+        .below-hero .bh-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 16px
+        }
+
+        .below-hero h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #E2E8F0;
+            margin-bottom: 12px
+        }
+
+        .below-hero h2 span {
+            color: #F59E0B
+        }
+
+        .below-hero p {
+            font-size: .9rem;
+            color: #64748B;
+            max-width: 500px;
+            margin: 0 auto
+        }
+
+        /* ───── FOOTER ───── */
+        .footer {
+            padding: 40px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, .04)
+        }
+
+        .footer p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: #334155;
+            text-transform: uppercase;
+            letter-spacing: .06em
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <section class="hero">
+        <div class="grid-bg"></div>
+
+        <div class="hero-content">
+            <div class="hero-tag">Enhanced OEE · Loss Decomposition</div>
+            <div class="hero-number" id="hero-number">0</div>
+            <div class="hero-unit">hours of production never recovered</div>
+            <p class="hero-desc">
+                Traditional OEE gives you a single percentage. Enhanced OEE decomposes every lost hour into
+                <strong>11 actionable variables</strong> — so the question is no longer <em>"what is our OEE?"</em>
+                but <strong>"which lever do we pull first?"</strong>
+            </p>
+            <a href="#matrix-section" class="hero-cta">
+                See the full breakdown <span class="arrow">↓</span>
+            </a>
+        </div>
+
+        <div class="stat-cards">
+            <div class="stat-card">
+                <div class="sc-val" style="color:#F59E0B">186h</div>
+                <div class="sc-label">Availability</div>
+            </div>
+            <div class="stat-card">
+                <div class="sc-val" style="color:#3B82F6">72h</div>
+                <div class="sc-label">Performance</div>
+            </div>
+            <div class="stat-card">
+                <div class="sc-val" style="color:#8B5CF6">26h</div>
+                <div class="sc-label">Quality</div>
+            </div>
+            <div class="stat-card">
+                <div class="sc-val" style="color:#10B981">11</div>
+                <div class="sc-label">Variables</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="below-hero">
+        <div class="bh-tag">The Complete Diagnostic</div>
+        <h2>Every Variable <span>in Logical Flow</span></h2>
+        <p>Ordered by position in the OEE hierarchy — from Planned downtime through the Digital Signal escalation path.
+        </p>
+    </section>
+
+    <section class="matrix-section" id="matrix-section">
+        <div class="matrix" id="matrix">
+            <div class="matrix-header">
+                <div class="mh"></div>
+                <div class="mh">Variable</div>
+                <div class="mh">Hierarchy</div>
+                <div class="mh" style="justify-content:center">Hours</div>
+                <div class="mh" style="justify-content:center">% Total</div>
+                <div class="mh" style="justify-content:center">% Parent</div>
+                <div class="mh">Magnitude</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="footer">
+        <p>Augos™ — Enhanced OEE · 11 Variables of Truth</p>
+    </div>
+
+    <script>
+        const data = [
+            {
+                group: 'Availability Loss', groupColor: '#F59E0B', groupTotal: 186, subgroups: [
+                    {
+                        label: 'Planned Downtime', sublabel: '42h', color: '#D97706', items: [
+                            { name: 'Planning Efficiency', val: 28, color: '#CA8A04', path: 'Planned', parentVal: 42, step: 1 },
+                            { name: 'Operator Discipline', val: 14, color: '#FBBF24', path: 'Planned', parentVal: 42, step: 2 },
+                        ]
+                    },
+                    {
+                        label: 'Unplanned — Operator Resolved', sublabel: '58h', color: '#FB923C', items: [
+                            { name: 'Op. Resolution Time', val: 58, color: '#FB923C', path: 'Unplanned › Op. Resolved', parentVal: 58, step: 3 },
+                        ]
+                    },
+                    {
+                        label: 'Unplanned — Tech Intervention', sublabel: '86h', color: '#EF4444', items: [
+                            { name: 'Op. Evaluation Time', val: 10, color: '#FB7185', path: 'Unplanned › Tech Intv.', parentVal: 86, step: 4 },
+                            { name: 'Tech Response Time', val: 16, color: '#EF4444', path: 'Unplanned › Tech Intv.', parentVal: 86, step: 5 },
+                            { name: 'Active Wrench Time', val: 38, color: '#10B981', path: 'Unplanned › Tech Intv. › Wrench', parentVal: 60, step: 6 },
+                            { name: 'Inactive Wrench Time', val: 22, color: '#EAB308', path: 'Unplanned › Tech Intv. › Wrench', parentVal: 60, step: 7 },
+                        ]
+                    },
+                ]
+            },
+            {
+                group: 'Performance Loss', groupColor: '#3B82F6', groupTotal: 72, subgroups: [
+                    {
+                        label: null, items: [
+                            { name: 'Micro Interruptions', val: 24, color: '#60A5FA', path: 'Performance', parentVal: 72, step: 8 },
+                            { name: 'True Speed Loss', val: 48, color: '#6366F1', path: 'Performance', parentVal: 72, step: 9 },
+                        ]
+                    }
+                ]
+            },
+            {
+                group: 'Quality Loss', groupColor: '#8B5CF6', groupTotal: 26, subgroups: [
+                    {
+                        label: null, items: [
+                            { name: 'Startup Rejects', val: 14, color: '#A855F7', path: 'Quality', parentVal: 26, step: 10 },
+                            { name: 'In-Process Rejects', val: 12, color: '#EC4899', path: 'Quality', parentVal: 26, step: 11 },
+                        ]
+                    }
+                ]
+            },
+        ];
+
+        const maxVal = 58;
+        const TOTAL = 284;
+
+        function hexRGBA(h, a) {
+            return `rgba(${parseInt(h.slice(1, 3), 16)},${parseInt(h.slice(3, 5), 16)},${parseInt(h.slice(5, 7), 16)},${a})`;
+        }
+
+        // Hero counter animation
+        function animateHeroNumber() {
+            const el = document.getElementById('hero-number');
+            const target = TOTAL;
+            const duration = 2000;
+            const start = performance.now();
+            function tick(now) {
+                const p = Math.min((now - start) / duration, 1);
+                const ease = 1 - Math.pow(1 - p, 3);
+                el.textContent = Math.round(ease * target);
+                if (p < 1) requestAnimationFrame(tick);
+            }
+            setTimeout(() => requestAnimationFrame(tick), 600);
+        }
+
+        // Build matrix
+        function buildMatrix() {
+            const container = document.getElementById('matrix');
+            const bars = [];
+
+            data.forEach(group => {
+                const gr = document.createElement('div');
+                gr.className = 'group-row';
+                gr.innerHTML = `
+                    <div style="width:4px;background:${group.groupColor}"></div>
+                    <div class="gr-label"><span>${group.group}</span> <span class="gr-total">${group.groupTotal}h · ${(group.groupTotal / TOTAL * 100).toFixed(1)}%</span></div>
+                `;
+                container.appendChild(gr);
+
+                group.subgroups.forEach(sg => {
+                    if (sg.label) {
+                        const sgRow = document.createElement('div');
+                        sgRow.className = 'subgroup-row';
+                        sgRow.innerHTML = `
+                            <div style="width:4px;background:${hexRGBA(group.groupColor, 0.15)}"></div>
+                            <div class="sg-label">
+                                <span class="sg-line" style="background:${hexRGBA(sg.color, 0.4)}"></span>
+                                <span>${sg.label}</span>
+                                <span style="color:${hexRGBA(sg.color, 0.7)};font-weight:500">${sg.sublabel}</span>
+                            </div>
+                        `;
+                        container.appendChild(sgRow);
+                    }
+
+                    sg.items.forEach(item => {
+                        const row = document.createElement('div');
+                        row.className = 'matrix-row';
+                        const pctTotal = (item.val / TOTAL * 100).toFixed(1);
+                        const pctParent = (item.val / item.parentVal * 100).toFixed(1);
+                        const barW = (item.val / maxVal * 100);
+                        const intensity = item.val / maxVal;
+
+                        row.innerHTML = `
+                            <div class="mr-band" style="background:${hexRGBA(group.groupColor, 0.3)}"></div>
+                            <div class="mr-name"><span class="step">${item.step}</span><div class="dot" style="background:${item.color}"></div>${item.name}</div>
+                            <div class="mr-path">${item.path}</div>
+                            <div class="mr-val" style="color:${hexRGBA(item.color, 0.6 + intensity * 0.4)};font-weight:${intensity > 0.5 ? '700' : '400'}">${item.val}h</div>
+                            <div class="mr-pct">${pctTotal}%</div>
+                            <div class="mr-pct">${pctParent}%</div>
+                            <div class="mr-bar-cell">
+                                <div class="mr-bar" style="width:0%;background:linear-gradient(90deg,${hexRGBA(item.color, 0.7)},${hexRGBA(item.color, 0.4)})">
+                                    ${barW > 30 ? `<span class="mr-bar-label">${item.val}h</span>` : ''}
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(row);
+                        bars.push({ el: row.querySelector('.mr-bar'), width: barW });
+                    });
+                });
+            });
+
+            // Summary
+            const sr = document.createElement('div');
+            sr.className = 'summary-row';
+            sr.innerHTML = `
+                <div class="mr-band" style="background:#F59E0B"></div>
+                <div class="mr-name" style="font-weight:700;color:#F59E0B">Total Accounted</div>
+                <div class="mr-path"></div>
+                <div class="mr-val" style="color:#F59E0B;font-weight:700">${TOTAL}h</div>
+                <div class="mr-pct" style="color:#F59E0B;font-weight:600">100%</div>
+                <div class="mr-pct"></div>
+                <div class="mr-bar-cell">
+                    <div class="mr-bar" style="width:0%;background:linear-gradient(90deg,rgba(245,158,11,0.5),rgba(245,158,11,0.2));height:4px;border-radius:2px"></div>
+                </div>
+            `;
+            container.appendChild(sr);
+            bars.push({ el: sr.querySelector('.mr-bar'), width: 100 });
+
+            return bars;
+        }
+
+        const bars = buildMatrix();
+
+        // Intersection observer for matrix
+        const matrixSection = document.querySelector('.matrix-section');
+        let barsAnimated = false;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    matrixSection.classList.add('visible');
+                    if (!barsAnimated) {
+                        barsAnimated = true;
+                        bars.forEach((bar, i) => {
+                            setTimeout(() => {
+                                bar.el.style.width = bar.width + '%';
+                            }, i * 60);
+                        });
+                    }
+                }
+            });
+        }, { threshold: 0.15 });
+
+        observer.observe(matrixSection);
+
+        animateHeroNumber();
+    </script>
+</body>
+
+</html>

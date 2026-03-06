@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>OEE Explorer — Interactive Loss Decomposition — Augos</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: #06080A;
+            color: #E2E8F0;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden
+        }
+
+        /* ───── LAYOUT ───── */
+        .app {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            min-height: 100vh
+        }
+
+        /* ───── LEFT: VISUAL PANEL ───── */
+        .visual-panel {
+            padding: 40px 32px;
+            display: flex;
+            flex-direction: column;
+            position: relative
+        }
+
+        .visual-panel::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: linear-gradient(transparent, rgba(255, 255, 255, .06) 20%, rgba(255, 255, 255, .06) 80%, transparent)
+        }
+
+        .vp-header {
+            margin-bottom: 32px
+        }
+
+        .vp-header .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            color: #F59E0B;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 10px
+        }
+
+        .vp-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600
+        }
+
+        .vp-header h1 span {
+            color: #64748B;
+            font-weight: 300
+        }
+
+        /* Category tabs */
+        .cat-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px
+        }
+
+        .cat-tab {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, .06);
+            background: rgba(255, 255, 255, .02);
+            color: #64748B;
+            cursor: pointer;
+            transition: all .25s;
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .cat-tab:hover {
+            background: rgba(255, 255, 255, .05);
+            color: #94A3B8
+        }
+
+        .cat-tab.active {
+            border-color: var(--tab-color);
+            background: var(--tab-bg);
+            color: var(--tab-color)
+        }
+
+        .cat-tab .tab-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 2px
+        }
+
+        /* Variable bars */
+        .var-list {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px
+        }
+
+        .var-item {
+            display: grid;
+            grid-template-columns: 28px 1fr 50px;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all .25s;
+            border: 1px solid transparent;
+            position: relative
+        }
+
+        .var-item:hover {
+            background: rgba(255, 255, 255, .03);
+            border-color: rgba(255, 255, 255, .04)
+        }
+
+        .var-item.selected {
+            background: rgba(255, 255, 255, .05);
+            border-color: rgba(255, 255, 255, .08)
+        }
+
+        .var-item.selected::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            bottom: 6px;
+            width: 3px;
+            border-radius: 0 3px 3px 0;
+            background: var(--item-color)
+        }
+
+        .var-item .vi-step {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: #475569;
+            background: rgba(255, 255, 255, .04);
+            border-radius: 4px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s
+        }
+
+        .var-item.selected .vi-step {
+            background: var(--item-bg);
+            color: var(--item-color)
+        }
+
+        .var-item .vi-body {
+            display: flex;
+            flex-direction: column;
+            gap: 4px
+        }
+
+        .var-item .vi-name {
+            font-size: .8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .var-item .vi-name .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 2px;
+            flex-shrink: 0;
+            transition: transform .2s
+        }
+
+        .var-item.selected .vi-name .dot {
+            transform: scale(1.3)
+        }
+
+        .var-item .vi-bar-track {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, .04);
+            border-radius: 2px;
+            overflow: hidden
+        }
+
+        .var-item .vi-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width .6s ease
+        }
+
+        .var-item .vi-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .8rem;
+            font-weight: 600;
+            text-align: right;
+            transition: color .2s
+        }
+
+        /* Subgroup dividers */
+        .sg-divider {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px 2px;
+            margin-top: 4px
+        }
+
+        .sg-divider .sg-line {
+            width: 16px;
+            height: 1px;
+            flex-shrink: 0
+        }
+
+        .sg-divider span {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .5rem;
+            color: #334155;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            white-space: nowrap
+        }
+
+        .sg-divider .sg-hours {
+            font-weight: 600;
+            color: #475569
+        }
+
+        /* ───── RIGHT: DETAIL PANEL ───── */
+        .detail-panel {
+            padding: 40px 28px;
+            overflow-y: auto;
+            position: relative;
+            background: rgba(255, 255, 255, .008)
+        }
+
+        .dp-empty {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 12px
+        }
+
+        .dp-empty .de-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .03);
+            border: 1px solid rgba(255, 255, 255, .06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 4px
+        }
+
+        .dp-empty h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #94A3B8
+        }
+
+        .dp-empty p {
+            font-size: .78rem;
+            color: #475569;
+            max-width: 240px;
+            line-height: 1.5
+        }
+
+        /* Detail content */
+        .dp-content {
+            display: none;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeIn .3s ease
+        }
+
+        .dp-content.active {
+            display: flex
+        }
+
+        .dp-title-row {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .dp-color-block {
+            width: 4px;
+            height: 36px;
+            border-radius: 2px
+        }
+
+        .dp-title-text h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600
+        }
+
+        .dp-title-text .dp-path {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: #475569;
+            margin-top: 2px
+        }
+
+        /* Big stat */
+        .dp-big-stat {
+            display: flex;
+            align-items: baseline;
+            gap: 8px
+        }
+
+        .dp-big-stat .bs-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1
+        }
+
+        .dp-big-stat .bs-unit {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .9rem;
+            color: #64748B
+        }
+
+        /* Stat grid */
+        .dp-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px
+        }
+
+        .dp-stat {
+            background: rgba(255, 255, 255, .03);
+            border: 1px solid rgba(255, 255, 255, .04);
+            border-radius: 8px;
+            padding: 14px
+        }
+
+        .dp-stat .ds-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .5rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 6px
+        }
+
+        .dp-stat .ds-val {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700
+        }
+
+        /* Visual proportion */
+        .dp-proportion {
+            background: rgba(255, 255, 255, .02);
+            border: 1px solid rgba(255, 255, 255, .04);
+            border-radius: 8px;
+            padding: 16px
+        }
+
+        .dp-proportion .dp-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 10px
+        }
+
+        .dp-proportion .prop-bar-track {
+            width: 100%;
+            height: 24px;
+            background: rgba(255, 255, 255, .03);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 8px
+        }
+
+        .dp-proportion .prop-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width .6s ease;
+            position: relative
+        }
+
+        .dp-proportion .prop-bar-fill span {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: rgba(255, 255, 255, .8)
+        }
+
+        .dp-proportion .prop-context {
+            font-size: .72rem;
+            color: #64748B;
+            line-height: 1.5
+        }
+
+        /* Description */
+        .dp-desc {
+            border-left: 2px solid rgba(255, 255, 255, .06);
+            padding-left: 16px
+        }
+
+        .dp-desc .dd-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 8px
+        }
+
+        .dp-desc .dd-text {
+            font-size: .82rem;
+            color: #94A3B8;
+            line-height: 1.7
+        }
+
+        /* Origin story */
+        .dp-origin {
+            background: rgba(245, 158, 11, .03);
+            border: 1px solid rgba(245, 158, 11, .08);
+            border-radius: 8px;
+            padding: 16px
+        }
+
+        .dp-origin .do-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: #F59E0B;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .dp-origin .do-text {
+            font-size: .78rem;
+            color: #94A3B8;
+            line-height: 1.65
+        }
+
+        /* Question badge */
+        .dp-question {
+            background: rgba(255, 255, 255, .02);
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px
+        }
+
+        .dp-question .dq-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .75rem;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, .06)
+        }
+
+        .dp-question .dq-body {
+            display: flex;
+            flex-direction: column;
+            gap: 2px
+        }
+
+        .dp-question .dq-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: .06em
+        }
+
+        .dp-question .dq-text {
+            font-size: .78rem;
+            color: #E2E8F0
+        }
+
+        /* Nav arrows */
+        .dp-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, .04)
+        }
+
+        .dp-nav-btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, .06);
+            background: rgba(255, 255, 255, .02);
+            color: #64748B;
+            cursor: pointer;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .dp-nav-btn:hover {
+            background: rgba(255, 255, 255, .05);
+            color: #94A3B8
+        }
+
+        .dp-nav-btn:disabled {
+            opacity: .3;
+            cursor: default
+        }
+
+        .dp-nav-btn:disabled:hover {
+            background: rgba(255, 255, 255, .02);
+            color: #64748B
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="visual-panel">
+            <div class="vp-header">
+                <div class="tag">Interactive Explorer</div>
+                <h1>OEE Loss Decomposition <span>· 11 Variables</span></h1>
+            </div>
+            <div class="cat-tabs" id="cat-tabs"></div>
+            <div class="var-list" id="var-list"></div>
+        </div>
+
+        <div class="detail-panel">
+            <div class="dp-empty" id="dp-empty">
+                <div class="de-icon">◎</div>
+                <h3>Select a Variable</h3>
+                <p>Click any loss variable on the left to explore its full context, origin story, and diagnostic detail.
+                </p>
+            </div>
+            <div class="dp-content" id="dp-content"></div>
+        </div>
+    </div>
+
+    <script>
+        const TOTAL = 284;
+        const maxVal = 58;
+
+        const variables = [
+            {
+                step: 1, name: 'Planning Efficiency', val: 28, color: '#CA8A04',
+                group: 'Availability', groupColor: '#F59E0B', path: 'Availability › Planned',
+                parentName: 'Planned Downtime', parentVal: 42, parentColor: '#D97706',
+                subgroup: 'Planned Downtime', subgroupHours: '42h', subgroupColor: '#D97706',
+                desc: 'Hours lost to scheduling inefficiency — planned downtime that overran its allocation. When a coil change is allocated 15 minutes but takes 40, the overage flows here.',
+                origin: 'Born from a steel press study in the motor industry: routine coil changes took 29 minutes on average but ranged from 6 minutes to nearly 90 minutes. By splitting Planned Time into Allocated vs. Actual, the scheduling gap became visible for the first time.',
+                question: 'Is my planned maintenance overrunning — and by how much?',
+                questionIcon: '⏱'
+            },
+            {
+                step: 2, name: 'Operator Discipline', val: 14, color: '#FBBF24',
+                group: 'Availability', groupColor: '#F59E0B', path: 'Availability › Planned',
+                parentName: 'Planned Downtime', parentVal: 42, parentColor: '#D97706',
+                subgroup: null,
+                desc: 'Late starts, early stops, extended breaks — genuine operator time discipline isolated from planning failures. Before this variable existed, operators were unfairly blamed for scheduling problems.',
+                origin: 'Operators were being held accountable for poor scheduling, not poor execution. This variable isolates the operator\'s time discipline from organizational planning failures — putting accountability where it belongs.',
+                question: 'Are my operators starting on time, stopping on time, and taking the right breaks?',
+                questionIcon: '👤'
+            },
+            {
+                step: 3, name: 'Operator Resolution Time', val: 58, color: '#FB923C',
+                group: 'Availability', groupColor: '#F59E0B', path: 'Availability › Unplanned › Op. Resolved',
+                parentName: 'Unplanned Downtime', parentVal: 144, parentColor: '#F43F5E',
+                subgroup: 'Unplanned — Operator Resolved', subgroupHours: '58h', subgroupColor: '#FB923C',
+                desc: 'Time spent by operators resolving machine issues without requiring technical support. If the operator fixes the machine, they own the "Resolution %" — this metric encourages frontline capability and self-sufficiency.',
+                origin: 'Part of Evolution 3 — the "accountability crisis" solution. By measuring whether the operator resolved the issue themselves or had to escalate, Augos ended the blame game between Production and Technical teams.',
+                question: 'Can my operators solve problems themselves — and how long does it take?',
+                questionIcon: '🔧'
+            },
+            {
+                step: 4, name: 'Operator Evaluation Time', val: 10, color: '#FB7185',
+                group: 'Availability', groupColor: '#F59E0B', path: 'Availability › Unplanned › Tech Intv.',
+                parentName: 'Tech Intervention', parentVal: 86, parentColor: '#EF4444',
+                subgroup: 'Unplanned — Tech Intervention', subgroupHours: '86h', subgroupColor: '#EF4444',
+                desc: 'The clock between the machine stop event and the Digital Signal — how long does the operator evaluate the problem before deciding to escalate to a technician? This is the decision-making window.',
+                origin: 'The operator sees the machine stop, evaluates whether they can fix it, and eventually hits "Assist" if they can\'t. The time between the stop and the Assist button press is the Operator Evaluation Time — a training opportunity in disguise.',
+                question: 'Are operators evaluating too long before escalating — or not long enough?',
+                questionIcon: '🔍'
+            },
+            {
+                step: 5, name: 'Tech Response Time', val: 16, color: '#EF4444',
+                group: 'Availability', groupColor: '#F59E0B', path: 'Availability › Unplanned › Tech Intv.',
+                parentName: 'Tech Intervention', parentVal: 86, parentColor: '#EF4444',
+                subgroup: null,
+                desc: 'From the Digital Signal to technician arrival — pure accountability via QR-coded handoff. The moment the operator hits "Assist," the clock starts and cannot be back-dated or manipulated.',
+                origin: 'The Digital Signal replaced ambiguity with a transparent handoff. A unique QR code appears on the HMI. The technician must physically scan it, creating proof-of-presence and an unmanipulable timestamp of their arrival. This is accountability by design.',
+                question: 'How long are my machines waiting for technicians to arrive?',
+                questionIcon: '🚨'
+            },
+            {
+                step: 6, name: 'Active Wrench Time', val: 38, color: '#10B981',
+                group: 'Availability', groupColor: '#F59E0B', path: 'Availability › Unplanned › Wrench',
+                parentName: 'Wrench Time', parentVal: 60, parentColor: '#14B8A6',
+                subgroup: null,
+                desc: 'Productive repair — the only "good" unplanned time. Tools on machine, technician actively fixing the problem. This is the irreducible core of maintenance — the time you actually need.',
+                origin: 'By splitting Wrench Time into Active and Inactive, the hidden waste within maintenance becomes visible. The technician is on-site, but how much of their time is actually productive repair vs. searching, walking, or waiting for parts?',
+                question: 'Of my maintenance time, how much is actually productive repair?',
+                questionIcon: '✅'
+            },
+            {
+                step: 7, name: 'Inactive Wrench Time', val: 22, color: '#EAB308',
+                group: 'Availability', groupColor: '#F59E0B', path: 'Availability › Unplanned › Wrench',
+                parentName: 'Wrench Time', parentVal: 60, parentColor: '#14B8A6',
+                subgroup: null,
+                desc: 'The hidden waste within maintenance — technician present but not productive. Waiting for spare parts, searching manuals, walking to stores, looking for tools. A massive improvement opportunity.',
+                origin: 'In the field, Augos found that technicians on-site were often spending more time not repairing than repairing. Parts weren\'t staged, tools weren\'t pre-positioned, and procedures weren\'t documented. This variable makes that waste visible.',
+                question: 'What is preventing my technicians from being productive while they\'re at the machine?',
+                questionIcon: '⚠️'
+            },
+            {
+                step: 8, name: 'Micro Interruptions', val: 24, color: '#60A5FA',
+                group: 'Performance', groupColor: '#3B82F6', path: 'Performance',
+                parentName: 'Performance Loss', parentVal: 72, parentColor: '#3B82F6',
+                subgroup: null,
+                desc: 'Micro-stops too brief to log individually but devastating in aggregate — the "silent killers." Each one lasts seconds, but over a shift they accumulate into hours. Traditional OEE lumps these into "Performance" and hides them entirely.',
+                origin: 'Augos\'s first breakthrough discovery. By separating Small Stops from True Speed, they found that machines are actually quite predictable at speed. The real Performance destroyers were these invisible micro-gaps — individually meaningless, collectively devastating.',
+                question: 'What brief, invisible interruptions are silently killing my throughput?',
+                questionIcon: '👻'
+            },
+            {
+                step: 9, name: 'True Speed Loss', val: 48, color: '#6366F1',
+                group: 'Performance', groupColor: '#3B82F6', path: 'Performance',
+                parentName: 'Performance Loss', parentVal: 72, parentColor: '#3B82F6',
+                subgroup: null,
+                desc: 'Running below design speed — the machine produces, but slower than it should. At 48 hours, True Speed Loss alone is larger than all of Planned downtime (42h). This is a machine capability problem, not a stoppages problem.',
+                origin: 'Separated from Small Stops in Evolution 1. Traditional OEE\'s "Performance" metric was a blur that lumped machine speed and small stops together, creating a fog. By splitting them, the nature of each problem became clear — and actionable.',
+                question: 'Are my machines running at design speed — and if not, why not?',
+                questionIcon: '🏎️'
+            },
+            {
+                step: 10, name: 'Startup Rejects', val: 14, color: '#A855F7',
+                group: 'Quality', groupColor: '#8B5CF6', path: 'Quality',
+                parentName: 'Quality Loss', parentVal: 26, parentColor: '#8B5CF6',
+                subgroup: null,
+                desc: 'Reject production during startup and changeover — material wasted before the process stabilizes. Every changeover has a "ramp-up" period where output quality is unreliable.',
+                origin: 'Quality decomposition is straightforward but important. Startup Rejects are expected but manageable — the question is how quickly the process stabilizes and whether certain products or changeovers consistently produce more waste.',
+                question: 'How much material am I wasting during startup — and can I reduce the ramp-up?',
+                questionIcon: '🔄'
+            },
+            {
+                step: 11, name: 'In-Process Rejects', val: 12, color: '#EC4899',
+                group: 'Quality', groupColor: '#8B5CF6', path: 'Quality',
+                parentName: 'Quality Loss', parentVal: 26, parentColor: '#8B5CF6',
+                subgroup: null,
+                desc: 'Steady-state defects during normal production — defects that occur even when the process is "running correctly." These indicate a deeper machine or process issue that persists beyond the startup window.',
+                origin: 'While Quality accounts for less than 10% of total losses, each hour represents wasted material, energy, and labour on product that can never be sold. The 95% Rule says focus on Availability first — but don\'t ignore Quality.',
+                question: 'Why am I producing defects even when the process is stable?',
+                questionIcon: '❌'
+            }
+        ];
+
+        const groups = [
+            { name: 'All', color: '#F59E0B', bg: 'rgba(245,158,11,.1)' },
+            { name: 'Availability', color: '#F59E0B', bg: 'rgba(245,158,11,.1)' },
+            { name: 'Performance', color: '#3B82F6', bg: 'rgba(59,130,246,.1)' },
+            { name: 'Quality', color: '#8B5CF6', bg: 'rgba(139,92,246,.1)' }
+        ];
+
+        let selectedIndex = -1;
+        let activeGroup = 'All';
+
+        function hexRGBA(h, a) {
+            return `rgba(${parseInt(h.slice(1, 3), 16)},${parseInt(h.slice(3, 5), 16)},${parseInt(h.slice(5, 7), 16)},${a})`;
+        }
+
+        // Build category tabs
+        function buildTabs() {
+            const tabContainer = document.getElementById('cat-tabs');
+            tabContainer.innerHTML = '';
+            groups.forEach(g => {
+                const tab = document.createElement('button');
+                tab.className = 'cat-tab' + (activeGroup === g.name ? ' active' : '');
+                tab.style.setProperty('--tab-color', g.color);
+                tab.style.setProperty('--tab-bg', g.bg);
+                tab.innerHTML = `<span class="tab-dot" style="background:${g.color}"></span>${g.name}`;
+                tab.onclick = () => {
+                    activeGroup = g.name;
+                    buildTabs();
+                    buildVarList();
+                };
+                tabContainer.appendChild(tab);
+            });
+        }
+
+        // Build variable list
+        function buildVarList() {
+            const listContainer = document.getElementById('var-list');
+            listContainer.innerHTML = '';
+
+            const filtered = activeGroup === 'All' ? variables : variables.filter(v => v.group === activeGroup);
+            let lastSubgroup = null;
+
+            filtered.forEach((v, i) => {
+                const globalIndex = variables.indexOf(v);
+
+                // Subgroup divider
+                if (v.subgroup && v.subgroup !== lastSubgroup) {
+                    const divider = document.createElement('div');
+                    divider.className = 'sg-divider';
+                    divider.innerHTML = `
+                        <span class="sg-line" style="background:${hexRGBA(v.subgroupColor, 0.4)}"></span>
+                        <span>${v.subgroup}</span>
+                        <span class="sg-hours" style="color:${hexRGBA(v.subgroupColor, 0.7)}">${v.subgroupHours}</span>
+                    `;
+                    listContainer.appendChild(divider);
+                    lastSubgroup = v.subgroup;
+                }
+
+                const item = document.createElement('div');
+                item.className = 'var-item' + (selectedIndex === globalIndex ? ' selected' : '');
+                item.style.setProperty('--item-color', v.color);
+                item.style.setProperty('--item-bg', hexRGBA(v.color, 0.15));
+
+                const barW = (v.val / maxVal * 100);
+                item.innerHTML = `
+                    <div class="vi-step">${v.step}</div>
+                    <div class="vi-body">
+                        <div class="vi-name"><span class="dot" style="background:${v.color}"></span>${v.name}</div>
+                        <div class="vi-bar-track">
+                            <div class="vi-bar-fill" style="width:${barW}%;background:linear-gradient(90deg,${hexRGBA(v.color, 0.7)},${hexRGBA(v.color, 0.35)})"></div>
+                        </div>
+                    </div>
+                    <div class="vi-val" style="color:${hexRGBA(v.color, 0.8)}">${v.val}h</div>
+                `;
+                item.onclick = () => selectVariable(globalIndex);
+                listContainer.appendChild(item);
+            });
+        }
+
+        // Select variable
+        function selectVariable(index) {
+            selectedIndex = index;
+            const v = variables[index];
+
+            // Update left list
+            buildVarList();
+
+            // Update detail
+            document.getElementById('dp-empty').style.display = 'none';
+            const dp = document.getElementById('dp-content');
+            dp.className = 'dp-content active';
+
+            const pctTotal = (v.val / TOTAL * 100).toFixed(1);
+            const pctParent = (v.val / v.parentVal * 100).toFixed(1);
+            const propBarW = (v.val / TOTAL * 100);
+
+            dp.innerHTML = `
+                <div class="dp-title-row">
+                    <div class="dp-color-block" style="background:${v.color}"></div>
+                    <div class="dp-title-text">
+                        <h2>${v.name}</h2>
+                        <div class="dp-path">${v.path}</div>
+                    </div>
+                </div>
+
+                <div class="dp-big-stat">
+                    <div class="bs-number" style="color:${v.color}">${v.val}</div>
+                    <div class="bs-unit">hours lost</div>
+                </div>
+
+                <div class="dp-stats">
+                    <div class="dp-stat">
+                        <div class="ds-label">Of Total Loss</div>
+                        <div class="ds-val" style="color:${v.color}">${pctTotal}%</div>
+                    </div>
+                    <div class="dp-stat">
+                        <div class="ds-label">Of ${v.parentName}</div>
+                        <div class="ds-val">${pctParent}%</div>
+                    </div>
+                    <div class="dp-stat">
+                        <div class="ds-label">Category</div>
+                        <div class="ds-val" style="color:${v.groupColor}">${v.group}</div>
+                    </div>
+                    <div class="dp-stat">
+                        <div class="ds-label">Variable #</div>
+                        <div class="ds-val">${v.step} of 11</div>
+                    </div>
+                </div>
+
+                <div class="dp-proportion">
+                    <div class="dp-label">Proportion of Total (${TOTAL}h)</div>
+                    <div class="prop-bar-track">
+                        <div class="prop-bar-fill" style="width:0%;background:linear-gradient(90deg,${hexRGBA(v.color, 0.8)},${hexRGBA(v.color, 0.4)})">
+                            <span>${v.val}h of ${TOTAL}h</span>
+                        </div>
+                    </div>
+                    <div class="prop-context">This variable accounts for <strong style="color:${v.color}">${pctTotal}%</strong> of all production time lost and <strong>${pctParent}%</strong> of its parent category (${v.parentName}: ${v.parentVal}h).</div>
+                </div>
+
+                <div class="dp-question">
+                    <div class="dq-icon" style="background:${hexRGBA(v.color, 0.1)}">${v.questionIcon}</div>
+                    <div class="dq-body">
+                        <div class="dq-title">The Question This Answers</div>
+                        <div class="dq-text">${v.question}</div>
+                    </div>
+                </div>
+
+                <div class="dp-desc">
+                    <div class="dd-label">What It Measures</div>
+                    <div class="dd-text">${v.desc}</div>
+                </div>
+
+                <div class="dp-origin">
+                    <div class="do-label">✦ Origin Story</div>
+                    <div class="do-text">${v.origin}</div>
+                </div>
+
+                <div class="dp-nav">
+                    <button class="dp-nav-btn" onclick="navPrev()" ${index === 0 ? 'disabled' : ''}>← Prev</button>
+                    <button class="dp-nav-btn" onclick="navNext()" ${index === variables.length - 1 ? 'disabled' : ''}>Next →</button>
+                </div>
+            `;
+
+            // Animate proportion bar
+            setTimeout(() => {
+                const fill = dp.querySelector('.prop-bar-fill');
+                if (fill) fill.style.width = propBarW + '%';
+            }, 50);
+        }
+
+        function navPrev() {
+            if (selectedIndex > 0) selectVariable(selectedIndex - 1);
+        }
+
+        function navNext() {
+            if (selectedIndex < variables.length - 1) selectVariable(selectedIndex + 1);
+        }
+
+        // Keyboard nav
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowDown' || e.key === 'j') { e.preventDefault(); navNext(); }
+            if (e.key === 'ArrowUp' || e.key === 'k') { e.preventDefault(); navPrev(); }
+        });
+
+        // Init
+        buildTabs();
+        buildVarList();
+    </script>
+</body>
+
+</html>

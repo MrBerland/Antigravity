@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>OEE Circle Packing — Augos</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: #06080A;
+            color: #E2E8F0;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            min-height: 100vh
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 24px
+        }
+
+        .title .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            color: #F59E0B;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 12px
+        }
+
+        .title h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 8px
+        }
+
+        .title h1 span {
+            color: #94A3B8;
+            font-weight: 300
+        }
+
+        .title p {
+            font-size: .85rem;
+            color: #64748B;
+            max-width: 500px;
+            margin: 0 auto
+        }
+
+        canvas {
+            display: block;
+            cursor: pointer
+        }
+
+        .tooltip {
+            position: fixed;
+            background: rgba(14, 17, 22, .95);
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: .8rem;
+            color: #E2E8F0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .15s;
+            z-index: 10;
+            backdrop-filter: blur(8px)
+        }
+
+        .tooltip .tt-name {
+            font-weight: 600;
+            margin-bottom: 2px
+        }
+
+        .tooltip .tt-path {
+            font-size: .65rem;
+            color: #64748B;
+            margin-bottom: 4px;
+            font-family: 'JetBrains Mono', monospace
+        }
+
+        .tooltip .tt-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .75rem;
+            color: #94A3B8
+        }
+    </style>
+</head>
+
+<body>
+    <div class="title">
+        <div class="tag">Visualisation 6 · Circle Packing</div>
+        <h1>Nested Bubbles <span>· Proportional Depth</span></h1>
+        <p>Each circle contains its children. Area is proportional to hours consumed. Hover to see the hierarchy path.
+        </p>
+    </div>
+    <canvas id="chart"></canvas>
+    <div class="tooltip" id="tip"></div>
+
+    <script>
+        const canvas = document.getElementById('chart');
+        const ctx = canvas.getContext('2d');
+        const tip = document.getElementById('tip');
+        const DPR = window.devicePixelRatio || 1;
+        const SIZE = 700;
+        canvas.width = SIZE * DPR; canvas.height = SIZE * DPR;
+        canvas.style.width = SIZE + 'px'; canvas.style.height = SIZE + 'px';
+        ctx.scale(DPR, DPR);
+        const CX = SIZE / 2, CY = SIZE / 2;
+
+        function hexRGBA(h, a) {
+            return `rgba(${parseInt(h.slice(1, 3), 16)},${parseInt(h.slice(3, 5), 16)},${parseInt(h.slice(5, 7), 16)},${a})`;
+        }
+
+        // Build hierarchical data
+        const tree = {
+            name: 'Total Loss', val: 284, color: '#94A3B8',
+            children: [
+                {
+                    name: 'Availability', val: 186, color: '#F59E0B', children: [
+                        {
+                            name: 'Planned', val: 42, color: '#D97706', children: [
+                                { name: 'Planning Efficiency', val: 28, color: '#CA8A04' },
+                                { name: 'Operator Discipline', val: 14, color: '#FBBF24' },
+                            ]
+                        },
+                        {
+                            name: 'Unplanned', val: 144, color: '#F43F5E', children: [
+                                { name: 'Op. Resolution Time', val: 58, color: '#FB923C' },
+                                { name: 'Op. Evaluation', val: 10, color: '#FB7185' },
+                                { name: 'Tech Response', val: 16, color: '#EF4444' },
+                                { name: 'Active Wrench', val: 38, color: '#10B981' },
+                                { name: 'Inactive Wrench', val: 22, color: '#EAB308' },
+                            ]
+                        },
+                    ]
+                },
+                {
+                    name: 'Performance', val: 72, color: '#3B82F6', children: [
+                        { name: 'Interruptions', val: 24, color: '#60A5FA' },
+                        { name: 'True Speed', val: 48, color: '#6366F1' },
+                    ]
+                },
+                {
+                    name: 'Quality', val: 26, color: '#8B5CF6', children: [
+                        { name: 'Startup Rejects', val: 14, color: '#A855F7' },
+                        { name: 'In-Process Rejects', val: 12, color: '#EC4899' },
+                    ]
+                },
+            ]
+        };
+
+        // Simple circle packing: position circles within a parent circle
+        const circles = [];
+
+        function packCircles(node, px, py, pr, depth, path) {
+            circles.push({ ...node, cx: px, cy: py, r: pr, depth, path: path, isLeaf: !node.children });
+
+            if (!node.children) return;
+
+            const totalVal = node.children.reduce((s, c) => s + c.val, 0);
+            // Calculate radii based on value proportion (area)
+            const padding = pr * 0.08;
+            const availR = pr - padding;
+
+            // Simple layout: place children in a circle arrangement
+            const n = node.children.length;
+            const childRadii = node.children.map(c => Math.sqrt(c.val / totalVal) * availR * 0.72);
+
+            if (n === 1) {
+                packCircles(node.children[0], px, py, childRadii[0], depth + 1, path + ' › ' + node.children[0].name);
+            } else if (n === 2) {
+                const angle = Math.PI * 0.25;
+                const sep = (childRadii[0] + childRadii[1]) * 0.55;
+                packCircles(node.children[0], px - sep * Math.cos(angle), py - sep * Math.sin(angle) * 0.3, childRadii[0], depth + 1, path + ' › ' + node.children[0].name);
+                packCircles(node.children[1], px + sep * Math.cos(angle), py + sep * Math.sin(angle) * 0.3, childRadii[1], depth + 1, path + ' › ' + node.children[1].name);
+            } else {
+                // Arrange in a ring
+                const angleStep = TAU / n;
+                const ringR = availR * 0.35;
+                node.children.forEach((child, i) => {
+                    const a = -Math.PI / 2 + angleStep * i;
+                    const cx = px + Math.cos(a) * ringR;
+                    const cy = py + Math.sin(a) * ringR;
+                    packCircles(child, cx, cy, childRadii[i], depth + 1, path + ' › ' + child.name);
+                });
+            }
+        }
+
+        const TAU = Math.PI * 2;
+        const mainR = SIZE / 2 - 30;
+        packCircles(tree, CX, CY, mainR, 0, 'Total Loss');
+
+        let hoveredCircle = null;
+
+        function render() {
+            ctx.clearRect(0, 0, SIZE, SIZE);
+
+            // Sort by depth (draw parents first)
+            const sorted = [...circles].sort((a, b) => a.depth - b.depth);
+
+            sorted.forEach(c => {
+                const isHov = hoveredCircle === c;
+                const alpha = hoveredCircle ? (isHov ? 0.85 : 0.3) : (c.isLeaf ? 0.75 : 0.15);
+
+                ctx.beginPath();
+                ctx.arc(c.cx, c.cy, c.r, 0, TAU);
+
+                if (c.isLeaf) {
+                    const g = ctx.createRadialGradient(c.cx - c.r * 0.2, c.cy - c.r * 0.2, 0, c.cx, c.cy, c.r);
+                    g.addColorStop(0, hexRGBA(c.color, alpha + 0.1));
+                    g.addColorStop(1, hexRGBA(c.color, alpha * 0.6));
+                    ctx.fillStyle = g;
+                } else {
+                    ctx.fillStyle = hexRGBA(c.color, alpha * 0.3);
+                }
+                ctx.fill();
+
+                // Border
+                ctx.strokeStyle = hexRGBA(c.color, isHov ? 0.8 : (c.isLeaf ? 0.3 : 0.15));
+                ctx.lineWidth = isHov ? 2 : 1;
+                ctx.stroke();
+
+                // Label for circles large enough
+                if (c.r > 25) {
+                    ctx.fillStyle = hoveredCircle && !isHov ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.9)';
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    const fontSize = Math.min(c.r * 0.35, 13);
+                    ctx.font = `600 ${fontSize}px 'Inter',sans-serif`;
+                    const label = c.name.length > Math.floor(c.r / 4) ? c.name.slice(0, Math.floor(c.r / 4) - 1) + '…' : c.name;
+                    ctx.fillText(label, c.cx, c.cy - fontSize * 0.4);
+                    ctx.font = `400 ${Math.max(fontSize * 0.7, 8)}px 'JetBrains Mono',monospace`;
+                    ctx.fillStyle = hoveredCircle && !isHov ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.5)';
+                    ctx.fillText(c.val + 'h', c.cx, c.cy + fontSize * 0.5);
+                }
+            });
+        }
+
+        render();
+
+        canvas.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+
+            hoveredCircle = null;
+            // Find smallest circle containing point (deepest)
+            let minR = Infinity;
+            circles.forEach(c => {
+                const dx = mx - c.cx, dy = my - c.cy;
+                if (dx * dx + dy * dy <= c.r * c.r && c.r < minR) {
+                    minR = c.r;
+                    hoveredCircle = c;
+                }
+            });
+
+            if (hoveredCircle) {
+                tip.style.opacity = '1';
+                tip.style.left = (e.clientX + 16) + 'px';
+                tip.style.top = (e.clientY - 20) + 'px';
+                tip.innerHTML = `<div class="tt-path">${hoveredCircle.path}</div><div class="tt-name">${hoveredCircle.name}</div><div class="tt-val">${hoveredCircle.val}h · ${(hoveredCircle.val / 284 * 100).toFixed(1)}% of total</div>`;
+                canvas.style.cursor = 'pointer';
+            } else {
+                tip.style.opacity = '0';
+                canvas.style.cursor = 'default';
+            }
+            render();
+        });
+
+        canvas.addEventListener('mouseleave', () => { hoveredCircle = null; tip.style.opacity = '0'; render(); });
+    </script>
+</body>
+
+</html>

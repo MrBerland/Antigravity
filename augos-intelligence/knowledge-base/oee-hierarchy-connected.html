@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>OEE Hierarchical Bars — Connected Static — Augos</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: #06080A;
+            color: #E2E8F0;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            min-height: 100vh
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 28px
+        }
+
+        .title .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            color: #F59E0B;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 12px
+        }
+
+        .title h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 8px
+        }
+
+        .title h1 span {
+            color: #94A3B8;
+            font-weight: 300
+        }
+
+        .title p {
+            font-size: .85rem;
+            color: #64748B;
+            max-width: 640px;
+            margin: 0 auto;
+            line-height: 1.6
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            position: relative
+        }
+
+        /* Level */
+        .level {
+            position: relative;
+            margin-bottom: 0
+        }
+
+        .level-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: #334155;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .level-label .depth-badge {
+            background: rgba(245, 158, 11, .1);
+            color: #F59E0B;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600
+        }
+
+        .bar-row {
+            display: flex;
+            height: 46px;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            z-index: 2
+        }
+
+        .bar-seg {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            position: relative;
+            min-width: 1px;
+            transition: filter .2s
+        }
+
+        .bar-seg:hover {
+            filter: brightness(1.2)
+        }
+
+        .bar-seg .s-name {
+            font-size: .7rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, .9);
+            white-space: nowrap
+        }
+
+        .bar-seg .s-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: rgba(255, 255, 255, .5)
+        }
+
+        /* CONNECTOR SVG between levels */
+        .connector-zone {
+            position: relative;
+            height: 44px;
+            z-index: 1;
+            overflow: visible
+        }
+
+        .connector-zone svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: visible
+        }
+
+        .connector-zone path {
+            stroke-width: 1;
+            fill-opacity: 0.06
+        }
+    </style>
+</head>
+
+<body>
+    <div class="title">
+        <div class="tag">Static · Connected Hierarchy</div>
+        <h1>Every Level <span>Linked to Its Source</span></h1>
+        <p>Each row decomposes the level above. Shaded connector flows show exactly which parent segment spawns which
+            children — making the hierarchy impossible to misread.</p>
+    </div>
+    <div class="container" id="container"></div>
+
+    <script>
+        const TOTAL = 284;
+        const container = document.getElementById('container');
+
+        function hexRGBA(h, a) {
+            return `rgba(${parseInt(h.slice(1, 3), 16)},${parseInt(h.slice(3, 5), 16)},${parseInt(h.slice(5, 7), 16)},${a})`;
+        }
+
+        // Level data: each segment has { name, val, color, children (indices into next level) }
+        const levels = [
+            {
+                label: 'Total Loss', depth: 0,
+                segments: [
+                    { name: 'Total Loss', val: 284, color: '#94A3B8', childRange: [0, 2] },
+                ]
+            },
+            {
+                label: 'OEE Categories', depth: 1,
+                segments: [
+                    { name: 'Availability Loss', val: 186, color: '#F59E0B', childRange: [0, 1] },
+                    { name: 'Performance Loss', val: 72, color: '#3B82F6', childRange: [2, 3] },
+                    { name: 'Quality Loss', val: 26, color: '#8B5CF6', childRange: [4, 5] },
+                ]
+            },
+            {
+                label: 'Sub-Categories', depth: 2,
+                segments: [
+                    { name: 'Planned', val: 42, color: '#D97706', childRange: [0, 1] },
+                    { name: 'Unplanned', val: 144, color: '#F43F5E', childRange: [2, 3] },
+                    { name: 'Interruptions', val: 24, color: '#60A5FA', childRange: null },
+                    { name: 'True Speed', val: 48, color: '#6366F1', childRange: null },
+                    { name: 'Startup Rej.', val: 14, color: '#A855F7', childRange: null },
+                    { name: 'In-Process Rej.', val: 12, color: '#EC4899', childRange: null },
+                ]
+            },
+            {
+                label: 'Resolution Path', depth: 3,
+                segments: [
+                    // Under Planned (42h)
+                    { name: 'Plan. Efficiency', val: 28, color: '#CA8A04' },
+                    { name: 'Op. Discipline', val: 14, color: '#FBBF24' },
+                    // Under Unplanned (144h)
+                    { name: 'Op. Resolved', val: 58, color: '#FB923C' },
+                    { name: 'Tech Intervention', val: 86, color: '#DC2626' },
+                    // Performance pass-through (72h)
+                    { name: 'Interruptions', val: 24, color: '#60A5FA' },
+                    { name: 'True Speed', val: 48, color: '#6366F1' },
+                    // Quality pass-through (26h)
+                    { name: 'Startup Rej.', val: 14, color: '#A855F7' },
+                    { name: 'In-Process Rej.', val: 12, color: '#EC4899' },
+                ]
+            },
+            {
+                label: 'Time Account', depth: 4,
+                segments: [
+                    // Under Plan. Efficiency (28h) — pass-through
+                    { name: 'Plan. Efficiency', val: 28, color: '#CA8A04' },
+                    // Under Op. Discipline (14h) — pass-through
+                    { name: 'Op. Discipline', val: 14, color: '#FBBF24' },
+                    // Under Op. Resolved (58h) — pass-through
+                    { name: 'Op. Resolution Time', val: 58, color: '#FB923C' },
+                    // Under Tech Intervention (86h) — decomposed
+                    { name: 'Op. Evaluation', val: 10, color: '#FB7185' },
+                    { name: 'Tech Response', val: 16, color: '#EF4444' },
+                    { name: 'Wrench Time', val: 60, color: '#14B8A6' },
+                    // Performance pass-through (72h)
+                    { name: 'Interruptions', val: 24, color: '#60A5FA' },
+                    { name: 'True Speed', val: 48, color: '#6366F1' },
+                    // Quality pass-through (26h)
+                    { name: 'Startup Rej.', val: 14, color: '#A855F7' },
+                    { name: 'In-Process Rej.', val: 12, color: '#EC4899' },
+                ]
+            },
+            {
+                label: 'The Science', depth: 5,
+                segments: [
+                    // Under Plan. Efficiency — pass-through
+                    { name: 'Plan. Efficiency', val: 28, color: '#CA8A04' },
+                    // Under Op. Discipline — pass-through
+                    { name: 'Op. Discipline', val: 14, color: '#FBBF24' },
+                    // Under Op. Resolution Time — pass-through
+                    { name: 'Op. Resolution Time', val: 58, color: '#FB923C' },
+                    // Under Op. Evaluation — pass-through
+                    { name: 'Op. Evaluation', val: 10, color: '#FB7185' },
+                    // Under Tech Response — pass-through
+                    { name: 'Tech Response', val: 16, color: '#EF4444' },
+                    // Under Wrench Time (60h) — decomposed
+                    { name: 'Active Wrench', val: 38, color: '#10B981' },
+                    { name: 'Inactive Wrench', val: 22, color: '#EAB308' },
+                    // Performance pass-through
+                    { name: 'Interruptions', val: 24, color: '#60A5FA' },
+                    { name: 'True Speed', val: 48, color: '#6366F1' },
+                    // Quality pass-through
+                    { name: 'Startup Rej.', val: 14, color: '#A855F7' },
+                    { name: 'In-Process Rej.', val: 12, color: '#EC4899' },
+                ]
+            },
+        ];
+
+        // Pre-compute absolute x positions (as percentages of total)
+        function computePositions(level) {
+            let x = 0;
+            return level.segments.map(seg => {
+                const w = (seg.val / TOTAL) * 100;
+                const pos = { left: x, width: w };
+                x += w;
+                return pos;
+            });
+        }
+
+        const allPositions = levels.map(l => computePositions(l));
+
+        // Build each level + connectors
+        levels.forEach((level, li) => {
+            // Level label
+            const lbl = document.createElement('div');
+            lbl.className = 'level-label';
+            lbl.innerHTML = `<span class="depth-badge">L${level.depth}</span> ${level.label}`;
+            container.appendChild(lbl);
+
+            // Bar row
+            const row = document.createElement('div');
+            row.className = 'bar-row';
+            row.id = 'level-' + li;
+
+            const positions = allPositions[li];
+            level.segments.forEach((seg, si) => {
+                const div = document.createElement('div');
+                div.className = 'bar-seg';
+                div.style.width = positions[si].width + '%';
+                div.style.background = seg.color;
+                div.title = `${seg.name}: ${seg.val}h (${(seg.val / TOTAL * 100).toFixed(1)}%)`;
+
+                if (positions[si].width > 6) {
+                    const inner = positions[si].width > 12
+                        ? `<span class="s-name">${seg.name}</span><span class="s-val">${seg.val}h</span>`
+                        : `<span class="s-val">${seg.val}h</span>`;
+                    div.innerHTML = inner;
+                }
+                row.appendChild(div);
+            });
+            container.appendChild(row);
+
+            // Connector zone between this level and next
+            if (li < levels.length - 1) {
+                const nextLevel = levels[li + 1];
+                const nextPositions = allPositions[li + 1];
+
+                // We need to map parent segments to child segments
+                // For simplicity, we match by accumulating values
+                const connZone = document.createElement('div');
+                connZone.className = 'connector-zone';
+
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('viewBox', '0 0 1000 44');
+                svg.setAttribute('preserveAspectRatio', 'none');
+
+                // Map: for each child in next level, find which parent it belongs to
+                // by checking if the child's x range falls within the parent's x range
+                // We use a simpler approach: walk through children and parents simultaneously
+                let childIdx = 0;
+                let parentRunning = 0;
+
+                level.segments.forEach((parent, pi) => {
+                    const parentLeft = positions[pi].left / 100 * 1000;
+                    const parentRight = (positions[pi].left + positions[pi].width) / 100 * 1000;
+                    let parentAccum = 0;
+
+                    // Find all children that sum to this parent's value
+                    const childrenForParent = [];
+                    let remaining = parent.val;
+                    while (childIdx < nextLevel.segments.length && remaining > 0) {
+                        const child = nextLevel.segments[childIdx];
+                        if (child.val <= remaining + 0.1) {
+                            childrenForParent.push({ seg: child, pos: nextPositions[childIdx] });
+                            remaining -= child.val;
+                            childIdx++;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    // Draw connector flows from parent boundary to each child
+                    childrenForParent.forEach(({ seg: child, pos: childPos }) => {
+                        const childLeft = childPos.left / 100 * 1000;
+                        const childRight = (childPos.left + childPos.width) / 100 * 1000;
+
+                        // The parent portion for this child
+                        const parentChildLeft = parentLeft + (parentAccum / parent.val) * (parentRight - parentLeft);
+                        const parentChildRight = parentChildLeft + (child.val / parent.val) * (parentRight - parentLeft);
+                        parentAccum += child.val;
+
+                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        const d = `M ${parentChildLeft} 0 
+                           C ${parentChildLeft} 26, ${childLeft} 18, ${childLeft} 44 
+                           L ${childRight} 44 
+                           C ${childRight} 18, ${parentChildRight} 26, ${parentChildRight} 0 Z`;
+                        path.setAttribute('d', d);
+                        path.setAttribute('fill', child.color);
+                        path.setAttribute('stroke', child.color);
+                        path.setAttribute('stroke-opacity', '0.12');
+                        svg.appendChild(path);
+                    });
+                });
+
+                connZone.appendChild(svg);
+                container.appendChild(connZone);
+            }
+        });
+    </script>
+</body>
+
+</html>

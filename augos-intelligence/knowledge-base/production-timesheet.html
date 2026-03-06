@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="https://schema.org/TechArticle">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Timesheet Report — Augos Knowledge Base</title>
+
+    <!-- Google Fonts: Inter for refined body reading, Space Grotesk for technical headers -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..600;1,14..32,400&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            /* Premium Textbook / Editorial Dark Theme */
+            --bg-base: #06080A;
+            /* Extremely dark, barely blue */
+            --bg-surface: #0E1116;
+            --bg-surface-raised: #151A21;
+
+            --text-main: #E2E8F0;
+            --text-muted: #94A3B8;
+            --text-faint: #475569;
+
+            --border-faint: rgba(255, 255, 255, 0.06);
+            --border-light: rgba(255, 255, 255, 0.12);
+
+            --accent-primary: #F59E0B;
+            /* Amber/Augos */
+            --accent-dim: rgba(245, 158, 11, 0.15);
+
+            --code-bg: #0D1017;
+
+            /* Metric Colors matching the UI */
+            --cat-total: #10B981;
+            --cat-unreported: #64748B;
+            --cat-paid: #3B82F6;
+            --cat-planned: #60A5FA;
+            --cat-unplanned: #F43F5E;
+            --cat-interruptions: #F59E0B;
+            --cat-speed: #8B5CF6;
+            --cat-npt: #22C55E;
+
+            --font-body: 'Inter', sans-serif;
+            --font-heading: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            line-height: 1.75;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Layout */
+        .page-wrapper {
+            display: grid;
+            grid-template-columns: minmax(240px, 1fr) minmax(auto, 800px) minmax(240px, 1fr);
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: sticky;
+            top: 92px;
+            height: calc(100vh - 132px);
+            padding-right: 48px;
+            display: flex;
+            flex-direction: column;
+         overflow-y: auto; overflow-x: hidden; }
+
+        .brand {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.02em;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 64px;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            width: 20px;
+            height: 20px;
+            background: var(--text-main);
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .brand-logo::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: var(--bg-base);
+        }
+
+        .toc-menu {
+            list-style: none;
+            font-size: 0.85rem;
+        }
+
+        .toc-menu li {
+            margin-bottom: 16px;
+        }
+
+        .toc-menu a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s ease;
+            display: block;
+        }
+
+        .toc-menu a:hover,
+        .toc-menu a.active {
+            color: var(--text-main);
+        }
+
+        .toc-category {
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            color: var(--text-faint);
+            margin: 32px 0 12px 0;
+            font-weight: 600;
+        }
+
+        /* Main Content Article */
+        .article-content {
+            padding: 48px 0 120px 0;
+            min-width: 0;
+        }
+
+        header.document-header {
+            margin-bottom: 80px;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 48px;
+        }
+
+        .doc-meta {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .doc-meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            font-weight: 500;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        .abstract {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-weight: 300;
+            max-width: 90%;
+        }
+
+        /* Typography within content */
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: white;
+            margin: 64px 0 24px 0;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-faint);
+            letter-spacing: -0.02em;
+        }
+
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: white;
+            margin: 40px 0 16px 0;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        strong {
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Exhibits & Figures (Premium Image Display) */
+        figure.exhibit {
+            margin: 48px 0;
+            border: 1px solid var(--border-light);
+            background: var(--bg-surface);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+        }
+
+        .exhibit-header {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-light);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .exhibit-img-wrap {
+            padding: 1px;
+            background: #000;
+        }
+
+        .exhibit img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        figcaption {
+            padding: 16px 20px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border-faint);
+            line-height: 1.5;
+        }
+
+        /* Callout Boxes (Academic style) */
+        .callout {
+            margin: 32px 0;
+            padding: 24px 32px;
+            border-left: 2px solid var(--accent-primary);
+            background: linear-gradient(90deg, var(--accent-dim) 0%, transparent 100%);
+        }
+
+        .callout-title {
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .callout p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Tables (Financial / Technical Style) */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 32px 0;
+            font-size: 0.85rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            text-align: left;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-faint);
+        }
+
+        .data-table th {
+            color: var(--text-muted);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-light);
+            font-family: var(--font-heading);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            font-size: 0.75rem;
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Metric Tags */
+        .metric-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-faint);
+        }
+
+        .metric-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* Lists */
+        ul.text-list {
+            list-style: disc;
+            padding-left: 24px;
+            margin-bottom: 24px;
+        }
+
+        ul.text-list li {
+            margin-bottom: 8px;
+            padding-left: 8px;
+        }
+
+        ul.text-list li::marker {
+            color: var(--text-faint);
+        }
+
+        /* Code Blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-light);
+            padding: 24px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: #A6ACCD;
+            margin: 32px 0;
+        }
+
+        /* Time Waterfall Specific styling */
+        .waterfall-table {
+            width: 100%;
+            margin: 32px 0;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background: var(--bg-surface);
+            overflow: hidden;
+            font-family: var(--font-body);
+        }
+
+        .wf-row {
+            display: grid;
+            grid-template-columns: 260px minmax(0, 1fr) auto auto;
+            align-items: center;
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--border-faint);
+            font-size: 0.85rem;
+            column-gap: 24px;
+        }
+
+        .wf-row:last-child {
+            border-bottom: none;
+        }
+
+        .wf-indent .wf-key {
+            padding-left: 16px;
+            margin-left: 16px;
+            border-left: 1px solid var(--border-faint);
+        }
+
+        .wf-bar-wrap {
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .wf-bar {
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        .wf-val {
+            text-align: right;
+            font-family: var(--font-mono);
+            color: white;
+            white-space: nowrap;
+        }
+
+        .wf-pct {
+            text-align: right;
+            font-family: var(--font-mono);
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .wf-key {
+            font-weight: 500;
+        }
+
+        .wf-row.total .wf-key {
+            color: var(--cat-total);
+        }
+
+        .wf-row.paid .wf-key {
+            color: var(--cat-paid);
+        }
+
+        .wf-row.npt {
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .wf-row.npt .wf-key {
+            color: var(--cat-npt);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .wf-row.npt .wf-val {
+            color: var(--cat-npt);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* Right Sidebar / Meta data */
+        .meta-sidebar {
+            position: sticky;
+            top: 92px;
+            padding-left: 48px;
+            font-size: 0.85rem;
+        }
+
+        .meta-group {
+            margin-bottom: 32px;
+            border-top: 1px solid var(--border-light);
+            padding-top: 16px;
+        }
+
+        .meta-group-title {
+            font-family: var(--font-heading);
+            color: white;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+
+        .meta-item {
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .meta-val {
+            color: white;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+        }
+
+        /* Adjustments for smaller screens */
+        @media (max-width: 1200px) {
+            .page-wrapper {
+                grid-template-columns: 240px 1fr;
+            }
+
+            .meta-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .page-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+             overflow-y: auto; overflow-x: hidden; }
+        }
+    
+        
+
+
+        /* Hide scrollbar for sidebar but allow scrolling */
+        .sidebar::-webkit-scrollbar {
+            display: none;
+        }
+        .sidebar {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+
+/* ═══ BREADCRUMB NAV BAR ═══ */
+.kb-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(6, 8, 10, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 0 32px;
+}
+.kb-topbar-inner {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 44px;
+    gap: 16px;
+}
+.kb-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #94A3B8;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 4px 12px 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.kb-back-btn:hover {
+    color: #E2E8F0;
+    border-color: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+}
+.kb-back-btn svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+.kb-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    overflow: hidden;
+    white-space: nowrap;
+    min-width: 0;
+}
+.kb-breadcrumb a {
+    color: #64748B;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+}
+.kb-breadcrumb a:hover {
+    color: #F59E0B;
+}
+.kb-breadcrumb .bc-sep {
+    color: #334155;
+    margin: 0 8px;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+}
+.kb-breadcrumb .bc-current {
+    color: #E2E8F0;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.kb-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.kb-home-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    color: #64748B;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+.kb-home-btn:hover {
+    color: #E2E8F0;
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.08);
+}
+@media (max-width: 640px) {
+    .kb-breadcrumb .bc-mid { display: none; }
+    .kb-breadcrumb .bc-mid-sep { display: none; }
+}
+
+    </style>
+</head>
+
+<body>
+    <nav class="kb-topbar" aria-label="Breadcrumb">
+        <div class="kb-topbar-inner">
+            <a href="manufacturing-intelligence.html" class="kb-back-btn" title="Back to Manufacturing">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd"/></svg>
+                <span>Manufacturing</span>
+            </a>
+            <div class="kb-breadcrumb">
+                <a href="index.html">AUGOS Docs</a>
+                <span class="bc-sep">›</span>
+                <a href="manufacturing-intelligence.html" class="bc-mid">Manufacturing Intelligence</a>
+                <span class="bc-sep bc-mid-sep">›</span>
+                <span class="bc-current">Production Timesheet</span>
+            </div>
+            <div class="kb-topbar-actions">
+                <a href="index.html" class="kb-home-btn" title="Knowledge Base Home">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd"/></svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="page-wrapper">
+        <!-- LEFT: Navigation -->
+        <aside class="sidebar">
+            <a href="index.html" class="brand">
+                <div class="brand-logo"></div>
+                AUGOS Docs
+            </a>
+
+            <div class="toc-category">Module Overview</div>
+            <ul class="toc-menu">
+                <li><a href="manufacturing-intelligence.html">OEE Architecture</a></li>
+                <li><a href="#">Downtime Hierarchy</a></li>
+                <li><a href="#">Operator Analysis</a></li>
+            </ul>
+
+            <div class="toc-category">Article Contents</div>
+            <ul class="toc-menu">
+                <li><a href="#abstract">Abstract</a></li>
+                <li><a href="#capability">1. Capability & Purpose</a></li>
+                <li><a href="#mechanics">2. Operational Mechanics</a></li>
+                <li><a href="#outputs">3. Example Outputs</a></li>
+                <li><a href="#opportunities">4. Strategic Opportunities</a></li>
+                <li><a href="#architecture">5. Data Architecture</a></li>
+            </ul>
+        </aside>
+
+        <!-- CENTER: Main Article -->
+        <main class="article-content" itemscope itemtype="https://schema.org/TechArticle">
+
+            <header class="document-header" id="abstract">
+                <div class="doc-meta">
+                    <span>Manufacturing Module</span>
+                    <span>Report Definition</span>
+                    <span>Version 2.1</span>
+                </div>
+                <h1 itemprop="headline">Production Timesheet</h1>
+                <p class="abstract" itemprop="abstract">
+                    A rigorous chronological time-accounting model that decomposes every minute of a production shift
+                    into mathematically verifiable categories. It replaces analog logbooks with millisecond-precision
+                    digital attribution, serving as the foundational timeline for all downstream OEE analytics.
+                </p>
+            </header>
+
+            <section id="capability">
+                <h2>1. Capability & Purpose</h2>
+
+                <p>In traditional manufacturing environments, the shift record is maintained via physical logbooks. This
+                    analog approach introduces fundamental limitations into the data stack:</p>
+
+                <ul class="text-list">
+                    <li><strong>Shadow Losses:</strong> Operators systematically fail to record micro-stops (events
+                        taking less than 5 minutes), which cumulatively degrade performance.</li>
+                    <li><strong>Chronological Drift:</strong> Human estimation relies on 5- or 10-minute rounding,
+                        destroying the precision required for root-cause correlation.</li>
+                    <li><strong>Speed Invisibility:</strong> Paper logs record binary states (Running vs. Stopped) but
+                        entirely fail to capture capacity lost due to running below rated speed.</li>
+                    <li><strong>Orphaned Data:</strong> Analog records cannot be dynamically attributed to specific
+                        operators or aggregated programmatically to trace systemic correlations.</li>
+                </ul>
+
+                <div class="callout">
+                    <div class="callout-title">The Augos Capability</div>
+                    <p>The Production Timesheet natively instruments the production process. By integrating directly
+                        with PLC output streams, it automatically constructs a continuous, millisecond-precision
+                        temporal ledger. Every event—whether an active run, an unclassified stop, or an
+                        operator-attributed downtime code—is logged chronologically. <strong>It enforces a closed-loop
+                            accounting where Time Total equals the sum of all categorized events.</strong></p>
+                </div>
+            </section>
+
+            <section id="mechanics">
+                <h2>2. Operational Mechanics</h2>
+                <p>The report processes total calendar time through a rigorous "waterfall" calculation, systematically
+                    isolating non-productive phenomena until arriving at pure productive output.</p>
+
+                <div class="waterfall-table">
+                    <div class="wf-row total">
+                        <div class="wf-key">Total Time</div>
+                        <div class="wf-bar-wrap">
+                            <div class="wf-bar" style="width:100%; background:var(--cat-total)"></div>
+                        </div>
+                        <div class="wf-val">Calendar Span</div>
+                        <div class="wf-pct">100.00%</div>
+                    </div>
+                    <div class="wf-row wf-indent">
+                        <div class="wf-key" style="color:var(--cat-unreported)">− Unreported Time</div>
+                        <div class="wf-bar-wrap">
+                            <div class="wf-bar" style="width:2%; background:var(--cat-unreported)"></div>
+                        </div>
+                        <div class="wf-val">Comm Gaps</div>
+                        <div class="wf-pct" style="color:var(--cat-unreported)">Device Target: &lt;1%</div>
+                    </div>
+                    <div class="wf-row wf-indent">
+                        <div class="wf-key" style="color:var(--text-faint)">− Dark Hours</div>
+                        <div class="wf-bar-wrap">
+                            <div class="wf-bar" style="width:5%; background:var(--text-faint)"></div>
+                        </div>
+                        <div class="wf-val">Unscheduled</div>
+                        <div class="wf-pct">Configuration</div>
+                    </div>
+                    <div class="wf-row paid">
+                        <div class="wf-key">Paid Time (OEE Base)</div>
+                        <div class="wf-bar-wrap">
+                            <div class="wf-bar" style="width:93%; background:var(--cat-paid)"></div>
+                        </div>
+                        <div class="wf-val">Staffed Hours</div>
+                        <div class="wf-pct">100.00% (Base)</div>
+                    </div>
+                    <div class="wf-row wf-indent">
+                        <div class="wf-key" style="color:var(--cat-planned)">− Planned Stops</div>
+                        <div class="wf-bar-wrap">
+                            <div class="wf-bar" style="width:8%; background:var(--cat-planned)"></div>
+                        </div>
+                        <div class="wf-val">Budgeted</div>
+                        <div class="wf-pct" style="color:var(--cat-planned)">e.g. Changeovers</div>
+                    </div>
+                    <div class="wf-row wf-indent">
+                        <div class="wf-key" style="color:var(--cat-unplanned)">− Unplanned Stops</div>
+                        <div class="wf-bar-wrap">
+                            <div class="wf-bar" style="width:25%; background:var(--cat-unplanned)"></div>
+                        </div>
+                        <div class="wf-val">Failures</div>
+                        <div class="wf-pct" style="color:var(--cat-unplanned)">Primary CI Target</div>
+                    </div>
+                    <div class="wf-row wf-indent">
+                        <div class="wf-key" style="color:var(--cat-interruptions)">− Interruptions</div>
+                        <div class="wf-bar-wrap">
+                            <div class="wf-bar" style="width:4%; background:var(--cat-interruptions)"></div>
+                        </div>
+                        <div class="wf-val">Micro-stops</div>
+                        <div class="wf-pct" style="color:var(--cat-interruptions)">Invisible to manual</div>
+                    </div>
+                    <div class="wf-row wf-indent">
+                        <div class="wf-key" style="color:var(--cat-speed)">− Speed Loss</div>
+                        <div class="wf-bar-wrap">
+                            <div class="wf-bar" style="width:12%; background:var(--cat-speed)"></div>
+                        </div>
+                        <div class="wf-val">Rate Variance</div>
+                        <div class="wf-pct" style="color:var(--cat-speed)">Time Eqv.</div>
+                    </div>
+                    <div class="wf-row npt">
+                        <div class="wf-key">Net Production Time</div>
+                        <div class="wf-bar-wrap">
+                            <div class="wf-bar" style="width:44%; background:var(--cat-npt)"></div>
+                        </div>
+                        <div class="wf-val">Pure Output</div>
+                        <div class="wf-pct">True Capacity</div>
+                    </div>
+                </div>
+
+                <p>The culmination of this calculation is <strong>Net Production Time (NPT)</strong>. NPT is the
+                    audit-grade performance parameter representing the volume of time strictly converted into goods
+                    at the manufacturer's rated specification speed.</p>
+            </section>
+
+            <section id="outputs">
+                <h2>3. Example Outputs & Working Component</h2>
+
+                <p>The following exhibit demonstrates the interface as deployed at Pioneer Foods B-Mill. The viewport
+                    isolates the categorical breakdown of 550 hours of total operational time (a roughly 23-day
+                    continuous processing envelope).</p>
+
+                <figure class="exhibit">
+                    <div class="exhibit-header">
+                        <span>EXHIBIT A: PRODUCTION TIMESHEET UI</span>
+                        <span>POINT ID: 33340 | B-MILL</span>
+                    </div>
+                    <div class="exhibit-img-wrap">
+                        <img src="file:///Users/timstevens/.gemini/antigravity/brain/5b74152a-0798-4a5a-bf12-24aee26c9d6e/mfg_timesheet_01_hero_1771883933626.png"
+                            alt="Augos Production Timesheet Interface showing time decomposition">
+                    </div>
+                    <figcaption>
+                        <strong>Time Distribution Analysis:</strong> From a Paid Time baseline of exactly 550 hours, the
+                        system detected purely 1h 58m of Unreported Time (a 99.64% capture integrity rate). However,
+                        Unplanned Stops consumed 204h 8m (37.12%), and Speed Loss degraded another 57h 1m (10.37%).
+                        Consequently, Net Production Time yielded only 390h 59m, effectively establishing true plant
+                        capacity utilization at 71.09%.
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section id="opportunities">
+                <h2>4. Opportunities Exposed</h2>
+
+                <p>Because the Timesheet provides absolute accounting rather than sampled estimations, it immediately
+                    surfaces high-value operational levers:</p>
+
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Insight Vector</th>
+                                <th>Data Signal</th>
+                                <th>Strategic Application</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Speed Degradation</strong></td>
+                                <td><span class="metric-tag"><span class="metric-dot"
+                                            style="background:var(--cat-speed)"></span> Speed Loss > 10%</span></td>
+                                <td>Identifies conservative machine operation, raw material feed issues, or wear.
+                                    Converts theoretical "slow" runs into quantified financial loss in hours.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Logistics Sizing</strong></td>
+                                <td><span class="metric-tag"><span class="metric-dot"
+                                            style="background:var(--cat-unplanned)"></span> High Unplanned Stops</span>
+                                </td>
+                                <td>Combined with the Downtime Hierarchy (e.g., "Flour Bin Full"), proves that stoppages
+                                    are not maintenance issues, but downstream logistical limits requiring CapEx
+                                    expansion.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>System Health Validation</strong></td>
+                                <td><span class="metric-tag"><span class="metric-dot"
+                                            style="background:var(--cat-unreported)"></span> Unreported Time < 1%</span>
+                                </td>
+                                <td>Validates data integrity for ISO compliance (FSSC 22000, IATF 16949) and provides HR
+                                    with indisputable verification for highly-disputed shift overtime claims.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Budget Calibration</strong></td>
+                                <td><span class="metric-tag"><span class="metric-dot"
+                                            style="background:var(--cat-planned)"></span> Planned Stops vs Normal</span>
+                                </td>
+                                <td>Analyzes actual Time-to-Changeover against budgeted Time-to-Changeover, exposing
+                                    procedural deviation occurring during otherwise legitimate planned shutdowns.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="architecture">
+                <h2>5. Data Architecture & Integration</h2>
+
+                <p>The underlying data model serves as the foundational data frame for large language models (LLMs) and
+                    custom BI ingestion. The Timesheet exposes a deterministic JSON structure that avoids ambiguous
+                    categorization.</p>
+
+                <div class="callout">
+                    <div class="callout-title">AI Compatibility Note</div>
+                    <p>When feeding the AI-Ready payload to an LLM (e.g. GPT-4, Claude), analysts can issue complex
+                        logical queries such as: <em>"Calculate the localized financial cost of Speed Loss if plant
+                            operational overhead runs at R15,000 per paid hour."</em> The embedded guidelines ensure the
+                        LLM bases computations exclusively on the integer values within the
+                        <code>netProductionTimeMSeconds</code> tree.
+                    </p>
+                </div>
+
+                <pre><code>{
+  "totalTimeMSeconds": 1980000000,       // Calendar basis
+  "unreportedTimeMSeconds": 7080000,     // Quality penalty
+  "darkHoursMSeconds": 0,                // Exclusion masking
+  "paidTimeMSeconds": 1980000000,        // Calculation Denominator
+  
+  "stoppages": {
+    "totalMSeconds": 777720000,
+    "planned": { 
+      "timeMSeconds": 42420000, 
+      "count": 6 
+    },
+    "unplanned": { 
+      "timeMSeconds": 734880000, 
+      "count": 112 
+    },
+    "interruptions": { 
+      "timeMSeconds": 360000, 
+      "count": 13 
+    }
+  },
+  
+  "speedLossGainMSeconds": -205260000,   // Velocity penalty 
+  "netProductionTimeMSeconds": 1407540000, // True output equivalent
+  "netProductionTimePercent": 71.09        // Core Efficiency Index
+}</code></pre>
+            </section>
+        </main>
+
+        <!-- RIGHT: Meta / Secondary Info -->
+        <aside class="meta-sidebar">
+            <div class="meta-group">
+                <div class="meta-group-title">Module Context</div>
+                <div class="meta-item"><span>Status</span><span class="meta-val"
+                        style="color:var(--cat-npt)">Production</span></div>
+                <div class="meta-item"><span>Report ID</span><span class="meta-val">MFG_017</span></div>
+                <div class="meta-item"><span>AI-Ready</span><span class="meta-val">Enabled</span></div>
+            </div>
+
+            <div class="meta-group">
+                <div class="meta-group-title">Related Concepts</div>
+                <div class="meta-item"><span><a href="#" style="color:var(--text-muted); text-decoration:none;">OEE
+                            Framework</a></span></div>
+                <div class="meta-item"><span><a href="#" style="color:var(--text-muted); text-decoration:none;">Operator
+                            Analysis</a></span></div>
+                <div class="meta-item"><span><a href="#"
+                            style="color:var(--text-muted); text-decoration:none;">Hierarchical Logic</a></span></div>
+            </div>
+
+            <div class="meta-group">
+                <div class="meta-group-title">System Requirements</div>
+                <div class="meta-item"><span>Input Trigger</span><span class="meta-val">PLC Direct</span></div>
+                <div class="meta-item"><span>Precision</span><span class="meta-val">Millisecond</span></div>
+            </div>
+        </aside>
+
+    </div>
+
+</body>
+
+</html>

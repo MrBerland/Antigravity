@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Peeling Back OEE Loss — Augos</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: #06080A;
+            color: #E2E8F0;
+            font-family: 'Inter', sans-serif
+        }
+
+        .scroll-space {
+            height: 550vh
+        }
+
+        .fixed-viewport {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        canvas {
+            display: block
+        }
+
+        .progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            z-index: 100
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #F59E0B, #F43F5E, #3B82F6, #8B5CF6, #10B981)
+        }
+
+        .scroll-cue {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: #334155;
+            letter-spacing: .06em;
+            transition: opacity .4s
+        }
+    </style>
+</head>
+
+<body>
+    <div class="scroll-space"></div>
+    <div class="fixed-viewport"><canvas id="chart"></canvas></div>
+    <div class="progress">
+        <div class="progress-fill" id="pf"></div>
+    </div>
+    <div class="scroll-cue" id="cue">SCROLL TO DECOMPOSE ↓</div>
+
+    <script>
+        const C = document.getElementById('chart'), ctx = C.getContext('2d');
+        const DPR = devicePixelRatio || 1, W = 1100, H = 680;
+        C.width = W * DPR; C.height = H * DPR; C.style.width = W + 'px'; C.style.height = H + 'px';
+        ctx.scale(DPR, DPR);
+
+        const hex = (h, a) => `rgba(${parseInt(h.slice(1, 3), 16)},${parseInt(h.slice(3, 5), 16)},${parseInt(h.slice(5, 7), 16)},${a})`;
+        const lerp = (a, b, t) => a + (b - a) * t;
+        const easeIO = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+        function lerpHex(c1, c2, t) {
+            const p = s => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16)];
+            const [r1, g1, b1] = p(c1), [r2, g2, b2] = p(c2);
+            const r = Math.round(lerp(r1, r2, t)), g = Math.round(lerp(g1, g2, t)), b = Math.round(lerp(b1, b2, t));
+            return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+        }
+
+        const TOTAL = 284, ML = 50, MR = 50, chartL = ML, chartW = W - ML - MR;
+        const BAR_Y = 340, BAR_H = 65;
+
+        // Starting from A·P·Q — 5 levels, 4 transitions
+        const levels = [
+            {
+                h2: 'The Standard View',
+                copy: 'Traditional OEE gives you three categories. Useful — but not enough to act on. Where inside these 284 hours can you actually intervene?',
+                tag: 'L1 · OEE CATEGORIES · 3 SEGMENTS',
+                segs: [{ n: 'Availability', v: 186, c: '#F59E0B' }, { n: 'Performance', v: 72, c: '#3B82F6' }, { n: 'Quality', v: 26, c: '#8B5CF6' }]
+            },
+            {
+                h2: 'Planned vs Unplanned',
+                copy: 'Not all Availability loss is the same. 42 hours were planned downtime that overran. 144 hours were completely unplanned. That distinction changes everything.',
+                tag: 'L2 · SUB-CATEGORIES · 4 SEGMENTS',
+                segs: [{ n: 'Planned', v: 42, c: '#D97706' }, { n: 'Unplanned', v: 144, c: '#F43F5E' }, { n: 'Performance', v: 72, c: '#3B82F6' }, { n: 'Quality', v: 26, c: '#8B5CF6' }]
+            },
+            {
+                h2: 'Who Resolved It?',
+                copy: 'The operator fixed it themselves — or they had to call a technician. 58 hours resolved on the floor. 86 hours required technical intervention. Now you know where to train and where to invest.',
+                tag: 'L3 · RESOLUTION PATH · 6 SEGMENTS',
+                segs: [{ n: 'Plan. Efficiency', v: 28, c: '#CA8A04' }, { n: 'Op. Discipline', v: 14, c: '#FBBF24' }, { n: 'Op. Resolved', v: 58, c: '#FB923C' }, { n: 'Tech Intervention', v: 86, c: '#DC2626' }, { n: 'Performance', v: 72, c: '#3B82F6' }, { n: 'Quality', v: 26, c: '#8B5CF6' }]
+            },
+            {
+                h2: 'Where the Minutes Went',
+                copy: 'Technical intervention breaks down into evaluation, waiting, and actual repair. Performance reveals micro-stoppages and speed loss. Quality splits into startup and in-process rejects. Every minute classified.',
+                tag: 'L4 · TIME ACCOUNT · 10 SEGMENTS',
+                segs: [{ n: 'Plan. Eff.', v: 28, c: '#CA8A04' }, { n: 'Op. Disc.', v: 14, c: '#FBBF24' }, { n: 'Op. Resolution', v: 58, c: '#FB923C' }, { n: 'Op. Evaluation', v: 10, c: '#FB7185' }, { n: 'Tech Response', v: 16, c: '#EF4444' }, { n: 'Wrench Time', v: 60, c: '#14B8A6' }, { n: 'Interruptions', v: 24, c: '#60A5FA' }, { n: 'True Speed', v: 48, c: '#6366F1' }, { n: 'Startup Rej.', v: 14, c: '#A855F7' }, { n: 'In-Proc. Rej.', v: 12, c: '#EC4899' }]
+            },
+            {
+                h2: 'The Science of Loss',
+                copy: '11 variables. Each measurable. Each actionable. This is what Enhanced OEE reveals — not a single number, but a complete diagnostic. The question is no longer "what is our OEE?" but "which lever do we pull first?"',
+                tag: 'L5 · THE SCIENCE · 11 SEGMENTS',
+                segs: [{ n: 'Plan. Eff.', v: 28, c: '#CA8A04' }, { n: 'Op. Disc.', v: 14, c: '#FBBF24' }, { n: 'Op. Resolution', v: 58, c: '#FB923C' }, { n: 'Op. Evaluation', v: 10, c: '#FB7185' }, { n: 'Tech Response', v: 16, c: '#EF4444' }, { n: 'Active Wrench', v: 38, c: '#10B981' }, { n: 'Inactive Wrench', v: 22, c: '#EAB308' }, { n: 'Interruptions', v: 24, c: '#60A5FA' }, { n: 'True Speed', v: 48, c: '#6366F1' }, { n: 'Startup Rej.', v: 14, c: '#A855F7' }, { n: 'In-Proc. Rej.', v: 12, c: '#EC4899' }]
+            },
+        ];
+
+        function pos(segs) { let cum = 0; return segs.map(s => { const l = cum / TOTAL * chartW + chartL; const w = s.v / TOTAL * chartW; cum += s.v; return { ...s, x: l, w, cx: l + w / 2 }; }); }
+        const allPos = levels.map(l => pos(l.segs));
+        function pMap(tgt, src) { return tgt.map(t => { const c = t.cx; const i = src.findIndex(s => c >= s.x && c < s.x + s.w); return i >= 0 ? i : src.length - 1; }); }
+        const pmaps = []; for (let i = 0; i < levels.length - 1; i++)pmaps.push(pMap(allPos[i + 1], allPos[i]));
+
+        // Wrap text helper
+        function wrapText(text, x, y, maxW, lineH) {
+            const words = text.split(' '); let line = ''; let ly = y;
+            for (const word of words) {
+                const test = line ? line + ' ' + word : word;
+                if (ctx.measureText(test).width > maxW && line) {
+                    ctx.fillText(line, x, ly); ly += lineH; line = word;
+                } else line = test;
+            }
+            if (line) ctx.fillText(line, x, ly);
+            return ly + lineH;
+        }
+
+        function draw() {
+            const s = window.scrollY, max = document.documentElement.scrollHeight - window.innerHeight;
+            const p = clamp(s / max, 0, 1);
+            document.getElementById('pf').style.width = (p * 100) + '%';
+            document.getElementById('cue').style.opacity = p < 0.02 ? 1 : 0;
+
+            ctx.clearRect(0, 0, W, H);
+
+            const nT = levels.length - 1;
+            const scaled = p * nT;
+            const curT = Math.min(Math.floor(scaled), nT - 1);
+            const rawT = clamp(scaled - curT, 0, 1);
+
+            // Hold at each level: first 20% and last 20% of each transition segment are "resting"
+            // Middle 60% is the actual morph
+            let morphT;
+            if (rawT < 0.2) morphT = 0;
+            else if (rawT > 0.8) morphT = 1;
+            else morphT = easeIO((rawT - 0.2) / 0.6);
+
+            const srcIdx = curT, tgtIdx = Math.min(curT + 1, nT);
+            const srcPos = allPos[srcIdx], tgtPos = allPos[tgtIdx];
+            const pm = pmaps[srcIdx];
+            const srcL = levels[srcIdx], tgtL = levels[tgtIdx];
+
+            // ─── NARRATIVE (cross-fade with hold) ───────────────────────────────
+            const showLevel = morphT < 0.3 ? srcL : tgtL;
+            // Fade: 1 during hold, fade out in first 30% of morph, fade in last 30%
+            let textAlpha;
+            if (morphT < 0.15) textAlpha = 1;
+            else if (morphT < 0.4) textAlpha = lerp(1, 0, (morphT - 0.15) / 0.25);
+            else if (morphT < 0.6) textAlpha = 0;
+            else if (morphT < 0.85) textAlpha = lerp(0, 1, (morphT - 0.6) / 0.25);
+            else textAlpha = 1;
+            textAlpha = Math.max(0.03, textAlpha);
+
+            ctx.globalAlpha = textAlpha;
+
+            // Tag line
+            ctx.fillStyle = '#F59E0B'; ctx.font = "500 9px 'JetBrains Mono',monospace";
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.letterSpacing = '0.08em';
+            ctx.fillText(showLevel.tag, W / 2, 30);
+
+            // H2
+            ctx.fillStyle = '#E2E8F0'; ctx.font = "600 32px 'Space Grotesk',sans-serif";
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.fillText(showLevel.h2, W / 2, 58);
+
+            // Copy (wrapped)
+            ctx.fillStyle = '#94A3B8'; ctx.font = "400 13px 'Inter',sans-serif";
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            const maxCopyW = 620;
+            const words = showLevel.copy.split(' ');
+            let lines = []; let line = '';
+            for (const w of words) { const test = line ? line + ' ' + w : w; if (ctx.measureText(test).width > maxCopyW && line) { lines.push(line); line = w; } else line = test; }
+            if (line) lines.push(line);
+            lines.forEach((l, i) => ctx.fillText(l, W / 2, 108 + i * 20));
+
+            ctx.globalAlpha = 1;
+
+            // ─── STEP DOTS ──────────────────────────────────────────────────────
+            const dotY = BAR_Y - 60, dotSp = 55, dotsL = W / 2 - (levels.length - 1) * dotSp / 2;
+            for (let i = 0; i < levels.length; i++) {
+                const dx = dotsL + i * dotSp;
+                const before = i < (morphT < 0.5 ? srcIdx : tgtIdx);
+                const active = (morphT < 0.5 && i === srcIdx) || (morphT >= 0.5 && i === tgtIdx);
+                const future = i > (morphT < 0.5 ? srcIdx : tgtIdx);
+
+                if (i > 0) { ctx.strokeStyle = before || active ? 'rgba(245,158,11,.25)' : 'rgba(255,255,255,.04)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(dx - dotSp + 5, dotY); ctx.lineTo(dx - 5, dotY); ctx.stroke(); }
+                ctx.beginPath(); ctx.arc(dx, dotY, active ? 4.5 : 2.5, 0, Math.PI * 2);
+                ctx.fillStyle = active ? '#F59E0B' : (before ? 'rgba(245,158,11,.35)' : 'rgba(255,255,255,.06)'); ctx.fill();
+                if (active) { ctx.shadowColor = '#F59E0B'; ctx.shadowBlur = 8; ctx.fill(); ctx.shadowBlur = 0; }
+            }
+
+            // ─── THE BAR ────────────────────────────────────────────────────────
+            ctx.fillStyle = 'rgba(255,255,255,.012)'; ctx.beginPath(); ctx.roundRect(chartL, BAR_Y, chartW, BAR_H, 10); ctx.fill();
+
+            // Draw morphed segments
+            const renderPos = tgtPos;
+            renderPos.forEach((seg, i) => {
+                const parent = srcPos[pm[i]];
+                const color = lerpHex(parent.c, seg.c, morphT);
+                const isFirst = i === 0, isLast = i === renderPos.length - 1;
+                const r = isFirst ? [10, 0, 0, 10] : isLast ? [0, 10, 10, 0] : [0, 0, 0, 0];
+
+                const g = ctx.createLinearGradient(seg.x, BAR_Y, seg.x, BAR_Y + BAR_H);
+                g.addColorStop(0, hex(color, .82)); g.addColorStop(1, hex(color, .62));
+                ctx.fillStyle = g; ctx.shadowColor = hex(color, .1); ctx.shadowBlur = 5;
+                ctx.beginPath(); ctx.roundRect(seg.x, BAR_Y, seg.w, BAR_H, r); ctx.fill(); ctx.shadowBlur = 0;
+            });
+
+            // Split flashes & borders
+            for (let i = 1; i < renderPos.length; i++) {
+                const sibling = pm[i] === pm[i - 1];
+                if (sibling) {
+                    // Flash at split point
+                    const flash = morphT < 0.3 ? Math.sin(morphT / 0.3 * Math.PI) * 0.6 : 0;
+                    if (flash > 0.01) {
+                        ctx.strokeStyle = `rgba(255,255,255,${flash})`; ctx.lineWidth = 2; ctx.shadowColor = 'rgba(255,255,255,.5)'; ctx.shadowBlur = flash * 10;
+                        ctx.beginPath(); ctx.moveTo(renderPos[i].x, BAR_Y); ctx.lineTo(renderPos[i].x, BAR_Y + BAR_H); ctx.stroke(); ctx.shadowBlur = 0;
+                    }
+                    // Settling border
+                    const settle = clamp(morphT * 1.2, 0, 1) * 0.35;
+                    ctx.strokeStyle = `rgba(0,0,0,${settle})`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(renderPos[i].x, BAR_Y + 3); ctx.lineTo(renderPos[i].x, BAR_Y + BAR_H - 3); ctx.stroke();
+                } else {
+                    ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(renderPos[i].x, BAR_Y + 4); ctx.lineTo(renderPos[i].x, BAR_Y + BAR_H - 4); ctx.stroke();
+                }
+            }
+
+            // ─── IN-BAR LABELS ──────────────────────────────────────────────────
+            const barLabels = morphT < 0.35 ? srcPos : tgtPos;
+            const blAlpha = morphT < 0.15 ? 1 : (morphT < 0.4 ? lerp(1, 0, (morphT - 0.15) / 0.25) : (morphT < 0.55 ? 0 : lerp(0, 1, (morphT - 0.55) / 0.25)));
+
+            ctx.globalAlpha = Math.max(0.02, blAlpha);
+            barLabels.forEach(seg => {
+                if (seg.w > 70) {
+                    ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.font = "600 11px 'Inter',sans-serif";
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText(seg.n, seg.cx, BAR_Y + BAR_H / 2 - 7);
+                    ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.font = "400 9px 'JetBrains Mono',monospace";
+                    ctx.fillText(seg.v + 'h · ' + (seg.v / TOTAL * 100).toFixed(0) + '%', seg.cx, BAR_Y + BAR_H / 2 + 8);
+                } else if (seg.w > 40) {
+                    ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.font = "500 9px 'Inter',sans-serif";
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText(seg.n, seg.cx, BAR_Y + BAR_H / 2 - 5);
+                    ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.font = "400 8px 'JetBrains Mono',monospace";
+                    ctx.fillText(seg.v + 'h', seg.cx, BAR_Y + BAR_H / 2 + 7);
+                } else if (seg.w > 22) {
+                    ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = "400 8px 'JetBrains Mono',monospace";
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText(seg.v + 'h', seg.cx, BAR_Y + BAR_H / 2);
+                }
+            });
+            ctx.globalAlpha = 1;
+
+            // ─── BELOW-BAR LABELS ───────────────────────────────────────────────
+            const belowSegs = morphT < 0.35 ? srcPos : tgtPos;
+            const belowAlpha = Math.max(0.02, blAlpha);
+            ctx.globalAlpha = belowAlpha;
+
+            const bY = BAR_Y + BAR_H + 18;
+            const lbls = belowSegs.map(s => ({ idealX: s.cx, x: s.cx, n: s.n, v: s.v + 'h', c: s.c, tw: 0, row: 0 }));
+            ctx.font = "500 8.5px 'Inter',sans-serif";
+            lbls.forEach(l => l.tw = Math.max(ctx.measureText(l.n).width + 8, 28));
+
+            // Collision avoidance
+            for (let pass = 0; pass < 5; pass++) {
+                for (let i = 1; i < lbls.length; i++) {
+                    const mn = (lbls[i - 1].tw + lbls[i].tw) / 2 + 3; const gap = lbls[i].x - lbls[i - 1].x;
+                    if (gap < mn) { const push = (mn - gap) / 2; lbls[i - 1].x -= push; lbls[i].x += push; }
+                }
+            }
+            lbls.forEach(l => { l.x = clamp(l.x, chartL + l.tw / 2, chartL + chartW - l.tw / 2); });
+
+            // Stagger overlapping into row 1
+            for (let i = 1; i < lbls.length; i++) {
+                if (Math.abs(lbls[i].x - lbls[i - 1].x) < (lbls[i - 1].tw + lbls[i].tw) / 2 + 1)
+                    lbls[i].row = lbls[i - 1].row === 0 ? 1 : 0;
+            }
+
+            lbls.forEach(l => {
+                const ly = bY + l.row * 28;
+                // Leader
+                if (Math.abs(l.x - l.idealX) > 3 || l.row > 0) {
+                    ctx.strokeStyle = hex(l.c, .15); ctx.lineWidth = .5;
+                    ctx.beginPath(); ctx.moveTo(l.idealX, BAR_Y + BAR_H + 3); ctx.lineTo(l.x, ly - 3); ctx.stroke();
+                }
+                ctx.fillStyle = hex(l.c, .75); ctx.font = "500 8.5px 'Inter',sans-serif";
+                ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillText(l.n, l.x, ly);
+                ctx.fillStyle = hex(l.c, .3); ctx.font = "400 7.5px 'JetBrains Mono',monospace";
+                ctx.fillText(l.v, l.x, ly + 12);
+            });
+            ctx.globalAlpha = 1;
+
+            // ─── FOOTER SUMMARY ─────────────────────────────────────────────────
+            const footY = BAR_Y + BAR_H + 80 + (lbls.some(l => l.row > 0) ? 25 : 0);
+            const sumSegs = morphT < 0.5 ? srcPos : tgtPos;
+            ctx.fillStyle = '#1E293B'; ctx.font = "400 8px 'JetBrains Mono',monospace";
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            const big = sumSegs.reduce((a, b) => a.v > b.v ? a : b);
+            ctx.fillText(`${sumSegs.length} segments  ·  largest: ${big.n} (${big.v}h · ${(big.v / TOTAL * 100).toFixed(0)}%)  ·  total: ${TOTAL}h`, W / 2, footY);
+
+            requestAnimationFrame(draw);
+        }
+        requestAnimationFrame(draw);
+    </script>
+</body>
+
+</html>

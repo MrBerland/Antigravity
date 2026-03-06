@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="https://schema.org/TechArticle">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manufacturing Intelligence Module — Augos Knowledge Base</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..600;1,14..32,400&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-base: #06080A;
+            --bg-surface: #0E1116;
+            --bg-surface-raised: #151A21;
+            --text-main: #E2E8F0;
+            --text-muted: #94A3B8;
+            --text-faint: #475569;
+            --border-faint: rgba(255, 255, 255, 0.06);
+            --border-light: rgba(255, 255, 255, 0.12);
+            --accent-primary: #F59E0B;
+            --accent-dim: rgba(245, 158, 11, 0.15);
+            --code-bg: #0D1017;
+
+            --cat-total: #10B981;
+            --cat-paid: #3B82F6;
+            --cat-unplanned: #F43F5E;
+
+            --font-body: 'Inter', sans-serif;
+            --font-heading: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            line-height: 1.75;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page-wrapper {
+            display: grid;
+            grid-template-columns: minmax(240px, 1fr) minmax(auto, 800px) minmax(240px, 1fr);
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 92px;
+            height: calc(100vh - 132px);
+            padding-right: 48px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .brand {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.02em;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 48px;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            width: 20px;
+            height: 20px;
+            background: var(--text-main);
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .brand-logo::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: var(--bg-base);
+        }
+
+        .toc-menu {
+            list-style: none;
+            font-size: 0.85rem;
+        }
+
+        .toc-menu li {
+            margin-bottom: 16px;
+        }
+
+        .toc-menu a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s ease;
+            display: block;
+        }
+
+        .toc-menu a:hover,
+        .toc-menu a.active {
+            color: var(--text-main);
+        }
+
+        .toc-category {
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            color: var(--text-faint);
+            margin: 32px 0 12px 0;
+            font-weight: 600;
+        }
+
+        .article-content {
+            padding: 48px 0 120px 0;
+            min-width: 0;
+        }
+
+        header.document-header {
+            margin-bottom: 80px;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 48px;
+        }
+
+        .doc-meta {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .doc-meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            font-weight: 500;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        .abstract {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-weight: 300;
+            max-width: 90%;
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: white;
+            margin: 64px 0 24px 0;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-faint);
+            letter-spacing: -0.02em;
+        }
+
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: white;
+            margin: 40px 0 16px 0;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        strong {
+            color: white;
+            font-weight: 500;
+        }
+
+        figure.exhibit {
+            margin: 48px 0;
+            border: 1px solid var(--border-light);
+            background: var(--bg-surface);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+        }
+
+        .exhibit-header {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-light);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .exhibit-img-wrap {
+            padding: 1px;
+            background: #000;
+        }
+
+        .exhibit img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        figcaption {
+            padding: 16px 20px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border-faint);
+            line-height: 1.5;
+        }
+
+        .callout {
+            margin: 32px 0;
+            padding: 24px 32px;
+            border-left: 2px solid var(--accent-primary);
+            background: linear-gradient(90deg, var(--accent-dim) 0%, transparent 100%);
+        }
+
+        .callout-title {
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 32px 0;
+            font-size: 0.85rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            text-align: left;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-faint);
+        }
+
+        .data-table th {
+            color: var(--text-muted);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-light);
+            font-family: var(--font-heading);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            font-size: 0.75rem;
+        }
+
+        ul.text-list {
+            list-style: disc;
+            padding-left: 24px;
+            margin-bottom: 24px;
+        }
+
+        ul.text-list li {
+            margin-bottom: 8px;
+            padding-left: 8px;
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-light);
+            padding: 24px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: #A6ACCD;
+            margin: 32px 0;
+        }
+
+        /* Report Directory Cards */
+        .report-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 32px 0;
+        }
+
+        .report-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 24px;
+            text-decoration: none;
+            color: inherit;
+            transition: border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .report-card:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .report-card-icon {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .report-card-title {
+            font-family: var(--font-heading);
+            color: white;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .report-card-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .meta-sidebar {
+            position: sticky;
+            top: 92px;
+            padding-left: 48px;
+            font-size: 0.85rem;
+        }
+
+        .meta-group {
+            margin-bottom: 32px;
+            border-top: 1px solid var(--border-light);
+            padding-top: 16px;
+        }
+
+        .meta-group-title {
+            font-family: var(--font-heading);
+            color: white;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+
+        .meta-item {
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .meta-val {
+            color: white;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+        }
+
+        @media (max-width: 1200px) {
+            .page-wrapper {
+                grid-template-columns: 240px 1fr;
+            }
+
+            .meta-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .page-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    
+        
+
+
+        /* Hide scrollbar for sidebar but allow scrolling */
+        .sidebar::-webkit-scrollbar {
+            display: none;
+        }
+        .sidebar {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+
+/* ═══ BREADCRUMB NAV BAR ═══ */
+.kb-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(6, 8, 10, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 0 32px;
+}
+.kb-topbar-inner {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 44px;
+    gap: 16px;
+}
+.kb-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #94A3B8;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 4px 12px 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.kb-back-btn:hover {
+    color: #E2E8F0;
+    border-color: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+}
+.kb-back-btn svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+.kb-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    overflow: hidden;
+    white-space: nowrap;
+    min-width: 0;
+}
+.kb-breadcrumb a {
+    color: #64748B;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+}
+.kb-breadcrumb a:hover {
+    color: #F59E0B;
+}
+.kb-breadcrumb .bc-sep {
+    color: #334155;
+    margin: 0 8px;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+}
+.kb-breadcrumb .bc-current {
+    color: #E2E8F0;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.kb-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.kb-home-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    color: #64748B;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+.kb-home-btn:hover {
+    color: #E2E8F0;
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.08);
+}
+@media (max-width: 640px) {
+    .kb-breadcrumb .bc-mid { display: none; }
+    .kb-breadcrumb .bc-mid-sep { display: none; }
+}
+
+    </style>
+</head>
+
+<body>
+    <nav class="kb-topbar" aria-label="Breadcrumb">
+        <div class="kb-topbar-inner">
+            <a href="index.html" class="kb-back-btn" title="Back to Knowledge Base">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd"/></svg>
+                <span>Knowledge Base</span>
+            </a>
+            <div class="kb-breadcrumb">
+                <a href="index.html">AUGOS Docs</a>
+            </div>
+            <div class="kb-topbar-actions">
+                <a href="index.html" class="kb-home-btn" title="Knowledge Base Home">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd"/></svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+        <aside class="sidebar">
+            <a href="index.html" class="brand">
+                <div class="brand-logo"></div>AUGOS Docs
+            </a>
+
+            <div class="toc-category">Manufacturing Module</div>
+            <ul class="toc-menu">
+                <li><a href="manufacturing-intelligence.html" class="active"
+                        style="color:var(--text-main); font-weight:500;">Module Hub</a></li>
+                <li><a href="executive-summary.html">Executive Summary</a></li>
+                <li><a href="performance-overview.html">Performance Overview</a></li>
+                <li><a href="downtime-report.html">Downtime Hierarchy</a></li>
+                <li><a href="operator-analysis.html">Operator Analysis</a></li>
+                <li><a href="production-timesheet.html">Production Timesheet</a></li>
+                <li><a href="shift-report.html">Shift Report</a></li>
+                <li><a href="job-card.html">Job Analysis</a></li>
+                <li><a href="pending-inputs.html">Pending Inputs</a></li>
+                <li><a href="setup.html">Stoppage Configuration</a></li>
+            </ul>
+
+            <div class="toc-category">Article Contents</div>
+            <ul class="toc-menu">
+                <li><a href="#abstract">Abstract</a></li>
+                <li><a href="#problem">1. The Manufacturing Problem</a></li>
+                <li><a href="#oee">2. The OEE Framework</a></li>
+                <li><a href="#dimensions">3. Dimensions of Visibility</a></li>
+                <li><a href="#directory">4. Report Directory</a></li>
+                <li><a href="#roi">5. Realized ROI Audit</a></li>
+            </ul>
+        </aside>
+
+        <main class="article-content" itemscope itemtype="https://schema.org/TechArticle">
+
+            <header class="document-header" id="abstract">
+                <div class="doc-meta">
+                    <span>Ecosystem Overview</span>
+                    <span>Version 2.1</span>
+                    <span style="color:var(--cat-total)">General Availability</span>
+                </div>
+                <h1 itemprop="headline">Manufacturing Intelligence Hub</h1>
+                <p class="abstract" itemprop="abstract">
+                    Complete documentation for Augos Manufacturing Intelligence. This module replaces paper logbooks,
+                    standardizes data architecture, and deploys 9 distinct reports explicitly designed to expose factory
+                    bottlenecks using the Overall Equipment Effectiveness (OEE) standard.
+                </p>
+            </header>
+
+            <section id="problem">
+                <h2>1. The Manufacturing Data Problem</h2>
+
+                <p>Modern production facilities run millions of dollars of hardware, yet their intelligence collection
+                    is fundamentally archaic. The data is either highly accurate but totally unanalyzable (paper
+                    logbooks or whiteboards) or strictly quantitative but devoid of human context (PLC and SCADA tags).
+                </p>
+
+                <div class="callout">
+                    <div class="callout-title">The Augos Solution</div>
+                    <p>Augos acts as the unified ingestion point. It hooks directly into the machine's heartbeat
+                        (voltage, relays, photocells) to establish irrefutable truth about line status and cycle time.
+                        It then marries this with the ERP schedule and forces operators to rapidly categorize stoppages
+                        using a bounded semantic tree.</p>
+                </div>
+            </section>
+
+            <section id="oee">
+                <h2>2. The Core Framework (OEE)</h2>
+
+                <p>The entire module pivots on <strong>Overall Equipment Effectiveness (OEE)</strong>, which decomposes
+                    macro capacity losses into three strictly defined pillars. By evaluating these pillars
+                    independently, management can apply the correct therapeutic intervention.</p>
+
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>OEE % Range</th>
+                                <th>Classification</th>
+                                <th>Operational Implication</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong style="color: var(--cat-total);">≥ 85%</strong></td>
+                                <td>World Class</td>
+                                <td>Top-decile performance. Process is highly reliable and highly capable. Focus shifts
+                                    to minor continuous improvement and energy optimization.</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color: var(--accent-primary);">60–84%</strong></td>
+                                <td>Typical</td>
+                                <td>Room for significant margin improvement. Machine likely suffers from poor layout
+                                    routing, uncertified operator variance, or sporadic failure.</td>
+                            </tr>
+                            <tr>
+                                <td><strong style="color: var(--cat-unplanned);">≤ 59%</strong></td>
+                                <td>Unacceptable</td>
+                                <td>High-risk volatility. Process suffers from starvation, major catastrophic mechanical
+                                    breakdowns, or severe downstream bottlenecking.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="dimensions">
+                <h2>3. Six Dimensions of Visibility</h2>
+
+                <p>To fully optimize a factory line, data must be interrogated through six distinct vectors. A 65% OEE
+                    is meaningless without dimensional correlation.</p>
+
+                <ul class="text-list">
+                    <li><strong>Time (Chronology):</strong> Does OEE degrade on Sundays? Do we consistently lose
+                        capacity between 03:00 and 04:00 AM?</li>
+                    <li><strong>Equipment (Topology):</strong> Is the constraint at the filler, the capper, or the
+                        palletizer?</li>
+                    <li><strong>People (Operators):</strong> Does Operator A run the line 15% faster than Operator B
+                        without increasing waste? Let's codify Operator A's method.</li>
+                    <li><strong>Product (SKU):</strong> Does changing over to a 2L bottle inherently destabilize the
+                        pneumatic lifter compared to the 1L bottle?</li>
+                    <li><strong>Causation (Reason):</strong> Why exactly did the pneumatic lifter fail? (Requires strict
+                        hierarchy).</li>
+                    <li><strong>Severity (Impact):</strong> Which failure mode stole 40 hours of production time this
+                        month, regardless of whether it hit 1 time or 100 times?</li>
+                </ul>
+            </section>
+
+            <section id="directory">
+                <h2>4. Full Report Directory</h2>
+
+                <p>The Manufacturing Module is composed of targeted reports, each answering a specific question for a
+                    specific management layer.</p>
+
+                <div class="report-grid">
+                    <a href="executive-summary.html" class="report-card">
+                        <div class="report-card-icon">📊</div>
+                        <div class="report-card-title">Executive Summary</div>
+                        <div class="report-card-desc">The macro view for Plant Managers analyzing the complete OEE
+                            decomposition.</div>
+                    </a>
+                    <a href="performance-overview.html" class="report-card">
+                        <div class="report-card-icon">📈</div>
+                        <div class="report-card-title">Performance Overview</div>
+                        <div class="report-card-desc">Trend variance reporting for CI teams looking for the "waterbed"
+                            effect over months.</div>
+                    </a>
+                    <a href="downtime-report.html" class="report-card">
+                        <div class="report-card-icon">🛑</div>
+                        <div class="report-card-title">Downtime Hierarchy</div>
+                        <div class="report-card-desc">The deepest diagnostic tool. Pareto optimization using the 3-level
+                            cause ontology.</div>
+                    </a>
+                    <a href="operator-analysis.html" class="report-card">
+                        <div class="report-card-icon">👥</div>
+                        <div class="report-card-title">Operator Analysis</div>
+                        <div class="report-card-desc">Objective benchmarking of human output to identify training gaps
+                            vs physical issues.</div>
+                    </a>
+                    <a href="production-timesheet.html" class="report-card">
+                        <div class="report-card-icon">📋</div>
+                        <div class="report-card-title">Production Timesheet</div>
+                        <div class="report-card-desc">The unified, digitized logbook of every single event and condition
+                            state.</div>
+                    </a>
+                    <a href="shift-report.html" class="report-card">
+                        <div class="report-card-icon">⏱️</div>
+                        <div class="report-card-title">Shift Report</div>
+                        <div class="report-card-desc">Boundary-based OEE isolating accountability strictly within labor
+                            hours.</div>
+                    </a>
+                    <a href="job-card.html" class="report-card">
+                        <div class="report-card-icon">📦</div>
+                        <div class="report-card-title">Job Analysis</div>
+                        <div class="report-card-desc">Aggregating time-based telemetry into SKU-level cost and capacity
+                            audits.</div>
+                    </a>
+                    <a href="pending-inputs.html" class="report-card">
+                        <div class="report-card-icon">⏳</div>
+                        <div class="report-card-title">Pending Inputs / Setup</div>
+                        <div class="report-card-desc">Data integrity enforcement queues and semantic matrix
+                            configuration.</div>
+                    </a>
+                </div>
+            </section>
+
+            <section id="roi">
+                <h2>5. High-Impact ROI Audit</h2>
+
+                <p>During the Pioneer Foods B-Mill audit over a 54-day observation window, the module ingested telemetry
+                    for 158 stops impacting the main feed line.</p>
+
+                <div class="callout">
+                    <div class="callout-title">The B-Mill Findings</div>
+                    <p>Standard operator feedback suggested the milling equipment was mechanically inadequate. However,
+                        the <strong>Downtime Pareto</strong> explicitly grouped 45.8% of all downtime to a single
+                        Level-3 fault: <em>"Flour Bin Full."</em> <br><br>The intelligence proved that the mechanical
+                        mill was highly capable, but was starved by downstream packaging bottlenecks. The resulting
+                        decision prevented a multi-million Rand mechanical expansion project in favor of optimizing
+                        downstream clearance rates.</p>
+                </div>
+            </section>
+        </main>
+
+        <aside class="meta-sidebar">
+            <div class="meta-group">
+                <div class="meta-group-title">Module Analytics</div>
+                <div class="meta-item"><span>Available Reports</span><span class="meta-val">9 Active</span></div>
+                <div class="meta-item"><span>Data Resolution</span><span class="meta-val">Millisecond</span></div>
+                <div class="meta-item"><span>LLM Ready</span><span class="meta-val">Yes (Embedded schemas)</span></div>
+            </div>
+
+            <div class="meta-group">
+                <div class="meta-group-title">Prerequisites</div>
+                <div class="meta-item"><span>Edge Device</span><span class="meta-val">Augos Node Controller</span></div>
+                <div class="meta-item"><span>Network</span><span class="meta-val">Ethernet / LTE Bridge</span></div>
+            </div>
+        </aside>
+    </div>
+</body>
+
+</html>

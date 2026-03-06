@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="https://schema.org/TechArticle">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Power of People — Augos Knowledge Base</title>
+    <meta name="description"
+        content="Why the human element — culture, attitude, and training — is the single greatest determinant of manufacturing performance. A data-driven exploration of the operator as the irreplaceable intelligence layer between machine signal and productive outcome.">
+    <meta property="og:title" content="The Power of People — Manufacturing Intelligence">
+    <meta property="og:description"
+        content="Manufacturing is organised chaos. Something will always go wrong. The difference between a 40% OEE and an 85% OEE isn't the machine — it's the people.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..600;1,14..32,400&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #06080A;
+            --bg-surface: #0E1116;
+            --bg-surface-raised: #151A21;
+            --text-main: #E2E8F0;
+            --text-muted: #94A3B8;
+            --text-faint: #475569;
+            --border-faint: rgba(255, 255, 255, 0.06);
+            --border-light: rgba(255, 255, 255, 0.12);
+            --accent-primary: #F59E0B;
+            --accent-dim: rgba(245, 158, 11, 0.15);
+            --accent-rose: #F43F5E;
+            --accent-rose-dim: rgba(244, 63, 94, 0.12);
+            --accent-emerald: #22C55E;
+            --accent-emerald-dim: rgba(34, 197, 94, 0.12);
+            --accent-blue: #3B82F6;
+            --accent-blue-dim: rgba(59, 130, 246, 0.12);
+            --accent-violet: #8B5CF6;
+            --accent-violet-dim: rgba(139, 92, 246, 0.12);
+            --code-bg: #0D1017;
+            --font-body: 'Inter', sans-serif;
+            --font-heading: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            line-height: 1.75;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased
+        }
+
+        /* LAYOUT — wider center column for essay format */
+        .page-wrapper {
+            display: grid;
+            grid-template-columns: minmax(240px, 1fr) minmax(auto, 840px) minmax(200px, 1fr);
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 32px
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 92px;
+            height: calc(100vh - 132px);
+            padding-right: 48px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -ms-overflow-style: none;
+            scrollbar-width: none
+        }
+
+        .sidebar::-webkit-scrollbar {
+            display: none
+        }
+
+        .brand {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: .02em;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 64px;
+            text-decoration: none
+        }
+
+        .brand-logo {
+            width: 20px;
+            height: 20px;
+            background: var(--text-main);
+            border-radius: 2px;
+            position: relative
+        }
+
+        .brand-logo::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: var(--bg-base)
+        }
+
+        .toc-menu {
+            list-style: none;
+            font-size: .85rem
+        }
+
+        .toc-menu li {
+            margin-bottom: 14px
+        }
+
+        .toc-menu a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color .2s ease;
+            display: block
+        }
+
+        .toc-menu a:hover,
+        .toc-menu a.active {
+            color: var(--text-main)
+        }
+
+        .toc-category {
+            text-transform: uppercase;
+            font-size: .7rem;
+            letter-spacing: .05em;
+            color: var(--text-faint);
+            margin: 32px 0 12px 0;
+            font-weight: 600
+        }
+
+        /* ARTICLE */
+        .article-content {
+            padding: 48px 0 120px 0;
+            min-width: 0
+        }
+
+        header.document-header {
+            margin-bottom: 80px;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 48px
+        }
+
+        .doc-meta {
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px
+        }
+
+        .doc-meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            font-weight: 500;
+            line-height: 1.08;
+            letter-spacing: -.03em;
+            color: #fff;
+            margin-bottom: 24px
+        }
+
+        .abstract {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-weight: 300;
+            max-width: 92%
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: #fff;
+            margin: 80px 0 24px 0;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-faint);
+            letter-spacing: -.02em
+        }
+
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #fff;
+            margin: 40px 0 16px 0
+        }
+
+        p {
+            margin-bottom: 20px
+        }
+
+        strong {
+            color: #fff;
+            font-weight: 500
+        }
+
+        em {
+            color: var(--text-muted);
+            font-style: italic
+        }
+
+        /* PULLQUOTE */
+        .pullquote {
+            margin: 56px 0;
+            padding: 40px 48px;
+            position: relative;
+            border-left: 3px solid var(--accent-primary);
+            background: linear-gradient(135deg, var(--accent-dim) 0%, transparent 60%)
+        }
+
+        .pullquote p {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: #fff;
+            line-height: 1.5;
+            margin-bottom: 12px
+        }
+
+        .pullquote cite {
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            color: var(--accent-primary);
+            font-style: normal;
+            text-transform: uppercase;
+            letter-spacing: .05em
+        }
+
+        /* CALLOUT VARIANTS */
+        .callout {
+            margin: 32px 0;
+            padding: 24px 32px;
+            border-left: 2px solid var(--accent-primary);
+            background: linear-gradient(90deg, var(--accent-dim) 0%, transparent 100%);
+            border-radius: 0 8px 8px 0
+        }
+
+        .callout-title {
+            font-family: var(--font-heading);
+            font-size: .9rem;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 8px
+        }
+
+        .callout p:last-child {
+            margin-bottom: 0
+        }
+
+        .callout.rose {
+            border-left-color: var(--accent-rose);
+            background: linear-gradient(90deg, var(--accent-rose-dim) 0%, transparent 100%)
+        }
+
+        .callout.rose .callout-title {
+            color: var(--accent-rose)
+        }
+
+        .callout.emerald {
+            border-left-color: var(--accent-emerald);
+            background: linear-gradient(90deg, var(--accent-emerald-dim) 0%, transparent 100%)
+        }
+
+        .callout.emerald .callout-title {
+            color: var(--accent-emerald)
+        }
+
+        .callout.blue {
+            border-left-color: var(--accent-blue);
+            background: linear-gradient(90deg, var(--accent-blue-dim) 0%, transparent 100%)
+        }
+
+        .callout.blue .callout-title {
+            color: var(--accent-blue)
+        }
+
+        /* DATA TABLE */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 32px 0;
+            font-size: .85rem
+        }
+
+        .data-table th,
+        .data-table td {
+            text-align: left;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-faint)
+        }
+
+        .data-table th {
+            color: var(--text-muted);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-light);
+            font-family: var(--font-heading);
+            text-transform: uppercase;
+            letter-spacing: .02em;
+            font-size: .75rem
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(255, 255, 255, .02)
+        }
+
+        /* EXHIBIT */
+        figure.exhibit {
+            margin: 48px 0;
+            border: 1px solid var(--border-light);
+            background: var(--bg-surface);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, .5)
+        }
+
+        .exhibit-header {
+            background: rgba(255, 255, 255, .02);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-light);
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between
+        }
+
+        .exhibit-img-wrap {
+            padding: 1px;
+            background: #000
+        }
+
+        .exhibit img {
+            display: block;
+            width: 100%;
+            height: auto
+        }
+
+        figcaption {
+            padding: 16px 20px;
+            font-size: .85rem;
+            color: var(--text-muted);
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border-faint);
+            line-height: 1.5
+        }
+
+        /* INSIGHT CARDS — for the "non-obvious" perspectives */
+        .insight-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin: 40px 0
+        }
+
+        .insight-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color .3s ease, transform .2s ease
+        }
+
+        .insight-card:hover {
+            border-color: rgba(255, 255, 255, .2);
+            transform: translateY(-2px)
+        }
+
+        .insight-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px
+        }
+
+        .insight-card.amber::before {
+            background: var(--accent-primary)
+        }
+
+        .insight-card.rose::before {
+            background: var(--accent-rose)
+        }
+
+        .insight-card.emerald::before {
+            background: var(--accent-emerald)
+        }
+
+        .insight-card.blue::before {
+            background: var(--accent-blue)
+        }
+
+        .insight-card.violet::before {
+            background: var(--accent-violet)
+        }
+
+        .insight-number {
+            font-family: var(--font-mono);
+            font-size: 2.5rem;
+            font-weight: 600;
+            line-height: 1;
+            margin-bottom: 8px;
+            opacity: .15
+        }
+
+        .insight-card.amber .insight-number {
+            color: var(--accent-primary)
+        }
+
+        .insight-card.rose .insight-number {
+            color: var(--accent-rose)
+        }
+
+        .insight-card.emerald .insight-number {
+            color: var(--accent-emerald)
+        }
+
+        .insight-card.blue .insight-number {
+            color: var(--accent-blue)
+        }
+
+        .insight-card.violet .insight-number {
+            color: var(--accent-violet)
+        }
+
+        .insight-label {
+            font-family: var(--font-heading);
+            font-size: .85rem;
+            color: #fff;
+            margin-bottom: 8px
+        }
+
+        .insight-desc {
+            font-size: .85rem;
+            color: var(--text-muted);
+            line-height: 1.6
+        }
+
+        /* LIST */
+        ul.text-list {
+            list-style: disc;
+            padding-left: 24px;
+            margin-bottom: 24px
+        }
+
+        ul.text-list li {
+            margin-bottom: 8px;
+            padding-left: 8px
+        }
+
+        ul.text-list li::marker {
+            color: var(--text-faint)
+        }
+
+        /* TIMELINE */
+        .timeline {
+            margin: 40px 0;
+            padding-left: 32px;
+            border-left: 2px solid var(--border-light)
+        }
+
+        .timeline-event {
+            position: relative;
+            padding-bottom: 32px;
+            padding-left: 24px
+        }
+
+        .timeline-event:last-child {
+            padding-bottom: 0
+        }
+
+        .timeline-event::before {
+            content: '';
+            position: absolute;
+            left: -7px;
+            top: 6px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-primary);
+            background: var(--bg-base)
+        }
+
+        .timeline-title {
+            font-family: var(--font-heading);
+            font-size: .95rem;
+            color: #fff;
+            margin-bottom: 4px
+        }
+
+        .timeline-detail {
+            font-size: .85rem;
+            color: var(--text-muted);
+            line-height: 1.6
+        }
+
+        .timeline-tag {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: .65rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-left: 8px
+        }
+
+        .tag-operator {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60A5FA;
+            border: 1px solid rgba(59, 130, 246, .3)
+        }
+
+        .tag-system {
+            background: rgba(244, 63, 94, 0.2);
+            color: #F87171;
+            border: 1px solid rgba(244, 63, 94, .3)
+        }
+
+        .tag-culture {
+            background: rgba(245, 158, 11, 0.2);
+            color: #F59E0B;
+            border: 1px solid rgba(245, 158, 11, .3)
+        }
+
+        /* META SIDEBAR */
+        .meta-sidebar {
+            position: sticky;
+            top: 92px;
+            padding-left: 48px;
+            font-size: .85rem
+        }
+
+        .meta-group {
+            margin-bottom: 32px;
+            border-top: 1px solid var(--border-light);
+            padding-top: 16px
+        }
+
+        .meta-group-title {
+            font-family: var(--font-heading);
+            color: #fff;
+            font-size: .85rem;
+            margin-bottom: 12px
+        }
+
+        .meta-item {
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between
+        }
+
+        .meta-val {
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: .75rem
+        }
+
+        /* SPECTRUM BAR (custom) */
+        .spectrum {
+            margin: 32px 0;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 24px;
+            overflow: hidden
+        }
+
+        .spectrum-title {
+            font-family: var(--font-heading);
+            font-size: .85rem;
+            color: #fff;
+            margin-bottom: 16px
+        }
+
+        .spectrum-bar {
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            overflow: hidden;
+            margin-bottom: 12px
+        }
+
+        .spectrum-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: .65rem;
+            color: rgba(0, 0, 0, .7);
+            font-weight: 600
+        }
+
+        .spectrum-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: .75rem;
+            color: var(--text-muted)
+        }
+
+        .spectrum-labels span:first-child {
+            color: var(--accent-emerald)
+        }
+
+        .spectrum-labels span:last-child {
+            color: var(--accent-rose)
+        }
+
+        /* CODE */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-light);
+            padding: 24px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            line-height: 1.6;
+            color: #A6ACCD;
+            margin: 32px 0
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: .85em;
+            background: rgba(255, 255, 255, .06);
+            padding: 2px 6px;
+            border-radius: 3px
+        }
+
+        @media(max-width:1200px) {
+            .page-wrapper {
+                grid-template-columns: 240px 1fr
+            }
+
+            .meta-sidebar {
+                display: none
+            }
+        }
+
+        @media(max-width:900px) {
+            .page-wrapper {
+                grid-template-columns: 1fr
+            }
+
+            .sidebar {
+                display: none
+            }
+
+            .insight-grid {
+                grid-template-columns: 1fr
+            }
+        }
+    
+/* ═══ BREADCRUMB NAV BAR ═══ */
+.kb-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(6, 8, 10, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 0 32px;
+}
+.kb-topbar-inner {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 44px;
+    gap: 16px;
+}
+.kb-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #94A3B8;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 4px 12px 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.kb-back-btn:hover {
+    color: #E2E8F0;
+    border-color: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+}
+.kb-back-btn svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+.kb-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    overflow: hidden;
+    white-space: nowrap;
+    min-width: 0;
+}
+.kb-breadcrumb a {
+    color: #64748B;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+}
+.kb-breadcrumb a:hover {
+    color: #F59E0B;
+}
+.kb-breadcrumb .bc-sep {
+    color: #334155;
+    margin: 0 8px;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+}
+.kb-breadcrumb .bc-current {
+    color: #E2E8F0;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.kb-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.kb-home-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    color: #64748B;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+.kb-home-btn:hover {
+    color: #E2E8F0;
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.08);
+}
+@media (max-width: 640px) {
+    .kb-breadcrumb .bc-mid { display: none; }
+    .kb-breadcrumb .bc-mid-sep { display: none; }
+}
+
+    </style>
+</head>
+
+<body>
+    <nav class="kb-topbar" aria-label="Breadcrumb">
+        <div class="kb-topbar-inner">
+            <a href="manufacturing-intelligence.html" class="kb-back-btn" title="Back to Manufacturing">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd"/></svg>
+                <span>Manufacturing</span>
+            </a>
+            <div class="kb-breadcrumb">
+                <a href="index.html">AUGOS Docs</a>
+                <span class="bc-sep">›</span>
+                <a href="manufacturing-intelligence.html" class="bc-mid">Manufacturing Intelligence</a>
+                <span class="bc-sep bc-mid-sep">›</span>
+                <span class="bc-current">The Power of People</span>
+            </div>
+            <div class="kb-topbar-actions">
+                <a href="index.html" class="kb-home-btn" title="Knowledge Base Home">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd"/></svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+
+        <!-- ═══ SIDEBAR ═══ -->
+        <aside class="sidebar">
+            <a href="index.html" class="brand">
+                <div class="brand-logo"></div>AUGOS Docs
+            </a>
+            <div class="toc-category">Manufacturing Intelligence</div>
+            <ul class="toc-menu">
+                <li><a href="executive-summary.html">Executive Summary</a></li>
+                <li><a href="performance-overview.html">Performance Overview</a></li>
+                <li><a href="operator-analysis.html">Operator Analysis</a></li>
+                <li><a href="downtime-report.html">Downtime Report</a></li>
+                <li><a href="production-timesheet.html">Production Timesheet</a></li>
+                <li><a href="shift-report.html">Shift Report</a></li>
+                <li><a href="job-card.html">Job Card</a></li>
+                <li><a href="pending-inputs.html">Pending Inputs</a></li>
+                <li><a href="setup.html">Setup</a></li>
+            </ul>
+            <div class="toc-category">Perspectives</div>
+            <ul class="toc-menu">
+                <li><a href="the-power-of-people.html" class="active">The Power of People</a></li>
+                <li><a href="downtime-workflow.html">Downtime Response Workflow</a></li>
+            </ul>
+            <div class="toc-category">Article Contents</div>
+            <ul class="toc-menu">
+                <li><a href="#abstract">Thesis</a></li>
+                <li><a href="#organised-chaos">1. Organised Chaos</a></li>
+                <li><a href="#invisible-athlete">2. The Invisible Athlete</a></li>
+                <li><a href="#five-seconds">3. The Five-Second Window</a></li>
+                <li><a href="#not-surveillance">4. Not Surveillance — Fairness</a></li>
+                <li><a href="#robot-question">5. The Robot Question</a></li>
+                <li><a href="#hidden-data">6. What the Data Hides</a></li>
+                <li><a href="#culture-kpi">7. Culture as a KPI</a></li>
+                <li><a href="#anatomy">8. Anatomy of a Response</a></li>
+                <li><a href="#training-paradox">9. The Training Paradox</a></li>
+                <li><a href="#manifesto">10. A Manifesto for People</a></li>
+            </ul>
+        </aside>
+
+        <!-- ═══ ARTICLE ═══ -->
+        <main class="article-content">
+            <header class="document-header" id="abstract">
+                <div class="doc-meta">
+                    <span>Manufacturing Intelligence</span>
+                    <span>Perspective Article</span>
+                    <span>25 February 2026</span>
+                </div>
+                <h1>The Power of People</h1>
+                <p class="abstract">Manufacturing is organised chaos. Something will always go wrong. The difference
+                    between a 40% OEE and an 85% OEE isn't the machine — it's the speed, the judgement, and the culture
+                    of the people who respond when it does. This article argues that the operator is the single most
+                    under-invested, under-measured, and under-appreciated asset on the factory floor — and that the data
+                    proves it.</p>
+            </header>
+
+            <!-- ═══ 1. ORGANISED CHAOS ═══ -->
+            <section id="organised-chaos">
+                <h2>1. Manufacturing Is Organised Chaos</h2>
+
+                <p>In January 2026, Pioneer Foods' B-Mill flour line recorded <strong>158 stoppage events</strong> in 31
+                    days. That's an average of <strong>5.1 stops per day</strong>. Nearly twelve cumulative days of
+                    downtime buried inside a single calendar month.</p>
+
+                <p>This isn't a failing plant. This is a <em>normal</em> plant.</p>
+
+                <p>The unpredictability of manufacturing is not a flaw to be eliminated — it is a property of the system
+                    itself. Flour bins fill up. Bearings fail. Roller controllers fault. Pneumatic lifts jam. Product
+                    changes require cleaning. Power supplies flicker. E-stops get bumped. These are not rare events.
+                    They are <em>the rhythm of production</em>.</p>
+
+                <div class="spectrum">
+                    <div class="spectrum-title">158 Stops in January 2026 — What caused them?</div>
+                    <div class="spectrum-bar">
+                        <div class="spectrum-segment" style="width:11.4%;background:#60A5FA">18</div>
+                        <div class="spectrum-segment" style="width:77.8%;background:#F87171">123</div>
+                        <div class="spectrum-segment" style="width:10.8%;background:#F59E0B">17</div>
+                    </div>
+                    <div class="spectrum-labels">
+                        <span>18 Planned (expected, budgeted)</span>
+                        <span style="color:var(--text-faint)">17 Interruptions (micro-stops)</span>
+                        <span>123 Unplanned (unexpected)</span>
+                    </div>
+                </div>
+
+                <p><strong>78% of all stops were unplanned.</strong> No schedule predicted them. No maintenance calendar
+                    caught them. No automation prevented them. They happened because manufacturing is a complex system
+                    where entropy is the default state — and the only force that holds it together is <em>people</em>.
+                </p>
+
+                <div class="pullquote">
+                    <p>"Every stoppage has a name, a duration, an owner, and a cost. When you make that visible,
+                        behaviour changes."</p>
+                    <cite>Augos Manufacturing Intelligence — Core Proposition</cite>
+                </div>
+            </section>
+
+            <!-- ═══ 2. THE INVISIBLE ATHLETE ═══ -->
+            <section id="invisible-athlete">
+                <h2>2. The Invisible Athlete</h2>
+
+                <p>Consider what a flour mill operator actually does during a shift. They don't "operate" the machine in
+                    the way most people imagine — pressing buttons and watching gauges. They are running an ongoing act
+                    of prediction, diagnosis, and intervention against a system that is trying to stop itself.</p>
+
+                <p>During a single 12-hour shift, a B-Mill operator might face:</p>
+
+                <ul class="text-list">
+                    <li><strong>A flour bin full alarm</strong> — Is the downstream conveyor blocked, or is the silo
+                        evacuation system running slow? The answer determines whether they clear the jam themselves (3
+                        minutes) or call the logistics team (45 minutes).</li>
+                    <li><strong>A roller controller fault</strong> — Is it a transient PLC glitch (reset and restart, 5
+                        minutes) or a deteriorating contactor (needs a technician, 2 hours)?</li>
+                    <li><strong>A product changeover</strong> — The plan says 10 minutes. But the previous product left
+                        residue in the sifter. Do they rush the changeover to hit the plan, knowing the next batch will
+                        have quality issues? Or do they take 18 minutes and do it properly?</li>
+                    <li><strong>A pneumatic lift jam</strong> — This is the 4th time this week. Do they just clear it
+                        again, or do they escalate it as a systemic issue?</li>
+                </ul>
+
+                <p>Every one of these decisions contains a trade-off between <strong>speed and quality</strong>, between
+                    <strong>compliance and initiative</strong>, between <strong>following the plan and adapting to
+                        reality</strong>. And they make these decisions alone, at 3am, on a factory floor with no
+                    manager in sight.</p>
+
+                <div class="callout blue">
+                    <div class="callout-title">The Hidden Dimension</div>
+                    <p>OEE is calculated at the machine level. But the machine doesn't make decisions. The
+                        <em>operator</em> decides how fast to run. The <em>operator</em> decides when to escalate. The
+                        <em>operator</em> decides whether to tag the stop correctly. Strip the human element out of the
+                        equation, and OEE becomes a sensor reading with no agency attached to it.</p>
+                </div>
+            </section>
+
+            <!-- ═══ 3. THE FIVE-SECOND WINDOW ═══ -->
+            <section id="five-seconds">
+                <h2>3. The Five-Second Window</h2>
+
+                <p>The most important moment in manufacturing is not the monthly board meeting. It is not the
+                    maintenance planning session. It is not even the morning production meeting. The most important
+                    moment is the <strong>five seconds after the machine stops</strong>.</p>
+
+                <p>In those five seconds, the operator makes a series of decisions that determine whether this event
+                    costs the plant 3 minutes or 3 hours:</p>
+
+                <div class="timeline">
+                    <div class="timeline-event">
+                        <div class="timeline-title">T+0s: Machine Faults <span class="timeline-tag tag-system">PLC
+                                SIGNAL</span></div>
+                        <div class="timeline-detail">The Augos IoT device detects the line has stopped. The clock
+                            starts. Millisecond-precision timestamp recorded. Operator on shift is automatically
+                            assigned.</div>
+                    </div>
+                    <div class="timeline-event">
+                        <div class="timeline-title">T+5s: Recognition <span
+                                class="timeline-tag tag-operator">HUMAN</span></div>
+                        <div class="timeline-detail">The operator hears the alarm. Looks at the HMI. Sees the fault
+                            code. <strong>Their experience determines what happens next.</strong> A veteran recognises
+                            the fault instantly. A novice reads the code, hesitates, checks the manual.</div>
+                    </div>
+                    <div class="timeline-event">
+                        <div class="timeline-title">T+30s: Decision Point <span
+                                class="timeline-tag tag-culture">CULTURE</span></div>
+                        <div class="timeline-detail">"Can I fix this myself, or do I need to escalate?" This is the most
+                            consequential decision. An operator afraid of accountability might wait too long before
+                            pressing ASSIST. An empowered operator escalates immediately because they know calling for
+                            help is strength, not weakness.</div>
+                    </div>
+                    <div class="timeline-event">
+                        <div class="timeline-title">T+60s–T+∞: Resolution or Escalation</div>
+                        <div class="timeline-detail">If the operator resolves it: the entire event is classified as
+                            <strong>Operator Resolution Time</strong>. If they escalate: their hesitation time is locked
+                            as <strong>Operator Evaluation Time</strong>, and the <strong>Technician Response
+                                Time</strong> clock starts. Every second from here is measurable, attributable,
+                            improvable.</div>
+                    </div>
+                </div>
+
+                <p>This is why <strong>training, attitude, and culture</strong> — not just equipment reliability — are
+                    the primary determinants of stoppage duration. The machine breaks down. That's physics. How fast and
+                    how well the <em>people</em> respond? That's culture.</p>
+            </section>
+
+            <!-- ═══ 4. NOT SURVEILLANCE — FAIRNESS ═══ -->
+            <section id="not-surveillance">
+                <h2>4. This Is Not Surveillance. This Is Fairness.</h2>
+
+                <p>The moment you attach an operator's name to a downtime event, a natural objection arises: <em>"This
+                        is surveillance. You're tracking my every move."</em></p>
+
+                <p>The data tells the opposite story.</p>
+
+                <h3>The Case for Operator-Attributed Data as Protection</h3>
+
+                <p>Without data, performance conversations rely on the loudest voice, the most recent memory, or
+                    management bias. The night shift always gets blamed for problems that started on the day shift. The
+                    quiet operator gets overlooked while the charismatic one gets promoted. The operator who happened to
+                    be running the line when a bearing that was failing for weeks finally seized is the one who takes
+                    the blame.</p>
+
+                <div class="insight-grid">
+                    <div class="insight-card emerald">
+                        <div class="insight-label">Igshaan Abrahams</div>
+                        <div class="insight-desc">Assigned to major "Flour Bin Full" events — but these are
+                            <strong>logistics problems</strong>, not operator failures. The downstream silo is too
+                            small. Igshaan's data <em>protects</em> him: it proves the fault is systemic and existed
+                            before his shift started.</div>
+                    </div>
+                    <div class="insight-card blue">
+                        <div class="insight-label">Ramon Fester</div>
+                        <div class="insight-desc">Highest frequency of attributed events. But also the <strong>most
+                                shifts worked</strong>. Normalise for exposure time and Ramon may actually have the
+                            <em>lowest</em> event rate per hour. Without data, his raw count makes him look like the
+                            worst performer. With data, he might be the best.</div>
+                    </div>
+                    <div class="insight-card amber">
+                        <div class="insight-label">Renaldo Arnolds</div>
+                        <div class="insight-desc">Fewest attributed events. <strong>Quiet excellence</strong> that goes
+                            unrecognised on a chaotic factory floor. Without this data, Renaldo's consistent reliability
+                            would remain invisible to management.</div>
+                    </div>
+                    <div class="insight-card rose">
+                        <div class="insight-label">"Unknown Operator"</div>
+                        <div class="insight-desc">3–4 events attributed to no one — the operator wasn't logged in at the
+                            time. This isn't a performance issue. It's a <strong>data quality issue that reveals a
+                                process gap</strong>: shift handover login discipline needs attention.</div>
+                    </div>
+                </div>
+
+                <p>Plant managers routinely use Augos Operator Analysis to <strong>prove to operators that they are
+                        performing highly</strong>, protecting them from unjust discipline when downstream mechanical
+                    failures ruin their shift's output.</p>
+
+                <div class="callout emerald">
+                    <div class="callout-title">Reframing: Analytics as Shield, Not Sword</div>
+                    <p>In unionised or traditional manufacturing environments, individual tracking is met with
+                        resistance as "surveillance." The reframe is powerful: <em>"This data protects you. It proves
+                            that the problem isn't you — it's the flour bin. It proves that your changeover times are
+                            30% faster than the standard. It proves you were running at 95% of rated speed when the
+                            bearing failed."</em> Data doesn't blame. Bad data does.</p>
+                </div>
+            </section>
+
+            <!-- ═══ 5. THE ROBOT QUESTION ═══ -->
+            <section id="robot-question">
+                <h2>5. The Robot Question</h2>
+
+                <p>The implied alternative to investing in people is investing in robots. Automate the human away.
+                    Replace the operator with a machine that never hesitates, never miscodes an event, never calls in
+                    sick.</p>
+
+                <p>The data from 158 events across 54 days of Pioneer Foods production tells a different story about
+                    what robots can't do:</p>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Human Capability</th>
+                            <th>Data Evidence</th>
+                            <th>Automatable?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Contextual diagnosis</strong></td>
+                            <td>"Flour Bin Full" could mean silo evacuation fault, downstream blockage, or batch
+                                scheduling error. Same alarm, three entirely different responses.</td>
+                            <td style="color:var(--accent-rose)">No — requires plant knowledge</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Escalation judgement</strong></td>
+                            <td>Roller controller faults: 13 stops. Some were 5-minute PLC resets. Some required 2-hour
+                                technician intervention. The operator determines which is which.</td>
+                            <td style="color:var(--accent-rose)">Partially — pattern-matchable but not reliably</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Quality trade-off</strong></td>
+                            <td>Product changeover averages 10.3 min (planned: 10 min). Some operators take 6.8 min —
+                                are they faster or cutting corners? Only a human can judge context.</td>
+                            <td style="color:var(--accent-rose)">No — requires quality awareness</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pattern recognition</strong></td>
+                            <td>Pneumatic lifts: 19 stops, 2.8% of downtime. An operator who notices this is the 4th
+                                time this week — and escalates — prevents a chronic issue from becoming catastrophic.
+                            </td>
+                            <td style="color:var(--accent-primary)">Partially — Augos AI can detect trends</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reason coding</strong></td>
+                            <td>The system detects <em>that</em> the line stopped and <em>for how long</em>. Only the
+                                operator knows <em>why</em>. 96% of events are human-coded.</td>
+                            <td style="color:var(--accent-rose)">No — root cause requires presence</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cross-domain awareness</strong></td>
+                            <td>Sieve Bearings: 1 event, 11.3 hours. The operator who smells something burning, hears a
+                                grinding noise, or feels an unusual vibration might have caught this 2 hours earlier.
+                            </td>
+                            <td style="color:var(--accent-rose)">No — multi-sensory, not sensor-definable</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>The robot can detect the stop. The robot can measure the duration. The robot can calculate the OEE
+                    impact. But the robot cannot decide what to do about it. The robot cannot weigh the trade-off
+                    between a fast restart and a proper root cause fix. The robot cannot mentor a junior operator
+                    through their first mechanical failure at 3am.</p>
+
+                <div class="pullquote">
+                    <p>"The alternative to investing in people isn't robots. It's ignorance. Because the machine will
+                        always tell you <em>what</em> happened. Only a person can tell you <em>why</em>."</p>
+                    <cite>Derived from Augos Stage 2: Classify — Operator-Driven Reason Coding</cite>
+                </div>
+            </section>
+
+            <!-- ═══ 6. WHAT THE DATA HIDES ═══ -->
+            <section id="hidden-data">
+                <h2>6. What the Data Hides — Six Non-Obvious Perspectives</h2>
+
+                <p>The obvious reading of manufacturing data is: "Here are the biggest downtime drivers. Fix them." But
+                    the deeper reading — the one that looks at people, not just equipment — reveals patterns that aren't
+                    visible on any dashboard.</p>
+
+                <div class="insight-grid">
+                    <div class="insight-card violet">
+                        <div class="insight-number">01</div>
+                        <div class="insight-label">The Confidence Gap</div>
+                        <div class="insight-desc">Operator Evaluation Time — the time between a machine stopping and the
+                            operator deciding to call for help — is a direct measure of <strong>confidence</strong>.
+                            High Evaluation Times don't indicate incompetence. They indicate an environment where
+                            operators are afraid to escalate. This is a <em>leadership failure</em>, not an operator
+                            failure.</div>
+                    </div>
+                    <div class="insight-card amber">
+                        <div class="insight-number">02</div>
+                        <div class="insight-label">The Blame Displacement</div>
+                        <div class="insight-desc">45.8% of downtime at B-Mill is "Flour Bin Full" — a logistics
+                            bottleneck, not a production failure. Yet the <strong>operator gets the poor OEE
+                                score</strong> because OEE is measured at the machine level. The human assigned to the
+                            line inherits the system's failure. We measure the person; the problem is the silo.</div>
+                    </div>
+                    <div class="insight-card blue">
+                        <div class="insight-number">03</div>
+                        <div class="insight-label">The Compliance Paradox</div>
+                        <div class="insight-desc">Bin Changes are planned at 10 minutes. Operators average 6.8 minutes —
+                            consistently <em>beating</em> the plan. This means either the operators are excellent or the
+                            plan is wrong. Meanwhile, Fumigation was planned at 12 hours but took 44 hours. <strong>When
+                                the plan is wrong, operator compliance is meaningless.</strong> The plan must be as good
+                            as the people.</div>
+                    </div>
+                    <div class="insight-card rose">
+                        <div class="insight-number">04</div>
+                        <div class="insight-desc">
+                            <div class="insight-label">The Ghost Operators</div>3–4 events carry no operator
+                            attribution. These "Unknown Operator" events are <strong>the most expensive data quality
+                                failures in the system</strong> — not because of their duration, but because they
+                            corrode trust. If operators see unattributed events affecting "their" performance scores,
+                            they disengage from the system altogether.
+                        </div>
+                    </div>
+                    <div class="insight-card emerald">
+                        <div class="insight-number">05</div>
+                        <div class="insight-label">The Frequency Trap</div>
+                        <div class="insight-desc">Pneumatic lifts: 19 stops, but only 2.8% of downtime. Sieve Bearings:
+                            1 stop, but 3.9% of downtime. <strong>Humans naturally chase frequency — "it always
+                                breaks!"</strong> — but the data shows the single catastrophic failure is 40% worse. The
+                            team that chases the 19-stop problem ignores the one that actually matters.</div>
+                    </div>
+                    <div class="insight-card violet">
+                        <div class="insight-number">06</div>
+                        <div class="insight-label">The Speed Paradox</div>
+                        <div class="insight-desc">Operator A runs the line at 95% of rated speed but has 62% Planning
+                            Efficiency. Operator B runs at 80% of rated speed with 95% Planning Efficiency. <strong>Who
+                                is better?</strong> Neither. They have different strengths. A runs fast but botches
+                            changeovers. B is disciplined but conservative. The answer isn't to "fix" either one — it's
+                            to pair them on alternating shifts and let each observe the other.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ 7. CULTURE AS A KPI ═══ -->
+            <section id="culture-kpi">
+                <h2>7. Culture as a Measurable KPI</h2>
+
+                <p>Culture is usually treated as soft, unmeasurable, "HR stuff." But Augos Manufacturing Intelligence
+                    provides at least four hard metrics that are, in reality, <strong>culture metrics wearing
+                        engineering clothes</strong>:</p>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>What It Appears To Measure</th>
+                            <th>What It Actually Measures</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Pending Event Count</strong></td>
+                            <td>Data quality compliance</td>
+                            <td><strong>Engagement.</strong> A site with zero pending events has operators who care
+                                enough to tag every stop in real-time. A site with dozens has a workforce that has
+                                disengaged from the system. 2 Pending events (4.8%) at B-Mill = good, not perfect.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Operator Evaluation Time</strong></td>
+                            <td>Diagnostic speed</td>
+                            <td><strong>Psychological safety.</strong> High Evaluation Time = operators afraid to
+                                escalate. They hesitate because calling for help might be seen as incompetence. A
+                                culture that celebrates quick escalation will have dramatically lower Evaluation Times.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>"Undefined" Reason Codes</strong></td>
+                            <td>Reason tree completeness</td>
+                            <td><strong>Voice.</strong> 3.4% of downtime at B-Mill is "Downtime Electrical | Undefined."
+                                This could mean the operator couldn't find the right code — but it might also mean they
+                                don't feel empowered to request a new reason code from management. The tree should grow
+                                with the operators' vocabulary.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Shift Login Discipline</strong></td>
+                            <td>System usage</td>
+                            <td><strong>Ownership.</strong> When an operator logs in at the start of their shift, they
+                                take ownership of that line's performance. "Unknown Operator" events reveal a shift
+                                handover that is passive and unaccountable — the opposite of ownership culture.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="callout rose">
+                    <div class="callout-title">The Pending Event as Cultural Barometer</div>
+                    <p>"<em>A site with zero pending events has disciplined operators who tag events in real-time. A
+                            site with dozens of pending events has a culture gap that undermines the entire intelligence
+                            layer.</em>" — The Pending count isn't a data quality metric. It's the most honest culture
+                        metric in the plant. It answers: <strong>"Do the people on this floor believe the system
+                            matters?"</strong></p>
+                </div>
+            </section>
+
+            <!-- ═══ 8. ANATOMY OF A RESPONSE ═══ -->
+            <section id="anatomy">
+                <h2>8. Anatomy of a Response — Why Speed Matters</h2>
+
+                <p>The Augos Downtime Response Workflow decomposes every unplanned stop into a precise sequence of
+                    human-attributable time states. This decomposition reveals where time is <em>actually</em> lost —
+                    and the answer is almost always "between people," not "inside the machine."</p>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Time State</th>
+                            <th>Owner</th>
+                            <th>What It Measures</th>
+                            <th>What Reduces It</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Operator Evaluation</strong></td>
+                            <td>Operator</td>
+                            <td>Time from fault to escalation decision</td>
+                            <td style="color:var(--accent-emerald)">Training + psychological safety</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Operator Resolution</strong></td>
+                            <td>Operator</td>
+                            <td>Time to fix it without tech help</td>
+                            <td style="color:var(--accent-emerald)">SOPs + hands-on skill</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Technician Response</strong></td>
+                            <td>Maintenance</td>
+                            <td>Time from ASSIST call to technician arrival (QR scan)</td>
+                            <td style="color:var(--accent-emerald)">Maintenance deployment + proximity</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Active Wrench Time</strong></td>
+                            <td>Technician</td>
+                            <td>Hands-on repair time</td>
+                            <td style="color:var(--accent-emerald)">Skill + parts availability</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Inactive Wrench Time</strong></td>
+                            <td>System</td>
+                            <td>Waiting for parts, permits, isolation</td>
+                            <td style="color:var(--accent-emerald)">Spare parts stocking + process design</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>Notice: <strong>four of the five time states are about people</strong>. The only one that isn't
+                    (Inactive Wrench Time) is about the <em>systems people have designed</em> — parts stores, permit
+                    processes, isolation procedures.</p>
+
+                <p>The machine breaks instantly. The repair might take 30 minutes. But the <em>response</em> — the human
+                    cascade from recognition to evaluation to escalation to arrival to repair — can take hours if the
+                    culture, training, and process are wrong.</p>
+
+                <div class="callout">
+                    <div class="callout-title">The Multiplier Effect</div>
+                    <p>At 37,000 kg/h rated speed, every minute of downtime costs approximately <strong>617 kg of
+                            potential flour production</strong>. A 10-minute reduction in average response time —
+                        achievable through training and culture alone, zero CapEx — recovers an additional 6,170 kg per
+                        event. Across 123 unplanned stops per month, that's <strong>758,910 kg of potential
+                            recovery</strong>. No new equipment. No new software. Just faster, better-trained, more
+                        empowered people.</p>
+                </div>
+            </section>
+
+            <!-- ═══ 9. THE TRAINING PARADOX ═══ -->
+            <section id="training-paradox">
+                <h2>9. The Training Paradox</h2>
+
+                <p>The data implies a paradox: <strong>the operators who need training the most are the hardest to
+                        train</strong>, because their poor performance is often caused by the same systemic issues that
+                    prevent effective training from happening.</p>
+
+                <h3>What the Operator Analysis Actually Reveals</h3>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Pattern</th>
+                            <th>Data Signal</th>
+                            <th>Real Diagnosis</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>High Speed, Low Planning Efficiency</td>
+                            <td>Operator A: 95% speed, 62% PE</td>
+                            <td>Not a skill problem — fast runner who rushes changeovers. Needs <strong>SMED
+                                    training</strong> specifically, not generic upskilling.</td>
+                        </tr>
+                        <tr>
+                            <td>High Compliance, Low Speed</td>
+                            <td>Operator B: perfect tagging, 70% speed</td>
+                            <td>Cautious operator — runs slow to avoid causing breakdowns. <strong>Fear</strong>, not
+                                incompetence. Needs mentoring from a confident senior operator.</td>
+                        </tr>
+                        <tr>
+                            <td>Dominates Mechanical Events</td>
+                            <td>Quivern Antonie: concentrated electrical/mechanical stops</td>
+                            <td>Often present during complex failures. <strong>Is this cause or coincidence?</strong>
+                                The data can't determine if Quivern <em>causes</em> these failures or simply works
+                                shifts where the equipment is most stressed.</td>
+                        </tr>
+                        <tr>
+                            <td>Events attributed to "Unknown"</td>
+                            <td>3–4 unattributed events</td>
+                            <td>Shift handover gap. Not a training issue — a <strong>process design issue</strong>. The
+                                login workflow needs to be integrated into the shift start ritual.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>The insight is that <strong>generic training programs are wasteful</strong>. The data tells you
+                    exactly what each individual needs. Operator A needs 2 hours of SMED changeover training. Operator B
+                    needs a mentor, not a classroom. Quivern needs a root cause investigation, not a performance review.
+                    The "Unknown Operator" needs a process re-design, not discipline.</p>
+
+                <div class="callout blue">
+                    <div class="callout-title">The Best Operators Write the SOPs</div>
+                    <p>If Renaldo Arnolds consistently achieves the fewest attributed events and the fastest
+                        changeovers, then Renaldo's method should become the SOP. Not the engineer's theoretical
+                        process. Not the manager's classroom training. <strong>Renaldo's actual hands-on technique,
+                            documented from the floor, by the person who does it every day.</strong> This is knowledge
+                        transfer rooted in data, not hierarchy.</p>
+                </div>
+            </section>
+
+            <!-- ═══ 10. MANIFESTO ═══ -->
+            <section id="manifesto">
+                <h2>10. A Manifesto for People</h2>
+
+                <p>The data from 54 days, 158 stops, 7 operators, 3 levels of reason hierarchy, and 1,030,603,303
+                    milliseconds of downtime at Pioneer Foods B-Mill converges on a single conclusion:</p>
+
+                <div class="pullquote">
+                    <p>"The machine tells you <em>what</em> happened. Only a person can tell you <em>why</em>. And only
+                        a culture can determine how quickly it gets fixed."</p>
+                </div>
+
+                <h3>Ten Principles</h3>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Principle</th>
+                            <th>Data Evidence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><strong>Measure responses, not just failures</strong></td>
+                            <td>5 time states in the Downtime Response Workflow — 4 are human-owned</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><strong>Attribute events to protect, not to blame</strong></td>
+                            <td>Igshaan's "Flour Bin Full" events prove the fault is the silo, not the operator</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><strong>Treat Pending Events as a culture metric</strong></td>
+                            <td>2 events (4.8%) = good but imperfect engagement. Zero is the cultural target</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><strong>Celebrate escalation speed, not self-sufficiency</strong></td>
+                            <td>Low Evaluation Time = psychologically safe workplace. High = fear of blame</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td><strong>Normalise for exposure before comparing</strong></td>
+                            <td>Ramon's high event count ÷ high shift count may equal the best rate per hour</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td><strong>Train individuals, not groups</strong></td>
+                            <td>Operator A needs SMED. Operator B needs mentoring. Not the same course</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td><strong>Let the best operators write the SOPs</strong></td>
+                            <td>Renaldo's technique, not the engineer's theory, should be the standard</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td><strong>Fix the plan before fixing the person</strong></td>
+                            <td>Fumigation plan: 12h. Actual: 44h. The plan was wrong — not the team</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td><strong>Chase severity, not frequency</strong></td>
+                            <td>1 Sieve Bearing event (3.9%) outweighs 19 Pneumatic lift events (2.8%)</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td><strong>Invest in people before investing in machines</strong></td>
+                            <td>10-min faster responses × 123 events/month = 758,910 kg recovered. Zero CapEx</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>Manufacturing will always be organised chaos. Something will always go wrong. The question is never
+                    "Will it stop?" The question is <strong>"How fast, how well, and how fairly do the people respond
+                        when it does?"</strong></p>
+
+                <p>The answer to that question is not a machine specification. It is not a maintenance budget. It is not
+                    an automation project. It is <strong>culture</strong>. It is <strong>attitude</strong>. It is
+                    <strong>training</strong>.</p>
+
+                <p>And it is measurable.</p>
+            </section>
+        </main>
+
+        <!-- ═══ META SIDEBAR ═══ -->
+        <aside class="meta-sidebar">
+            <div class="meta-group">
+                <div class="meta-group-title">Article Context</div>
+                <div class="meta-item"><span>Type</span><span class="meta-val"
+                        style="color:var(--accent-primary)">Perspective</span></div>
+                <div class="meta-item"><span>Module</span><span class="meta-val">MFG Intelligence</span></div>
+                <div class="meta-item"><span>Date</span><span class="meta-val">25 Feb 2026</span></div>
+            </div>
+            <div class="meta-group">
+                <div class="meta-group-title">Data Source</div>
+                <div class="meta-item"><span>Site</span><span class="meta-val">Pioneer Foods</span></div>
+                <div class="meta-item"><span>Line</span><span class="meta-val">B-Mill</span></div>
+                <div class="meta-item"><span>Point ID</span><span class="meta-val">33340</span></div>
+                <div class="meta-item"><span>Period</span><span class="meta-val">54 days</span></div>
+            </div>
+            <div class="meta-group">
+                <div class="meta-group-title">Key Numbers</div>
+                <div class="meta-item"><span>Stops</span><span class="meta-val">158</span></div>
+                <div class="meta-item"><span>Unplanned</span><span class="meta-val"
+                        style="color:var(--accent-rose)">78%</span></div>
+                <div class="meta-item"><span>Operators</span><span class="meta-val">7</span></div>
+                <div class="meta-item"><span>Downtime (ms)</span><span class="meta-val">1.03B</span></div>
+                <div class="meta-item"><span>Top Driver</span><span class="meta-val">Flour Bin Full</span></div>
+                <div class="meta-item"><span>Recovery/mo</span><span class="meta-val"
+                        style="color:var(--accent-emerald)">758,910 kg</span></div>
+            </div>
+            <div class="meta-group">
+                <div class="meta-group-title">Reports Referenced</div>
+                <div class="meta-item"><span>Operator Analysis</span></div>
+                <div class="meta-item"><span>Downtime Report</span></div>
+                <div class="meta-item"><span>Shift Report</span></div>
+                <div class="meta-item"><span>Pending Inputs</span></div>
+                <div class="meta-item"><span>Executive Summary</span></div>
+                <div class="meta-item"><span>Setup</span></div>
+                <div class="meta-item"><span>Downtime Workflow</span></div>
+            </div>
+        </aside>
+    </div>
+</body>
+
+</html>

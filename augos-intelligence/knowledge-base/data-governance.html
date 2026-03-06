@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="https://schema.org/TechArticle">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Governance &amp; System Compliance — Augos Knowledge Base</title>
+    <meta name="description"
+        content="How Augos Manufacturing Intelligence enforces data quality through compliance metrics, operator accountability, and management governance. Addresses ghost operators, missing reasons, product misattribution, and remedial actions.">
+    <meta property="og:title" content="Data Governance — Manufacturing Intelligence">
+    <meta property="og:description"
+        content="The definitive guide to ensuring data integrity on the factory floor. Every metric is only as trustworthy as the inputs that feed it.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..600;1,14..32,400&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #06080A;
+            --bg-surface: #0E1116;
+            --bg-surface-raised: #151A21;
+            --text-main: #E2E8F0;
+            --text-muted: #94A3B8;
+            --text-faint: #475569;
+            --border-faint: rgba(255, 255, 255, 0.06);
+            --border-light: rgba(255, 255, 255, 0.12);
+            --accent-primary: #F59E0B;
+            --accent-dim: rgba(245, 158, 11, 0.15);
+            --accent-rose: #F43F5E;
+            --accent-rose-dim: rgba(244, 63, 94, 0.12);
+            --accent-emerald: #22C55E;
+            --accent-emerald-dim: rgba(34, 197, 94, 0.12);
+            --accent-blue: #3B82F6;
+            --accent-blue-dim: rgba(59, 130, 246, 0.12);
+            --accent-violet: #8B5CF6;
+            --accent-violet-dim: rgba(139, 92, 246, 0.12);
+            --code-bg: #0D1017;
+            --font-body: 'Inter', sans-serif;
+            --font-heading: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            line-height: 1.75;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased
+        }
+
+        .page-wrapper {
+            display: grid;
+            grid-template-columns: minmax(240px, 1fr) minmax(auto, 840px) minmax(200px, 1fr);
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 32px
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 92px;
+            height: calc(100vh - 132px);
+            padding-right: 48px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -ms-overflow-style: none;
+            scrollbar-width: none
+        }
+
+        .sidebar::-webkit-scrollbar {
+            display: none
+        }
+
+        .brand {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: .02em;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 64px;
+            text-decoration: none
+        }
+
+        .brand-logo {
+            width: 20px;
+            height: 20px;
+            background: var(--text-main);
+            border-radius: 2px;
+            position: relative
+        }
+
+        .brand-logo::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: var(--bg-base)
+        }
+
+        .toc-menu {
+            list-style: none;
+            font-size: .85rem
+        }
+
+        .toc-menu li {
+            margin-bottom: 14px
+        }
+
+        .toc-menu a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color .2s ease;
+            display: block
+        }
+
+        .toc-menu a:hover,
+        .toc-menu a.active {
+            color: var(--text-main)
+        }
+
+        .toc-category {
+            text-transform: uppercase;
+            font-size: .7rem;
+            letter-spacing: .05em;
+            color: var(--text-faint);
+            margin: 32px 0 12px 0;
+            font-weight: 600
+        }
+
+        .article-content {
+            padding: 48px 0 120px 0;
+            min-width: 0
+        }
+
+        header.document-header {
+            margin-bottom: 80px;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 48px
+        }
+
+        .doc-meta {
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px
+        }
+
+        .doc-meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 2.8rem;
+            font-weight: 500;
+            line-height: 1.08;
+            letter-spacing: -.03em;
+            color: #fff;
+            margin-bottom: 24px
+        }
+
+        .abstract {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-weight: 300;
+            max-width: 92%
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 1.65rem;
+            font-weight: 500;
+            color: #fff;
+            margin: 80px 0 24px 0;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-faint);
+            letter-spacing: -.02em
+        }
+
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: #fff;
+            margin: 40px 0 16px 0
+        }
+
+        p {
+            margin-bottom: 20px
+        }
+
+        strong {
+            color: #fff;
+            font-weight: 500
+        }
+
+        em {
+            color: var(--text-muted);
+            font-style: italic
+        }
+
+        .pullquote {
+            margin: 56px 0;
+            padding: 40px 48px;
+            position: relative;
+            border-left: 3px solid var(--accent-primary);
+            background: linear-gradient(135deg, var(--accent-dim) 0%, transparent 60%)
+        }
+
+        .pullquote p {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #fff;
+            line-height: 1.5;
+            margin-bottom: 12px
+        }
+
+        .pullquote cite {
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            color: var(--accent-primary);
+            font-style: normal;
+            text-transform: uppercase;
+            letter-spacing: .05em
+        }
+
+        .callout {
+            margin: 32px 0;
+            padding: 24px 32px;
+            border-left: 2px solid var(--accent-primary);
+            background: linear-gradient(90deg, var(--accent-dim) 0%, transparent 100%);
+            border-radius: 0 8px 8px 0
+        }
+
+        .callout-title {
+            font-family: var(--font-heading);
+            font-size: .9rem;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 8px
+        }
+
+        .callout p:last-child {
+            margin-bottom: 0
+        }
+
+        .callout.rose {
+            border-left-color: var(--accent-rose);
+            background: linear-gradient(90deg, var(--accent-rose-dim) 0%, transparent 100%)
+        }
+
+        .callout.rose .callout-title {
+            color: var(--accent-rose)
+        }
+
+        .callout.emerald {
+            border-left-color: var(--accent-emerald);
+            background: linear-gradient(90deg, var(--accent-emerald-dim) 0%, transparent 100%)
+        }
+
+        .callout.emerald .callout-title {
+            color: var(--accent-emerald)
+        }
+
+        .callout.blue {
+            border-left-color: var(--accent-blue);
+            background: linear-gradient(90deg, var(--accent-blue-dim) 0%, transparent 100%)
+        }
+
+        .callout.blue .callout-title {
+            color: var(--accent-blue)
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 32px 0;
+            font-size: .85rem
+        }
+
+        .data-table th,
+        .data-table td {
+            text-align: left;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-faint)
+        }
+
+        .data-table th {
+            color: var(--text-muted);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-light);
+            font-family: var(--font-heading);
+            text-transform: uppercase;
+            letter-spacing: .02em;
+            font-size: .75rem
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(255, 255, 255, .02)
+        }
+
+        ul.text-list {
+            list-style: disc;
+            padding-left: 24px;
+            margin-bottom: 24px
+        }
+
+        ul.text-list li {
+            margin-bottom: 8px;
+            padding-left: 8px
+        }
+
+        ul.text-list li::marker {
+            color: var(--text-faint)
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-light);
+            padding: 24px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            line-height: 1.6;
+            color: #A6ACCD;
+            margin: 32px 0
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: .85em;
+            background: rgba(255, 255, 255, .06);
+            padding: 2px 6px;
+            border-radius: 3px
+        }
+
+        .gov-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            margin: 32px 0;
+            transition: border-color .3s ease
+        }
+
+        .gov-card:hover {
+            border-color: rgba(255, 255, 255, .2)
+        }
+
+        .gov-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px
+        }
+
+        .gov-card.severity-critical::before {
+            background: var(--accent-rose)
+        }
+
+        .gov-card.severity-high::before {
+            background: var(--accent-primary)
+        }
+
+        .gov-card.severity-medium::before {
+            background: var(--accent-blue)
+        }
+
+        .gov-label {
+            font-family: var(--font-mono);
+            font-size: .7rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 12px
+        }
+
+        .gov-label.critical {
+            color: var(--accent-rose)
+        }
+
+        .gov-label.high {
+            color: var(--accent-primary)
+        }
+
+        .gov-label.medium {
+            color: var(--accent-blue)
+        }
+
+        .gov-title {
+            font-family: var(--font-heading);
+            font-size: 1.15rem;
+            color: #fff;
+            margin-bottom: 12px
+        }
+
+        .gov-body {
+            font-size: .9rem;
+            color: var(--text-muted);
+            line-height: 1.7
+        }
+
+        .gov-body p:last-child {
+            margin-bottom: 0
+        }
+
+        .accountability-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0
+        }
+
+        .acc-box {
+            background: rgba(255, 255, 255, .02);
+            border: 1px solid var(--border-faint);
+            border-radius: 6px;
+            padding: 16px
+        }
+
+        .acc-box-title {
+            font-family: var(--font-mono);
+            font-size: .7rem;
+            color: var(--text-faint);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 8px
+        }
+
+        .acc-box p {
+            font-size: .85rem;
+            margin-bottom: 0
+        }
+
+        .metric-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 8px 0
+        }
+
+        .metric-bar-label {
+            font-size: .8rem;
+            color: var(--text-muted);
+            min-width: 120px
+        }
+
+        .metric-bar-track {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, .05);
+            border-radius: 4px;
+            overflow: hidden
+        }
+
+        .metric-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width .6s ease
+        }
+
+        .metric-bar-value {
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            color: #fff;
+            min-width: 48px;
+            text-align: right
+        }
+
+        .meta-sidebar {
+            position: sticky;
+            top: 92px;
+            padding-left: 48px;
+            font-size: .85rem
+        }
+
+        .meta-group {
+            margin-bottom: 32px;
+            border-top: 1px solid var(--border-light);
+            padding-top: 16px
+        }
+
+        .meta-group-title {
+            font-family: var(--font-heading);
+            color: #fff;
+            font-size: .85rem;
+            margin-bottom: 12px
+        }
+
+        .meta-item {
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between
+        }
+
+        .meta-val {
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: .75rem
+        }
+
+        /* BREADCRUMB */
+        .kb-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(6, 8, 10, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 0 32px
+        }
+
+        .kb-topbar-inner {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 44px;
+            gap: 16px
+        }
+
+        .kb-back-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #94A3B8;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            font-size: .8rem;
+            font-weight: 500;
+            padding: 4px 12px 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            transition: all .2s ease;
+            flex-shrink: 0;
+            cursor: pointer
+        }
+
+        .kb-back-btn:hover {
+            color: #E2E8F0;
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.06)
+        }
+
+        .kb-back-btn svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0
+        }
+
+        .kb-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            font-family: 'Inter', sans-serif;
+            font-size: .78rem;
+            overflow: hidden;
+            white-space: nowrap;
+            min-width: 0
+        }
+
+        .kb-breadcrumb a {
+            color: #64748B;
+            text-decoration: none;
+            transition: color .2s ease;
+            flex-shrink: 0
+        }
+
+        .kb-breadcrumb a:hover {
+            color: #F59E0B
+        }
+
+        .kb-breadcrumb .bc-sep {
+            color: #334155;
+            margin: 0 8px;
+            font-size: .65rem;
+            flex-shrink: 0
+        }
+
+        .kb-breadcrumb .bc-current {
+            color: #E2E8F0;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .kb-topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0
+        }
+
+        .kb-home-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            color: #64748B;
+            text-decoration: none;
+            transition: all .2s ease;
+            border: 1px solid transparent
+        }
+
+        .kb-home-btn:hover {
+            color: #E2E8F0;
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08)
+        }
+
+        @media(max-width:1200px) {
+            .page-wrapper {
+                grid-template-columns: 240px 1fr
+            }
+
+            .meta-sidebar {
+                display: none
+            }
+        }
+
+        @media(max-width:900px) {
+            .page-wrapper {
+                grid-template-columns: 1fr
+            }
+
+            .sidebar {
+                display: none
+            }
+
+            .accountability-row {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="kb-topbar" aria-label="Breadcrumb">
+        <div class="kb-topbar-inner">
+            <a href="manufacturing-intelligence.html" class="kb-back-btn" title="Back to Manufacturing">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z"
+                        clip-rule="evenodd" />
+                </svg>
+                <span>Manufacturing</span>
+            </a>
+            <div class="kb-breadcrumb">
+                <a href="index.html">AUGOS Docs</a>
+                <span class="bc-sep">›</span>
+                <a href="manufacturing-intelligence.html" class="bc-mid">Manufacturing Intelligence</a>
+                <span class="bc-sep bc-mid-sep">›</span>
+                <span class="bc-current">Data Governance</span>
+            </div>
+            <div class="kb-topbar-actions">
+                <a href="index.html" class="kb-home-btn" title="Knowledge Base Home">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16"
+                        height="16">
+                        <path fill-rule="evenodd"
+                            d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <a href="index.html" class="brand">
+                <div class="brand-logo"></div>AUGOS Docs
+            </a>
+            <div class="toc-category">Manufacturing Intelligence</div>
+            <ul class="toc-menu">
+                <li><a href="executive-summary.html">Executive Summary</a></li>
+                <li><a href="performance-overview.html">Performance Overview</a></li>
+                <li><a href="operator-analysis.html">Operator Analysis</a></li>
+                <li><a href="downtime-report.html">Downtime Report</a></li>
+                <li><a href="production-timesheet.html">Production Timesheet</a></li>
+                <li><a href="shift-report.html">Shift Report</a></li>
+                <li><a href="job-card.html">Job Card</a></li>
+                <li><a href="pending-inputs.html">Pending Inputs</a></li>
+                <li><a href="setup.html">Setup</a></li>
+            </ul>
+            <div class="toc-category">Perspectives</div>
+            <ul class="toc-menu">
+                <li><a href="the-power-of-people.html">The Power of People</a></li>
+                <li><a href="downtime-workflow.html">Downtime Workflow</a></li>
+                <li><a href="data-governance.html" class="active">Data Governance</a></li>
+            </ul>
+            <div class="toc-category">Article Contents</div>
+            <ul class="toc-menu">
+                <li><a href="#abstract">Thesis</a></li>
+                <li><a href="#trust-equation">1. The Trust Equation</a></li>
+                <li><a href="#five-fractures">2. Five Fracture Points</a></li>
+                <li><a href="#ghost-operators">3. Ghost Operators</a></li>
+                <li><a href="#missing-reasons">4. Missing Reasons</a></li>
+                <li><a href="#product-blindness">5. Product Blindness</a></li>
+                <li><a href="#wrong-reason">6. Wrong Reason Selected</a></li>
+                <li><a href="#wrong-product">7. Wrong Product Selected</a></li>
+                <li><a href="#compliance-dashboard">8. The Compliance Dashboard</a></li>
+                <li><a href="#management-protocol">9. Management Protocol</a></li>
+                <li><a href="#objection">10. Addressing the Objection</a></li>
+            </ul>
+        </aside>
+
+        <!-- ARTICLE -->
+        <main class="article-content">
+            <header class="document-header" id="abstract">
+                <div class="doc-meta">
+                    <span>Manufacturing Intelligence</span>
+                    <span>Governance &amp; Compliance</span>
+                    <span>26 February 2026</span>
+                </div>
+                <h1>Data Governance &amp; System Compliance</h1>
+                <p class="abstract">Every metric Augos produces is only as trustworthy as the inputs that feed it. OEE,
+                    operator performance, downtime Pareto analysis, shift benchmarking — all of it rests on a single
+                    foundation: <strong style="color:#fff">did the right person log in, select the right product, and
+                        assign the right reason?</strong> This article confronts that dependency directly. It maps the
+                    five ways data integrity fractures, quantifies the damage each one inflicts, identifies precisely
+                    where accountability lies, and prescribes the remedial actions that restore trust.</p>
+            </header>
+
+            <!-- 1. TRUST EQUATION -->
+            <section id="trust-equation">
+                <h2>1. The Trust Equation</h2>
+
+                <p>Manufacturing intelligence operates on a simple contract between machine and human. The machine
+                    captures <em>that</em> a stoppage occurred and <em>how long</em> it lasted — automatically, with
+                    millisecond precision, no human involvement required. But the machine cannot capture <em>why</em> it
+                    stopped, <em>who</em> was responsible, or <em>what product</em> was running at the time. Those three
+                    dimensions require a human being to provide context.</p>
+
+                <p>This creates what we call the <strong>Trust Equation</strong>:</p>
+
+                <pre><code>Data Trust = Automatic Capture (100% reliable) × Human Context (variable)
+
+If Human Context = 100%  →  Intelligence is complete
+If Human Context = 80%   →  20% of every report is noise
+If Human Context = 0%    →  You have expensive data, not intelligence</code></pre>
+
+                <p>The Augos IoT device will never miss a stop. It will never misrecord a duration. It will never
+                    fabricate an event. <strong>The machine side of the equation is solved.</strong> The governance
+                    challenge — and the governance opportunity — lives entirely on the human side.</p>
+
+                <div class="pullquote">
+                    <p>"The question is never whether Augos captured the data. The question is whether the people on the
+                        floor gave it the context it needs to become intelligence."</p>
+                    <cite>The Governance Principle</cite>
+                </div>
+
+                <p>This is not a weakness of the system. It is an inherent property of any manufacturing intelligence
+                    platform that respects the complexity of production. Fully automated reason coding would require
+                    machine learning models trained on months of site-specific data, integrated into every PLC alarm
+                    code, cross-referenced against product schedules, and validated against maintenance logs. Even then,
+                    the model would guess. The operator <em>knows</em>.</p>
+
+                <p>The solution is not to remove the human from the loop. The solution is to <strong>govern the human's
+                        contribution</strong> — with the same rigour we apply to the machine's.</p>
+            </section>
+
+            <!-- 2. FIVE FRACTURE POINTS -->
+            <section id="five-fractures">
+                <h2>2. The Five Fracture Points</h2>
+
+                <p>Through analysis of thousands of production events across multiple sites, we have identified five
+                    distinct ways that data integrity degrades. Each has a different cause, a different signature in the
+                    data, a different responsible party, and a different remedial action.</p>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Fracture</th>
+                            <th>Data Signature</th>
+                            <th>Severity</th>
+                            <th>Detection</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Ghost Operator</strong></td>
+                            <td>Operator field shows device MAC address or "Unknown"</td>
+                            <td style="color:var(--accent-rose)">Critical</td>
+                            <td>Automatic — Augos flags these events</td>
+                        </tr>
+                        <tr>
+                            <td><strong>No Reason Selected</strong></td>
+                            <td>Event remains in "Pending" state</td>
+                            <td style="color:var(--accent-rose)">Critical</td>
+                            <td>Automatic — Pending Inputs report</td>
+                        </tr>
+                        <tr>
+                            <td><strong>No Product Selected</strong></td>
+                            <td>Product field is null or default</td>
+                            <td style="color:var(--accent-primary)">High</td>
+                            <td>Visible in Job Card and Shift Report</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Wrong Reason Selected</strong></td>
+                            <td>"Undefined" category or statistical anomaly</td>
+                            <td style="color:var(--accent-primary)">High</td>
+                            <td>Semi-automatic — "Undefined" flags + supervisor review</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Wrong Product Selected</strong></td>
+                            <td>Speed/output mismatch against product specification</td>
+                            <td style="color:var(--accent-blue)">Medium</td>
+                            <td>Manual — requires Production Timesheet cross-check</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>The first two fractures are <strong>automatically detectable</strong> by Augos. The system knows when
+                    an operator isn't logged in. The system knows when a reason hasn't been assigned. These are
+                    governance metrics that require zero interpretation — they are binary. The event either has an
+                    operator or it doesn't. The event either has a reason or it doesn't.</p>
+
+                <p>The remaining three fractures require <strong>human judgement to detect</strong> — a supervisor who
+                    knows the line, knows the products, knows the difference between a roller controller fault and a
+                    bearing seizure. This is where management accountability enters the governance framework.</p>
+            </section>
+
+            <!-- 3. GHOST OPERATORS -->
+            <section id="ghost-operators">
+                <h2>3. Ghost Operators</h2>
+
+                <div class="gov-card severity-critical">
+                    <div class="gov-label critical">Severity: Critical — Destroys operator attribution entirely</div>
+                    <div class="gov-title">What Happens</div>
+                    <div class="gov-body">
+                        <p>The production line stops. Augos captures the event — duration, time, speed data — but no
+                            operator is logged into the system at that moment. The event is attributed to the device MAC
+                            address (e.g., <code>B827EBB73052</code>) or recorded as <strong>"Unknown"</strong>.</p>
+                        <p>In the Pioneer Foods B-Mill dataset, 3–4 events in January 2026 were attributed to an unknown
+                            operator. That represents events where we know <em>what</em> happened and <em>for how
+                                long</em>, but we have no idea <em>who was on the floor when it happened</em>.</p>
+                    </div>
+                </div>
+
+                <h3>Why It Matters</h3>
+                <p>Ghost operators don't just create a gap in one report. They cascade through the entire intelligence
+                    layer:</p>
+                <ul class="text-list">
+                    <li><strong>Operator Analysis</strong> — Performance metrics for all operators are skewed because
+                        some events are missing from their records. An operator who had a bad shift might appear cleaner
+                        because their worst event was unattributed.</li>
+                    <li><strong>Shift Report</strong> — Shift-level accountability becomes unreliable. If two operators
+                        share a shift and one forgets to log in, all events default to the logged-in operator — unfairly
+                        inflating their downtime attribution.</li>
+                    <li><strong>Training decisions</strong> — You can't train someone if you don't know they need
+                        training. Ghost events hide precisely the operators who may need the most support.</li>
+                    <li><strong>Cultural erosion</strong> — When operators see that unattributed events affect their
+                        colleagues' scores, or that nobody is held accountable for ghost events, the incentive to log in
+                        diminishes for everyone.</li>
+                </ul>
+
+                <div class="accountability-row">
+                    <div class="acc-box">
+                        <div class="acc-box-title">👤 Accountability: Operator</div>
+                        <p>The operator is responsible for logging into the Augos terminal at the start of every shift.
+                            This takes fewer than 10 seconds. There is no technical barrier — only a behavioural one.
+                        </p>
+                    </div>
+                    <div class="acc-box">
+                        <div class="acc-box-title">👔 Accountability: Supervisor</div>
+                        <p>The shift supervisor must verify that an operator is logged in at the start of every shift.
+                            This should be part of the shift handover checklist — as fundamental as confirming the line
+                            is running.</p>
+                    </div>
+                    <div class="acc-box">
+                        <div class="acc-box-title">🏢 Accountability: Management</div>
+                        <p>Management must establish a policy: <strong>no production without an operator login.</strong>
+                            The "Unknown" event count should be a standing item in the weekly production meeting.</p>
+                    </div>
+                </div>
+
+                <div class="callout emerald">
+                    <div class="callout-title">Remedial Actions</div>
+                    <p><strong>Immediate:</strong> Review the Operator Analysis report weekly. Filter for "Unknown"
+                        events. Correlate timestamps with the physical shift roster to retrospectively identify the
+                        operator and correct the record.</p>
+                    <p><strong>Structural:</strong> Add operator login verification to the shift handover SOP. Consider
+                        a visual indicator on the Augos terminal — a green bar when logged in, a red bar when not — so
+                        that anyone walking past can see the compliance status at a glance.</p>
+                    <p><strong>KPI:</strong> Track "Ghost Operator Rate" as a percentage of total events. Target: 0%.
+                        Any value above 0% should trigger a conversation with the relevant shift team.</p>
+                </div>
+            </section>
+
+            <!-- 4. MISSING REASONS -->
+            <section id="missing-reasons">
+                <h2>4. No Reason Selected — The Pending Problem</h2>
+
+                <div class="gov-card severity-critical">
+                    <div class="gov-label critical">Severity: Critical — Renders downtime analysis incomplete</div>
+                    <div class="gov-title">What Happens</div>
+                    <div class="gov-body">
+                        <p>The line stops, Augos records the event, but the operator does not select a reason code from
+                            the stoppage reason tree. The event sits in a <strong>"Pending"</strong> state — captured
+                            but unclassified. It appears in the Pending Inputs report as an open item awaiting human
+                            input.</p>
+                        <p>In the B-Mill dataset, <strong>2 events representing 4.8% of total downtime</strong> remained
+                            pending. That means nearly 5% of the intelligence picture — almost half a day of production
+                            insight — was missing because nobody told the system <em>why</em> the line stopped.</p>
+                    </div>
+                </div>
+
+                <h3>The Compound Damage</h3>
+                <p>A pending event doesn't just represent a missing data point. It actively distorts every report that
+                    depends on reason classification:</p>
+
+                <ul class="text-list">
+                    <li><strong>Downtime Pareto</strong> — The percentage shares of all other categories are
+                        artificially inflated because 4.8% of downtime is excluded from the denominator. "Flour Bin
+                        Full" might be 45.8% <em>of classified downtime</em>, but only 43.6% of <em>all downtime</em>.
+                    </li>
+                    <li><strong>Maintenance prioritisation</strong> — If the pending events were electrical failures,
+                        the Electrical category is underreported. Maintenance budgets may be misallocated because the
+                        data tells an incomplete story.</li>
+                    <li><strong>Trend analysis</strong> — A failure mode that appears to be declining might actually be
+                        stable — the recent events were simply never classified.</li>
+                </ul>
+
+                <div class="callout rose">
+                    <div class="callout-title">The Pending Count Is a KPI in Itself</div>
+                    <p>A site with <strong>zero pending events</strong> has disciplined operators who tag events in
+                        real-time. A site with dozens of pending events has a culture gap that undermines the entire
+                        intelligence layer. The difference between these two sites is not technology — it is management
+                        expectation.</p>
+                </div>
+
+                <div class="accountability-row">
+                    <div class="acc-box">
+                        <div class="acc-box-title">👤 Accountability: Operator</div>
+                        <p>The operator should classify every event <strong>before the end of their shift</strong>. The
+                            Pending Inputs interface is designed specifically for this — it presents unclassified events
+                            in a simple, scrollable list with the reason tree readily available.</p>
+                    </div>
+                    <div class="acc-box">
+                        <div class="acc-box-title">👔 Accountability: Supervisor</div>
+                        <p>The shift supervisor must check the Pending Inputs count at the end of every shift. If the
+                            count is not zero, the outgoing operator should not be released until all events are
+                            classified. <strong>This is the single highest-impact governance action available.</strong>
+                        </p>
+                    </div>
+                    <div class="acc-box">
+                        <div class="acc-box-title">🏢 Accountability: Management</div>
+                        <p>Include the site-wide Pending Event Count in the weekly production review. Set a tolerance
+                            threshold (e.g., "no more than 2 pending events at any time") and escalate when breached.
+                            Consider linking pending event clearance to shift performance scoring.</p>
+                    </div>
+                </div>
+
+                <div class="callout emerald">
+                    <div class="callout-title">Remedial Actions</div>
+                    <p><strong>Immediate:</strong> Open the Pending Inputs report. Classify all outstanding events. If
+                        the operator's memory has faded, use the Production Timesheet (which shows the exact time and
+                        duration of each stop) to reconstruct the context.</p>
+                    <p><strong>Structural:</strong> Establish a "zero pending at shift-end" policy. Make it a
+                        non-negotiable element of the shift handover protocol. Display the Pending count on a screen
+                        visible to the entire production floor.</p>
+                    <p><strong>KPI:</strong> Track "Pending Event Rate" — pending events divided by total events,
+                        expressed as a percentage. Target: 0%. B-Mill achieved 4.8% in January 2026, which is good but
+                        not perfect.</p>
+                </div>
+            </section>
+
+            <!-- 5. PRODUCT BLINDNESS -->
+            <section id="product-blindness">
+                <h2>5. No Product Selected — Product Blindness</h2>
+
+                <div class="gov-card severity-high">
+                    <div class="gov-label high">Severity: High — Breaks product-specific OEE and job costing</div>
+                    <div class="gov-title">What Happens</div>
+                    <div class="gov-body">
+                        <p>The operator starts a production run but does not select the product being manufactured. The
+                            system records production data — speed, output, stoppages — but cannot attribute it to a
+                            specific product. The Job Card report shows a run with no product identity. The Shift Report
+                            aggregates output without knowing what was produced.</p>
+                    </div>
+                </div>
+
+                <h3>Why Product Context Matters</h3>
+                <p>Different products have different rated speeds, different changeover requirements, and different
+                    quality thresholds. A flour mill running white bread flour at 37,000 kg/h has a fundamentally
+                    different performance profile to the same mill running cake flour at 28,000 kg/h. Without product
+                    selection:</p>
+
+                <ul class="text-list">
+                    <li><strong>OEE Performance calculation is wrong</strong> — Performance is calculated as actual
+                        output divided by expected output at rated speed. If the system doesn't know which product is
+                        running, it uses the default rated speed — potentially measuring an operator against an
+                        impossible target or a trivially easy one.</li>
+                    <li><strong>Planned changeover times are meaningless</strong> — Different products have different
+                        changeover allowances configured in Setup. Without product selection, the system cannot
+                        calculate whether the changeover was compliant.</li>
+                    <li><strong>Job costing is impossible</strong> — The Job Card report tracks production against
+                        customer orders. Without product attribution, you cannot reconcile production output with order
+                        fulfilment.</li>
+                    <li><strong>Product-specific failure patterns are invisible</strong> — Some stoppages correlate with
+                        specific products (e.g., a particular flour grade causes more sifter blockages). Without product
+                        data, this correlation cannot be established.</li>
+                </ul>
+
+                <div class="accountability-row">
+                    <div class="acc-box">
+                        <div class="acc-box-title">👤 Accountability: Operator</div>
+                        <p>Select the correct product at the start of every production run and when changing products.
+                            The product list is pre-configured in Setup — this is a dropdown selection, not a data entry
+                            task.</p>
+                    </div>
+                    <div class="acc-box">
+                        <div class="acc-box-title">👔 Accountability: Supervisor</div>
+                        <p>Verify the Production Timesheet at end-of-shift. Any runs without a product assigned must be
+                            corrected before the shift report is finalised.</p>
+                    </div>
+                    <div class="acc-box">
+                        <div class="acc-box-title">🏢 Accountability: Management</div>
+                        <p>Ensure the product list in Setup is complete and current. If operators can't find their
+                            product in the list, they'll skip the selection. Management owns the master data; operators
+                            can only select what's available.</p>
+                    </div>
+                </div>
+
+                <div class="callout emerald">
+                    <div class="callout-title">Remedial Actions</div>
+                    <p><strong>Immediate:</strong> Cross-reference the Production Timesheet with the day's production
+                        schedule. Assign products retroactively to any unattributed runs.</p>
+                    <p><strong>Structural:</strong> Review the product list in Setup quarterly. Remove discontinued
+                        products, add new ones, and ensure naming conventions are intuitive for operators (not internal
+                        SKU codes that nobody on the floor recognises).</p>
+                    <p><strong>KPI:</strong> Track "Product Attribution Rate" — runs with a product selected divided by
+                        total runs. Target: 100%.</p>
+                </div>
+            </section>
+
+            <!-- 6. WRONG REASON -->
+            <section id="wrong-reason">
+                <h2>6. Incorrect Stoppage Reason Selected</h2>
+
+                <div class="gov-card severity-high">
+                    <div class="gov-label high">Severity: High — Misdirects maintenance spending and root cause analysis
+                    </div>
+                    <div class="gov-title">What Happens</div>
+                    <div class="gov-body">
+                        <p>The operator classifies a stoppage, but selects the wrong reason. A bearing seizure is tagged
+                            as "Other Mechanical." An electrical fault is classified under "Pneumatic." Or — most
+                            commonly — the operator selects <strong>"Undefined"</strong> from a category because the
+                            actual reason doesn't exist in the tree or because they're unsure which code applies.</p>
+                        <p>In the B-Mill data, the <strong>"Downtime Electrical | Undefined"</strong> reason accounted
+                            for 3.4% of total downtime — a single event of 34.6 million milliseconds (roughly 9.6
+                            hours). That is a nearly 10-hour event where the system knows <em>something</em> electrical
+                            failed, but the specific failure mode is lost.</p>
+                    </div>
+                </div>
+
+                <h3>The "Undefined" Warning Signal</h3>
+                <p>"Undefined" is the most important single word in any Augos reason tree. It is the system's way of
+                    telling you that one of two things has gone wrong:</p>
+
+                <ul class="text-list">
+                    <li><strong>The reason tree is incomplete</strong> — The operator encountered a failure mode that
+                        doesn't have a corresponding code. This is a <em>configuration problem</em>, owned by
+                        management, not an operator failure. The answer is to refine the reason tree in Setup → Stoppage
+                        Reasons.</li>
+                    <li><strong>The operator is uncertain</strong> — The operator recognises the available codes but
+                        isn't confident which one applies. This is a <em>training problem</em>. The answer is targeted
+                        training on failure mode identification for that specific operator.</li>
+                </ul>
+
+                <p>A more insidious variant is the <strong>misclassification</strong> — where the operator selects a
+                    plausible but incorrect reason. The bearing that's tagged as a roller fault. The conveyor blockage
+                    that's logged as a bin full event. These are harder to detect because the data <em>looks</em>
+                    complete. The damage is silent: maintenance teams investigate the wrong component, capital is
+                    allocated to the wrong system, and the real root cause persists unaddressed.</p>
+
+                <div class="accountability-row">
+                    <div class="acc-box">
+                        <div class="acc-box-title">👤 Accountability: Operator</div>
+                        <p>Select the most specific reason code available. When in doubt, use "Undefined" within the
+                            correct <em>category</em> — this is better than selecting a wrong specific reason, because
+                            it signals uncertainty without creating false precision.</p>
+                    </div>
+                    <div class="acc-box">
+                        <div class="acc-box-title">👔 Accountability: Supervisor</div>
+                        <p>Review the Downtime Report weekly. Filter for "Undefined" events. For each, determine the
+                            actual root cause through discussion with the operator and physical inspection. Correct the
+                            reason code in the system.</p>
+                    </div>
+                    <div class="acc-box">
+                        <div class="acc-box-title">🏢 Accountability: Management</div>
+                        <p>Own the reason tree. Review it quarterly. If "Undefined" usage exceeds 5% of events, the tree
+                            is inadequate — not the operators. Commission a reason tree refinement with input from
+                            operators, supervisors, <em>and</em> maintenance technicians.</p>
+                    </div>
+                </div>
+
+                <div class="callout emerald">
+                    <div class="callout-title">Remedial Actions</div>
+                    <p><strong>Immediate:</strong> Search the Downtime Report for all "Undefined" events. Reclassify
+                        each one based on maintenance records, operator testimony, or SCADA alarm logs.</p>
+                    <p><strong>Structural:</strong> The stoppage reason tree should balance specificity with usability —
+                        Augos recommends approximately 70 reason codes across 8 top-level categories, nested 3 levels
+                        deep. Too few reasons produce vague data; too many overwhelm the operator and slow down
+                        classification.</p>
+                    <p><strong>KPI:</strong> Track "Undefined Rate" — events classified as "Undefined" divided by total
+                        classified events. Target: below 2%. B-Mill's 3.4% suggests the reason tree or operator training
+                        needs attention.</p>
+                </div>
+            </section>
+
+            <!-- 7. WRONG PRODUCT -->
+            <section id="wrong-product">
+                <h2>7. Incorrect Product Selected</h2>
+
+                <div class="gov-card severity-medium">
+                    <div class="gov-label medium">Severity: Medium — Distorts performance benchmarks and yield
+                        calculations</div>
+                    <div class="gov-title">What Happens</div>
+                    <div class="gov-body">
+                        <p>The operator selects a product, but it's the wrong one — either because the product changed
+                            mid-shift and the operator forgot to update, or because two products have similar names and
+                            the wrong one was tapped in haste. The system now measures performance against the wrong
+                            rated speed and the wrong quality standards.</p>
+                    </div>
+                </div>
+
+                <h3>Detection Through Data</h3>
+                <p>Incorrect product selection is the hardest fracture to detect because the data <em>looks</em>
+                    complete and classified. However, there are telltale signatures:</p>
+
+                <ul class="text-list">
+                    <li><strong>Speed anomalies</strong> — If the selected product has a rated speed of 37,000 kg/h but
+                        actual production is running at 28,000 kg/h, the Performance metric will show an impossibly low
+                        value. This mismatch should trigger investigation.</li>
+                    <li><strong>Changeover gaps</strong> — If the Production Timesheet shows a product changeover event
+                        but no change in the selected product, the operator likely forgot to update the product
+                        selection after the changeover.</li>
+                    <li><strong>Schedule cross-reference</strong> — Comparing the products selected in Augos against the
+                        day's production schedule reveals mismatches that wouldn't be visible in either system alone.
+                    </li>
+                </ul>
+
+                <div class="accountability-row">
+                    <div class="acc-box">
+                        <div class="acc-box-title">👤 Accountability: Operator</div>
+                        <p>Update the product selection every time a product changeover occurs. This should be paired
+                            with the physical changeover process — when you change the product, you change the system.
+                        </p>
+                    </div>
+                    <div class="acc-box">
+                        <div class="acc-box-title">👔 Accountability: Supervisor</div>
+                        <p>Cross-check the Production Timesheet against the production schedule during the end-of-shift
+                            review. Flag any mismatches for correction.</p>
+                    </div>
+                    <div class="acc-box">
+                        <div class="acc-box-title">🏢 Accountability: Management</div>
+                        <p>Ensure product names in Setup match what operators call them on the floor. If the system says
+                            "BREAD_FLOUR_01A" but the floor says "White Bread," rename it. Eliminate cognitive friction.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="callout emerald">
+                    <div class="callout-title">Remedial Actions</div>
+                    <p><strong>Immediate:</strong> Review the Production Timesheet for the past week. Any run where
+                        actual speed deviates more than 20% from the selected product's rated speed should be
+                        investigated.</p>
+                    <p><strong>Structural:</strong> Pair the product changeover SOP with a mandatory Augos product
+                        update step. Make it physical — a laminated card at the operator station listing each product
+                        and its Augos name.</p>
+                    <p><strong>KPI:</strong> Track "Product-Speed Alignment" — the percentage of production runs where
+                        actual speed falls within ±15% of the selected product's rated speed. Deviations beyond this
+                        threshold warrant investigation.</p>
+                </div>
+            </section>
+
+            <!-- 8. COMPLIANCE DASHBOARD -->
+            <section id="compliance-dashboard">
+                <h2>8. The Compliance Dashboard — Governance at a Glance</h2>
+
+                <p>Augos provides the raw materials for a complete governance framework through its existing reports.
+                    Here is how to construct a <strong>Data Quality Scorecard</strong> from metrics already available in
+                    the platform:</p>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Compliance Metric</th>
+                            <th>Source Report</th>
+                            <th>Calculation</th>
+                            <th>Target</th>
+                            <th>B-Mill Actual</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Operator Login Rate</strong></td>
+                            <td>Operator Analysis</td>
+                            <td>Events with known operator ÷ total events</td>
+                            <td style="color:var(--accent-emerald)">100%</td>
+                            <td><strong>~97%</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reason Completion Rate</strong></td>
+                            <td>Pending Inputs</td>
+                            <td>Classified events ÷ total events</td>
+                            <td style="color:var(--accent-emerald)">100%</td>
+                            <td><strong>95.2%</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reason Specificity Rate</strong></td>
+                            <td>Downtime Report</td>
+                            <td>Events not "Undefined" ÷ classified events</td>
+                            <td style="color:var(--accent-emerald)">&gt; 98%</td>
+                            <td><strong>~96.6%</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Product Attribution Rate</strong></td>
+                            <td>Job Card / Shift Report</td>
+                            <td>Runs with product selected ÷ total runs</td>
+                            <td style="color:var(--accent-emerald)">100%</td>
+                            <td><em>Audit required</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Composite Data Quality Score</strong></td>
+                            <td>All reports</td>
+                            <td>Weighted average of above four metrics</td>
+                            <td style="color:var(--accent-emerald)">&gt; 95%</td>
+                            <td><strong>~96.3%</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="callout blue">
+                    <div class="callout-title">The Pioneer Foods B-Mill Benchmark</div>
+                    <p>The B-Mill achieved a composite data quality score of approximately 96% in January 2026 — without
+                        any formal governance programme. Only 3–4 events were ghost-operated, only 2 events were
+                        pending, and only 1 event used "Undefined." This demonstrates that <strong>reasonable
+                            discipline, even without a formal compliance protocol, already produces highly trustworthy
+                            data.</strong> A formal governance programme would push this above 99%.</p>
+                </div>
+            </section>
+
+            <!-- 9. MANAGEMENT PROTOCOL -->
+            <section id="management-protocol">
+                <h2>9. The Management Accountability Protocol</h2>
+
+                <p>Data governance is not a technology problem. It is a management commitment. The following protocol
+                    distributes accountability across three levels — daily, weekly, and monthly — to create a
+                    self-correcting governance loop.</p>
+
+                <h3>Daily — Shift Supervisor</h3>
+                <ul class="text-list">
+                    <li>Verify operator login at shift start (10 seconds)</li>
+                    <li>Check Pending Inputs count at shift end — must be zero</li>
+                    <li>Verify product selection matches the production schedule</li>
+                    <li>Review any "Undefined" events from the past 24 hours</li>
+                </ul>
+
+                <h3>Weekly — Production Manager</h3>
+                <ul class="text-list">
+                    <li>Review the Data Quality Scorecard (table above)</li>
+                    <li>Identify operators with higher-than-average ghost events or pending counts</li>
+                    <li>Review the Downtime Report Pareto for "Undefined" clusters</li>
+                    <li>Spot-check 5 random events for reason code accuracy</li>
+                </ul>
+
+                <h3>Monthly — Plant Director / Operations Manager</h3>
+                <ul class="text-list">
+                    <li>Review the composite Data Quality Score trend — is it improving?</li>
+                    <li>Audit the stoppage reason tree — are new failure modes being captured?</li>
+                    <li>Assess whether product master data needs updating</li>
+                    <li>Recognise shifts or operators with 100% compliance</li>
+                </ul>
+
+                <div class="pullquote">
+                    <p>"The operator who logs in, selects the right product, and classifies every event before going
+                        home is not doing extra work. They are doing the work. Everything else is incomplete."</p>
+                    <cite>The Standard</cite>
+                </div>
+            </section>
+
+            <!-- 10. ADDRESSING THE OBJECTION -->
+            <section id="objection">
+                <h2>10. Addressing the Objection</h2>
+
+                <p>We hear it often: <em>"But what if the operators don't fill in the data correctly? Won't the reports
+                        be wrong?"</em></p>
+
+                <p>This is a legitimate question. And the answer has three parts:</p>
+
+                <h3>Part 1: The Machine Cannot Lie</h3>
+                <p>The IoT device captures every stop, every duration, every speed change — automatically, with
+                    millisecond precision. <strong>This data is never wrong.</strong> If the line stopped for 9.6 hours,
+                    Augos records 34,560,000 milliseconds. No operator input is required. No operator can alter it. The
+                    foundational truth — that you lost 9.6 hours of production — is immutable.</p>
+
+                <h3>Part 2: The System Makes Non-Compliance Visible</h3>
+                <p>Unlike a paper logbook or an Excel spreadsheet, Augos does not allow gaps to go unnoticed. Every
+                    ghost operator event, every pending reason, every "Undefined" classification is <strong>surfaced,
+                        quantified, and reportable.</strong> The platform doesn't just accept bad data — it measures the
+                    <em>badness</em> and hands you a report on it. The Pending Inputs screen is, in essence, a
+                    governance dashboard. The "Unknown" operator count is a compliance metric. You cannot have a data
+                    quality problem you don't know about.</p>
+
+                <h3>Part 3: Imperfect Data Is Infinitely Better Than No Data</h3>
+                <p>Before Augos, the alternative was not "perfect data." The alternative was <strong>no data at
+                        all.</strong> Paper logbooks filled in at the end of a shift from memory. Duration estimates
+                    rounded to the nearest 15 minutes. Reason codes limited to the operator's vocabulary and willingness
+                    to write. No attribution. No trend analysis. No Pareto. No accountability.</p>
+
+                <p>Even at 95% data quality — with a few ghost events, a couple of pending reasons, and an occasional
+                    "Undefined" — the intelligence produced by Augos is orders of magnitude more actionable than what
+                    existed before. And the platform itself provides the tools to push from 95% to 99%.</p>
+
+                <div class="callout">
+                    <div class="callout-title">The Real Question</div>
+                    <p>The objection assumes that data quality is a precondition for adopting the system. In reality,
+                        <strong>the system is the mechanism for achieving data quality.</strong> You don't wait for
+                        perfect inputs before installing Augos. You install Augos, measure your current data quality,
+                        and use its governance metrics to improve — week by week, shift by shift, operator by operator —
+                        until the inputs match the precision of the machine.</p>
+                    <p>The journey from 80% to 95% happens in the first month. The journey from 95% to 99% is a
+                        management discipline. And every percentage point of improvement makes the intelligence more
+                        trustworthy, the decisions more precise, and the ROI more tangible.</p>
+                </div>
+
+                <div class="pullquote">
+                    <p>"You don't refuse to install a speedometer because the driver might not look at it. You install
+                        it, and then you build the culture of checking."</p>
+                    <cite>The Augos Position</cite>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- META SIDEBAR -->
+        <aside class="meta-sidebar">
+            <div class="meta-group">
+                <div class="meta-group-title">Article Context</div>
+                <div class="meta-item"><span>Type</span><span class="meta-val"
+                        style="color:var(--accent-primary)">Governance</span></div>
+                <div class="meta-item"><span>Module</span><span class="meta-val">MFG Intelligence</span></div>
+                <div class="meta-item"><span>Date</span><span class="meta-val">26 Feb 2026</span></div>
+            </div>
+            <div class="meta-group">
+                <div class="meta-group-title">Data Source</div>
+                <div class="meta-item"><span>Site</span><span class="meta-val">Pioneer Foods</span></div>
+                <div class="meta-item"><span>Line</span><span class="meta-val">B-Mill</span></div>
+                <div class="meta-item"><span>Point ID</span><span class="meta-val">33340</span></div>
+                <div class="meta-item"><span>Period</span><span class="meta-val">Jan 2026</span></div>
+            </div>
+            <div class="meta-group">
+                <div class="meta-group-title">Governance Metrics</div>
+                <div class="meta-item"><span>Operator Login</span><span class="meta-val"
+                        style="color:var(--accent-emerald)">~97%</span></div>
+                <div class="meta-item"><span>Reason Completion</span><span class="meta-val"
+                        style="color:var(--accent-emerald)">95.2%</span></div>
+                <div class="meta-item"><span>Reason Specificity</span><span class="meta-val"
+                        style="color:var(--accent-primary)">96.6%</span></div>
+                <div class="meta-item"><span>Composite Score</span><span class="meta-val"
+                        style="color:var(--accent-emerald)">~96%</span></div>
+            </div>
+            <div class="meta-group">
+                <div class="meta-group-title">Five Fracture Points</div>
+                <div class="meta-item"><span>Ghost Operators</span><span class="meta-val"
+                        style="color:var(--accent-rose)">Critical</span></div>
+                <div class="meta-item"><span>No Reason</span><span class="meta-val"
+                        style="color:var(--accent-rose)">Critical</span></div>
+                <div class="meta-item"><span>No Product</span><span class="meta-val"
+                        style="color:var(--accent-primary)">High</span></div>
+                <div class="meta-item"><span>Wrong Reason</span><span class="meta-val"
+                        style="color:var(--accent-primary)">High</span></div>
+                <div class="meta-item"><span>Wrong Product</span><span class="meta-val"
+                        style="color:var(--accent-blue)">Medium</span></div>
+            </div>
+            <div class="meta-group">
+                <div class="meta-group-title">Reports Referenced</div>
+                <div class="meta-item"><span><a href="operator-analysis.html"
+                            style="color:var(--text-muted);text-decoration:none">Operator Analysis</a></span></div>
+                <div class="meta-item"><span><a href="pending-inputs.html"
+                            style="color:var(--text-muted);text-decoration:none">Pending Inputs</a></span></div>
+                <div class="meta-item"><span><a href="downtime-report.html"
+                            style="color:var(--text-muted);text-decoration:none">Downtime Report</a></span></div>
+                <div class="meta-item"><span><a href="setup.html"
+                            style="color:var(--text-muted);text-decoration:none">Setup</a></span></div>
+                <div class="meta-item"><span><a href="production-timesheet.html"
+                            style="color:var(--text-muted);text-decoration:none">Production Timesheet</a></span></div>
+                <div class="meta-item"><span><a href="job-card.html"
+                            style="color:var(--text-muted);text-decoration:none">Job Card</a></span></div>
+            </div>
+        </aside>
+    </div>
+</body>
+
+</html>

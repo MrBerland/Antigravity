@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="https://schema.org/TechArticle">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triggers — Augos Knowledge Base</title>
+    <meta name="description"
+        content="Organisation-wide alert configuration with 342+ rules across all sites, duration-based thresholds, and CRUD management for energy monitoring triggers.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..600;1,14..32,400&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #06080A;
+            --bg-surface: #0E1116;
+            --bg-surface-raised: #151A21;
+            --text-main: #E2E8F0;
+            --text-muted: #94A3B8;
+            --text-faint: #475569;
+            --border-faint: rgba(255, 255, 255, 0.06);
+            --border-light: rgba(255, 255, 255, 0.12);
+            --accent-primary: #F59E0B;
+            --accent-dim: rgba(245, 158, 11, 0.15);
+            --code-bg: #0D1017;
+            --cat-npt: #22C55E;
+            --font-body: 'Inter', sans-serif;
+            --font-heading: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            line-height: 1.75;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased
+        }
+
+        .page-wrapper {
+            display: grid;
+            grid-template-columns: minmax(240px, 1fr) minmax(auto, 800px) minmax(240px, 1fr);
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 32px
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 92px;
+            height: calc(100vh - 132px);
+            padding-right: 48px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -ms-overflow-style: none;
+            scrollbar-width: none
+        }
+
+        .sidebar::-webkit-scrollbar {
+            display: none
+        }
+
+        .brand {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: .02em;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 64px;
+            text-decoration: none
+        }
+
+        .brand-logo {
+            width: 20px;
+            height: 20px;
+            background: var(--text-main);
+            border-radius: 2px;
+            position: relative
+        }
+
+        .brand-logo::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: var(--bg-base)
+        }
+
+        .toc-menu {
+            list-style: none;
+            font-size: .85rem
+        }
+
+        .toc-menu li {
+            margin-bottom: 16px
+        }
+
+        .toc-menu a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color .2s ease;
+            display: block
+        }
+
+        .toc-menu a:hover,
+        .toc-menu a.active {
+            color: var(--text-main)
+        }
+
+        .toc-category {
+            text-transform: uppercase;
+            font-size: .7rem;
+            letter-spacing: .05em;
+            color: var(--text-faint);
+            margin: 32px 0 12px 0;
+            font-weight: 600
+        }
+
+        .article-content {
+            padding: 48px 0 120px 0;
+            min-width: 0
+        }
+
+        header.document-header {
+            margin-bottom: 80px;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 48px
+        }
+
+        .doc-meta {
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px
+        }
+
+        .doc-meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            font-weight: 500;
+            line-height: 1.1;
+            letter-spacing: -.03em;
+            color: #fff;
+            margin-bottom: 24px
+        }
+
+        .abstract {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-weight: 300;
+            max-width: 90%
+        }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: #fff;
+            margin: 64px 0 24px 0;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-faint);
+            letter-spacing: -.02em
+        }
+
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #fff;
+            margin: 40px 0 16px 0
+        }
+
+        p {
+            margin-bottom: 20px
+        }
+
+        strong {
+            color: #fff;
+            font-weight: 500
+        }
+
+        figure.exhibit {
+            margin: 48px 0;
+            border: 1px solid var(--border-light);
+            background: var(--bg-surface);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, .5)
+        }
+
+        .exhibit-header {
+            background: rgba(255, 255, 255, .02);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-light);
+            font-family: var(--font-mono);
+            font-size: .75rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between
+        }
+
+        .exhibit-img-wrap {
+            padding: 1px;
+            background: #000
+        }
+
+        .exhibit img {
+            display: block;
+            width: 100%;
+            height: auto
+        }
+
+        figcaption {
+            padding: 16px 20px;
+            font-size: .85rem;
+            color: var(--text-muted);
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border-faint);
+            line-height: 1.5
+        }
+
+        .callout {
+            margin: 32px 0;
+            padding: 24px 32px;
+            border-left: 2px solid var(--accent-primary);
+            background: linear-gradient(90deg, var(--accent-dim) 0%, transparent 100%)
+        }
+
+        .callout-title {
+            font-family: var(--font-heading);
+            font-size: .9rem;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 8px
+        }
+
+        .callout p:last-child {
+            margin-bottom: 0
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 32px 0;
+            font-size: .85rem
+        }
+
+        .data-table th,
+        .data-table td {
+            text-align: left;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-faint)
+        }
+
+        .data-table th {
+            color: var(--text-muted);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-light);
+            font-family: var(--font-heading);
+            text-transform: uppercase;
+            letter-spacing: .02em;
+            font-size: .75rem
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(255, 255, 255, .02)
+        }
+
+        ul.text-list {
+            list-style: disc;
+            padding-left: 24px;
+            margin-bottom: 24px
+        }
+
+        ul.text-list li {
+            margin-bottom: 8px;
+            padding-left: 8px
+        }
+
+        ul.text-list li::marker {
+            color: var(--text-faint)
+        }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border-light);
+            padding: 24px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: .8rem;
+            line-height: 1.6;
+            color: #A6ACCD;
+            margin: 32px 0
+        }
+
+        .meta-sidebar {
+            position: sticky;
+            top: 92px;
+            padding-left: 48px;
+            font-size: .85rem
+        }
+
+        .meta-group {
+            margin-bottom: 32px;
+            border-top: 1px solid var(--border-light);
+            padding-top: 16px
+        }
+
+        .meta-group-title {
+            font-family: var(--font-heading);
+            color: #fff;
+            font-size: .85rem;
+            margin-bottom: 12px
+        }
+
+        .meta-item {
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between
+        }
+
+        .meta-val {
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: .75rem
+        }
+
+        @media(max-width:1200px) {
+            .page-wrapper {
+                grid-template-columns: 240px 1fr
+            }
+
+            .meta-sidebar {
+                display: none
+            }
+        }
+
+        @media(max-width:900px) {
+            .page-wrapper {
+                grid-template-columns: 1fr
+            }
+
+            .sidebar {
+                display: none
+            }
+        }
+    
+/* ═══ BREADCRUMB NAV BAR ═══ */
+.kb-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(6, 8, 10, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 0 32px;
+}
+.kb-topbar-inner {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 44px;
+    gap: 16px;
+}
+.kb-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #94A3B8;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 4px 12px 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.kb-back-btn:hover {
+    color: #E2E8F0;
+    border-color: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+}
+.kb-back-btn svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+.kb-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    overflow: hidden;
+    white-space: nowrap;
+    min-width: 0;
+}
+.kb-breadcrumb a {
+    color: #64748B;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+}
+.kb-breadcrumb a:hover {
+    color: #F59E0B;
+}
+.kb-breadcrumb .bc-sep {
+    color: #334155;
+    margin: 0 8px;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+}
+.kb-breadcrumb .bc-current {
+    color: #E2E8F0;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.kb-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.kb-home-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    color: #64748B;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+.kb-home-btn:hover {
+    color: #E2E8F0;
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.08);
+}
+@media (max-width: 640px) {
+    .kb-breadcrumb .bc-mid { display: none; }
+    .kb-breadcrumb .bc-mid-sep { display: none; }
+}
+
+    </style>
+</head>
+
+<body>
+    <nav class="kb-topbar" aria-label="Breadcrumb">
+        <div class="kb-topbar-inner">
+            <a href="energy-intelligence.html" class="kb-back-btn" title="Back to Energy">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd"/></svg>
+                <span>Energy</span>
+            </a>
+            <div class="kb-breadcrumb">
+                <a href="index.html">AUGOS Docs</a>
+                <span class="bc-sep">›</span>
+                <a href="energy-intelligence.html" class="bc-mid">Energy Intelligence</a>
+                <span class="bc-sep bc-mid-sep">›</span>
+                <span class="bc-current">Triggers</span>
+            </div>
+            <div class="kb-topbar-actions">
+                <a href="index.html" class="kb-home-btn" title="Knowledge Base Home">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd"/></svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+        <aside class="sidebar">
+            <a href="index.html" class="brand">
+                <div class="brand-logo"></div>AUGOS Docs
+            </a>
+            <div class="toc-category">Energy Intelligence</div>
+            <ul class="toc-menu">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="technical-analysis.html">Technical Analysis</a></li>
+                <li><a href="consumption-breakdown.html">Consumption Breakdown</a></li>
+                <li><a href="cost-breakdown.html">Cost Breakdown</a></li>
+                <li><a href="cost-allocation.html">Cost Allocation</a></li>
+                <li><a href="bill-verification.html">Bill Verification</a></li>
+                <li><a href="power-factor-demand.html">Power Factor & Demand</a></li>
+                <li><a href="time-of-use.html">Time of Use</a></li>
+                <li><a href="tariff-comparison.html">Tariff Comparison</a></li>
+                <li><a href="load-curtailment.html">Load Curtailment</a></li>
+                <li><a href="charting.html">Charting</a></li>
+                <li><a href="data-download.html">Data Download</a></li>
+                <li><a href="triggers.html" class="active">Triggers</a></li>
+            </ul>
+            <div class="toc-category">Article Contents</div>
+            <ul class="toc-menu">
+                <li><a href="#abstract">Abstract</a></li>
+                <li><a href="#capability">1. Capability & Purpose</a></li>
+                <li><a href="#types">2. Trigger Types</a></li>
+                <li><a href="#outputs">3. Visual Walkthrough</a></li>
+                <li><a href="#architecture">4. Data Architecture</a></li>
+            </ul>
+        </aside>
+
+        <main class="article-content">
+            <header class="document-header" id="abstract">
+                <div class="doc-meta"><span>Energy Intelligence</span><span>Report 13 of 13</span><span>Version
+                        1.0</span></div>
+                <h1>Triggers</h1>
+                <p class="abstract">The operational automation layer. 342+ alert rules across the entire organisation,
+                    configurable by parameter, condition, threshold, and duration. Unlike every other report, Triggers
+                    operates at the organisation level — not point-specific — providing a unified control surface for
+                    all monitoring alerts.</p>
+            </header>
+
+            <section id="capability">
+                <h2>1. Capability & Purpose</h2>
+                <p>Triggers transform Augos from a retrospective analysis platform into a proactive monitoring system.
+                    Instead of discovering problems during the next morning's dashboard review, triggers push alerts in
+                    real-time when thresholds are breached.</p>
+                <ul class="text-list">
+                    <li><strong>Organisation-Wide Scope:</strong> ⚠️ This is the only report that spans the entire
+                        organisation — not filtered by point ID. All 342+ triggers across all sites are visible and
+                        manageable from one screen.</li>
+                    <li><strong>CRUD Operations:</strong> Create, read, update, delete triggers directly from the
+                        interface.</li>
+                    <li><strong>Duration-Based Thresholds:</strong> Triggers can fire on instantaneous breach or
+                        sustained breach (1 min, 5 min, 15 min, up to 10,080 min / 7 days).</li>
+                    <li><strong>Card-Style Rows:</strong> Each trigger is displayed as a card showing the parameter,
+                        condition, threshold, duration, and site.</li>
+                </ul>
+            </section>
+
+            <section id="types">
+                <h2>2. Trigger Types Observed</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Condition</th>
+                            <th>Example Threshold</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Peak Demand</strong></td>
+                            <td>greater than</td>
+                            <td>1,350 kVA</td>
+                            <td>Instantaneous</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Power Factor</strong></td>
+                            <td>less than</td>
+                            <td>0.94 PF</td>
+                            <td>Half-hour</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Voltage (3-phase)</strong></td>
+                            <td>less than</td>
+                            <td>10 V</td>
+                            <td>1 min</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Voltage (per phase)</strong></td>
+                            <td>greater than</td>
+                            <td>250 V</td>
+                            <td>2 min</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Comms on device</strong></td>
+                            <td>equal to</td>
+                            <td>Offline</td>
+                            <td>10,080 min (7 days)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Consumption</strong></td>
+                            <td>greater than</td>
+                            <td>1 kWh</td>
+                            <td>5 min</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="outputs">
+                <h2>3. Visual Walkthrough</h2>
+                <figure class="exhibit">
+                    <div class="exhibit-header"><span>EXHIBIT A: TRIGGER LIST</span><span>342 TOTAL |
+                            ORGANISATION-WIDE</span></div>
+                    <div class="exhibit-img-wrap"><img
+                            src="../report-audit/13-triggers/screenshots/01-header-and-first-triggers.png"
+                            alt="Trigger list showing first set of configured alerts" loading="lazy"></div>
+                    <figcaption><strong>Card Interface:</strong> Each trigger is rendered as a card showing the site
+                        name, parameter (Peak Demand, PF, Voltage), condition (greater/less than), threshold value, and
+                        duration. CRUD controls available per card.</figcaption>
+                </figure>
+                <figure class="exhibit">
+                    <div class="exhibit-header"><span>EXHIBIT B: DIVERSE TRIGGER TYPES</span><span>MULTIPLE SITES</span>
+                    </div>
+                    <div class="exhibit-img-wrap"><img
+                            src="../report-audit/13-triggers/screenshots/03-varied-trigger-types.png"
+                            alt="Diverse trigger types across multiple sites" loading="lazy"></div>
+                    <figcaption><strong>Diversity:</strong> The trigger list spans multiple sites and parameter types —
+                        from demand thresholds (kVA) to comms monitoring (offline detection) to voltage protection
+                        (per-phase limits).</figcaption>
+                </figure>
+                <figure class="exhibit">
+                    <div class="exhibit-header"><span>EXHIBIT C: PAGINATION</span><span>1–25 OF 342</span></div>
+                    <div class="exhibit-img-wrap"><img
+                            src="../report-audit/13-triggers/screenshots/04-pagination-342-total.png"
+                            alt="Pagination showing 342 total triggers" loading="lazy"></div>
+                    <figcaption><strong>Scale:</strong> 342 triggers across the entire organisation, paginated 25 per
+                        page. This demonstrates the platform's operational maturity — a live organisation actively
+                        monitoring hundreds of conditions across multiple sites.</figcaption>
+                </figure>
+            </section>
+
+            <section id="architecture">
+                <h2>4. Data Architecture</h2>
+                <pre><code>{
+  "endpoint": "/api/v1/triggers",
+  "method": "GET",
+  "parameters": {
+    "page": 1,
+    "pageSize": 25
+  },
+  "response": {
+    "totalCount": 342,
+    "triggers": [
+      {
+        "id": 1042,
+        "siteName": "One & Only Cape Town",
+        "parameter": "Peak Demand",
+        "condition": "greater_than",
+        "threshold": 1350,
+        "unit": "kVA",
+        "duration": "instantaneous",
+        "active": true
+      }
+    ]
+  }
+}</code></pre>
+            </section>
+        </main>
+
+        <aside class="meta-sidebar">
+            <div class="meta-group">
+                <div class="meta-group-title">Module Context</div>
+                <div class="meta-item"><span>Status</span><span class="meta-val"
+                        style="color:var(--cat-npt)">Production</span></div>
+                <div class="meta-item"><span>Report ID</span><span class="meta-val">NRG_013</span></div>
+                <div class="meta-item"><span>AI-Ready</span><span class="meta-val"
+                        style="color:var(--text-faint)">N/A</span></div>
+            </div>
+            <div class="meta-group">
+                <div class="meta-group-title">Scale</div>
+                <div class="meta-item"><span>Total Triggers</span><span class="meta-val">342</span></div>
+                <div class="meta-item"><span>Scope</span><span class="meta-val" style="color:#F59E0B">Org-Wide</span>
+                </div>
+                <div class="meta-item"><span>Duration Range</span><span class="meta-val">0–10,080 min</span></div>
+            </div>
+        </aside>
+    </div>
+</body>
+
+</html>

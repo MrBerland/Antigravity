@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="https://schema.org/WebPage">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manufacturing Intelligence for South African Industry | Augos OEE Platform</title>
+    <meta name="description"
+        content="OEE-powered production intelligence for South African manufacturers. Real-time downtime tracking, operator benchmarking, and AI-ready analytics for food, packaging, milling, bottling, paint, and automotive component manufacturers.">
+    <meta name="keywords"
+        content="OEE software South Africa, manufacturing intelligence, production analytics, downtime tracking, food manufacturing, packaging OEE, milling operations, bottling plant analytics, paint manufacturing, automotive component manufacturing, smart factory South Africa">
+    <meta property="og:title" content="Augos Manufacturing Intelligence — Built for South African Industry">
+    <meta property="og:description"
+        content="From flour mills to bottling lines to automotive component plants — Augos gives every South African manufacturer real-time visibility into OEE, downtime, and operator performance.">
+    <meta property="og:type" content="website">
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- JSON-LD: Service Page -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "Augos Manufacturing Intelligence",
+        "provider": {
+            "@type": "Organization",
+            "name": "Augos (Pty) Ltd",
+            "url": "https://augos.io",
+            "areaServed": {
+                "@type": "Country",
+                "name": "South Africa"
+            }
+        },
+        "description": "OEE-powered production analytics platform for South African manufacturers. Real-time downtime intelligence, operator benchmarking, and AI-ready data exports for food, packaging, milling, bottling, paint, and automotive component manufacturing.",
+        "serviceType": "Manufacturing Intelligence Software",
+        "audience": {
+            "@type": "Audience",
+            "audienceType": "Plant Managers, CI Teams, Operations Directors, Production Engineers"
+        }
+    }
+    </script>
+
+    <!-- JSON-LD: FAQ -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What types of manufacturers can use Augos OEE software?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Augos Manufacturing Intelligence supports any discrete or process manufacturer with quantifiable production output. This includes food manufacturers, milling operations, packaging lines, bottling and canning plants, paint and coatings facilities, and automotive component manufacturers."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How does OEE software help South African manufacturers?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "South African manufacturers face unique challenges including load shedding, high energy costs, skills gaps, and competitive pressure. Augos OEE provides real-time visibility into availability, performance, and quality losses — enabling data-driven decisions that improve throughput, reduce downtime, and optimise operator performance."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What is the typical ROI from Augos Manufacturing Intelligence?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Manufacturers typically see 10-25% availability improvement within 6 months by eliminating their top downtime reasons. In one case study, a single stop reason (Flour Bin Full) accounted for 45.8% of all downtime — eliminating this through process redesign could recover 4.9 million kg/month of lost production."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Does Augos work with existing SCADA and PLC systems?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Augos connects to production lines via a lightweight edge device that interfaces with existing SCADA, PLC, and sensor infrastructure. No replacement of existing equipment is required — Augos layers intelligence on top of your current setup."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What industries does Augos classify as manufacturing?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Augos serves manufacturers across ISIC classifications including food processing (ISIC 10), beverages (ISIC 11), textiles (ISIC 13), paper and packaging (ISIC 17), chemicals and paint (ISIC 20), rubber and plastics (ISIC 22), metal products (ISIC 25), motor vehicle components (ISIC 29), and general machinery (ISIC 28)."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <style>
+        /* ─── Page-Specific Overrides ─── */
+        .hero::before {
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 60%);
+        }
+
+        .hero h1 {
+            background: linear-gradient(135deg, var(--text-primary) 30%, var(--brand-amber) 70%, var(--brand-orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-stat-value {
+            color: var(--brand-amber);
+        }
+
+        .hero-badge {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.2);
+            color: var(--brand-amber);
+        }
+
+        /* ─── Sector Cards ─── */
+        .sector-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            transition: all var(--transition-base);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sector-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-mfg);
+            opacity: 0;
+            transition: opacity var(--transition-base);
+        }
+
+        .sector-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(245, 158, 11, 0.3);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-glow-amber);
+        }
+
+        .sector-card:hover::before {
+            opacity: 1;
+        }
+
+        .sector-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .sector-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 6px;
+        }
+
+        .sector-card .sector-isic {
+            font-size: 0.75rem;
+            color: var(--brand-amber);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 12px;
+        }
+
+        .sector-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .sector-pain-points {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sector-pain-points li {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .sector-pain-points li:first-child {
+            border-top: none;
+        }
+
+        .sector-pain-points .pain-icon {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* ─── Challenge Strips ─── */
+        .challenge-strip {
+            display: grid;
+            grid-template-columns: 80px 1fr auto;
+            gap: 20px;
+            align-items: center;
+            padding: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+            transition: all var(--transition-base);
+        }
+
+        .challenge-strip:hover {
+            border-color: rgba(245, 158, 11, 0.2);
+            background: var(--bg-card-hover);
+        }
+
+        .challenge-number {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--brand-amber);
+            text-align: center;
+            line-height: 1;
+        }
+
+        .challenge-content h4 {
+            margin-bottom: 4px;
+        }
+
+        .challenge-content p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .challenge-tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 4px 10px;
+            border-radius: 100px;
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--brand-amber);
+            white-space: nowrap;
+        }
+
+        /* ─── Value Matrix ─── */
+        .value-matrix {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            background: var(--border-subtle);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin: 32px 0;
+        }
+
+        .value-cell {
+            background: var(--bg-card);
+            padding: 24px;
+            text-align: center;
+        }
+
+        .value-cell .value-num {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--brand-amber);
+            margin-bottom: 4px;
+        }
+
+        .value-cell .value-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        /* ─── Classification Table ─── */
+        .classification-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .classification-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+        }
+
+        .classification-item:hover {
+            border-color: rgba(245, 158, 11, 0.2);
+            background: var(--bg-card-hover);
+        }
+
+        .classification-code {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--brand-amber);
+            background: rgba(245, 158, 11, 0.1);
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            white-space: nowrap;
+        }
+
+        .classification-name {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .classification-note {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ─── Testimonial-Style Insight ─── */
+        .insight-block {
+            background: rgba(245, 158, 11, 0.04);
+            border: 1px solid rgba(245, 158, 11, 0.15);
+            border-left: 4px solid var(--brand-amber);
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            padding: 32px;
+            margin: 32px 0;
+        }
+
+        .insight-block .insight-text {
+            font-size: 1.15rem;
+            font-style: italic;
+            color: var(--text-primary);
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .insight-block .insight-source {
+            font-size: 0.85rem;
+            color: var(--brand-amber);
+            font-weight: 600;
+        }
+
+        /* ─── How It Works Timeline ─── */
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 12.5%;
+            right: 12.5%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--brand-amber), var(--brand-orange));
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .timeline-step {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid var(--brand-amber);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--brand-amber);
+            margin: 0 auto 16px;
+        }
+
+        .step-title {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .step-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 768px) {
+            .sector-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .timeline {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .timeline::before {
+                display: none;
+            }
+
+            .challenge-strip {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .value-matrix {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .classification-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    
+        
+
+
+        /* Hide scrollbar for sidebar but allow scrolling */
+        .sidebar::-webkit-scrollbar {
+            display: none;
+        }
+        .sidebar {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+
+/* ═══ BREADCRUMB NAV BAR ═══ */
+.kb-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(6, 8, 10, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 0 32px;
+}
+.kb-topbar-inner {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 44px;
+    gap: 16px;
+}
+.kb-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #94A3B8;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 4px 12px 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.kb-back-btn:hover {
+    color: #E2E8F0;
+    border-color: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+}
+.kb-back-btn svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+.kb-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    overflow: hidden;
+    white-space: nowrap;
+    min-width: 0;
+}
+.kb-breadcrumb a {
+    color: #64748B;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+}
+.kb-breadcrumb a:hover {
+    color: #F59E0B;
+}
+.kb-breadcrumb .bc-sep {
+    color: #334155;
+    margin: 0 8px;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+}
+.kb-breadcrumb .bc-current {
+    color: #E2E8F0;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.kb-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.kb-home-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    color: #64748B;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+.kb-home-btn:hover {
+    color: #E2E8F0;
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.08);
+}
+@media (max-width: 640px) {
+    .kb-breadcrumb .bc-mid { display: none; }
+    .kb-breadcrumb .bc-mid-sep { display: none; }
+}
+
+    </style>
+</head>
+
+<body>
+    <nav class="kb-topbar" aria-label="Breadcrumb">
+        <div class="kb-topbar-inner">
+            <a href="index.html" class="kb-back-btn" title="Back to Knowledge Base">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd"/></svg>
+                <span>Knowledge Base</span>
+            </a>
+            <div class="kb-breadcrumb">
+                <a href="index.html">AUGOS Docs</a>
+            </div>
+            <div class="kb-topbar-actions">
+                <a href="index.html" class="kb-home-btn" title="Knowledge Base Home">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z" clip-rule="evenodd"/></svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- ═══ TOP NAV ═══ -->
+    <nav class="top-nav" role="navigation" aria-label="Main navigation">
+        <div class="top-nav-inner">
+            <a href="index.html" class="nav-brand">
+                <span class="brand-dot"
+                    style="background: var(--brand-amber); box-shadow: 0 0 12px var(--brand-amber);"></span>
+                AUGOS Manufacturing
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link" id="nav-home">Knowledge Base</a>
+                <a href="energy-intelligence.html" class="nav-link" id="nav-energy">Energy Intelligence</a>
+                <a href="manufacturing-intelligence.html" class="nav-link" id="nav-mfg-kb">MFG Documentation</a>
+                <a href="manufacturing-south-africa.html" class="nav-link active" id="nav-mfg-sa">SA Industries <span
+                        class="nav-tag mfg">New</span></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ═══ BREADCRUMB ═══ -->
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">Knowledge Base</a>
+            <span>›</span>
+            <a href="manufacturing-intelligence.html">Manufacturing Intelligence</a>
+            <span>›</span>
+            <strong style="color: var(--brand-amber);">South African Industries</strong>
+        </div>
+    </div>
+
+    <!-- ═══ HERO ═══ -->
+    <header class="hero" role="banner">
+        <div class="container">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                Manufacturing Intelligence · South Africa
+            </div>
+            <h1>OEE Intelligence for<br>South African Manufacturers</h1>
+            <p class="hero-subtitle">
+                From flour mills to bottling lines to automotive component plants — Augos gives every production
+                facility
+                real-time visibility into downtime, performance, and quality. Purpose-built for the realities of
+                manufacturing in South Africa.
+            </p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value">7</div>
+                    <div class="hero-stat-label">Industry Sectors</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">9</div>
+                    <div class="hero-stat-label">Production Reports</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">3-Level</div>
+                    <div class="hero-stat-label">Downtime Intelligence</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">AI</div>
+                    <div class="hero-stat-label">Ready Data Exports</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══ SA MANUFACTURING CONTEXT ═══ -->
+    <section id="context" aria-label="South African Manufacturing Context">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag mfg">The Reality</span>
+                <h2>Manufacturing in South Africa, Today</h2>
+                <p class="section-desc">South African manufacturers face a unique set of challenges that make
+                    production intelligence not just useful — but essential for survival.</p>
+            </div>
+
+            <div class="challenge-strip reveal">
+                <div class="challenge-number">01</div>
+                <div class="challenge-content">
+                    <h4>Load Shedding & Power Instability</h4>
+                    <p>Unplanned power interruptions destroy production schedules. Every minute of unplanned downtime
+                        costs money — but most manufacturers can't quantify exactly how much, or distinguish
+                        power-related
+                        stops from mechanical failures.</p>
+                </div>
+                <div class="challenge-tag">Availability</div>
+            </div>
+
+            <div class="challenge-strip reveal">
+                <div class="challenge-number">02</div>
+                <div class="challenge-content">
+                    <h4>Skills Shortage & Operator Variability</h4>
+                    <p>Experienced operators retire, new operators take months to reach full speed. Without benchmarking
+                        data, supervisors can't identify who needs coaching, who's underperforming, or what "good"
+                        actually
+                        looks like.</p>
+                </div>
+                <div class="challenge-tag">Performance</div>
+            </div>
+
+            <div class="challenge-strip reveal">
+                <div class="challenge-number">03</div>
+                <div class="challenge-content">
+                    <h4>Paper-Based Stop Logging</h4>
+                    <p>Most South African factories still log stoppages on paper or spreadsheets. The result? Inaccurate
+                        data, missing context, no Pareto analysis, and maintenance that fights fires rather than
+                        preventing
+                        them.</p>
+                </div>
+                <div class="challenge-tag">Causation</div>
+            </div>
+
+            <div class="challenge-strip reveal">
+                <div class="challenge-number">04</div>
+                <div class="challenge-content">
+                    <h4>High Input Costs & Margin Pressure</h4>
+                    <p>Rising electricity, raw material, and logistics costs squeeze already-thin margins. Manufacturers
+                        who
+                        don't optimise throughput on existing lines will lose to those who do — whether domestic or
+                        import competitors.</p>
+                </div>
+                <div class="challenge-tag">Efficiency</div>
+            </div>
+
+            <div class="challenge-strip reveal">
+                <div class="challenge-number">05</div>
+                <div class="challenge-content">
+                    <h4>Compliance & Audit Demands</h4>
+                    <p>FSSC 22000, ISO 9001, HACCP, NRCS — regulatory bodies demand production traceability.
+                        Digital production logs replace paper trails and survive audits.</p>
+                </div>
+                <div class="challenge-tag">Quality</div>
+            </div>
+
+            <div class="insight-block reveal">
+                <div class="insight-text">"In a Pioneer Foods flour mill, a single stoppage reason — 'Flour Bin Full' —
+                    accounted for 45.8% of all recorded downtime. It wasn't a mechanical failure. It was a downstream
+                    bottleneck. Without hierarchical coding, it would have been logged as 'machine stopped' on a paper
+                    form — invisible and unaddressable."</div>
+                <div class="insight-source">— Augos B-Mill Audit, Pioneer Foods, Malmesbury</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ THE SOLUTION ═══ -->
+    <section id="solution" aria-label="The Augos Solution">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag mfg">The Augos Answer</span>
+                <h2>What You Get</h2>
+                <p class="section-desc">A complete production intelligence platform that connects to your line,
+                    captures every stop, and turns raw data into strategic decisions.</p>
+            </div>
+
+            <div class="value-matrix reveal">
+                <div class="value-cell">
+                    <div class="value-num">9</div>
+                    <div class="value-label">Production Reports</div>
+                </div>
+                <div class="value-cell">
+                    <div class="value-num">3-Level</div>
+                    <div class="value-label">Reason Hierarchy</div>
+                </div>
+                <div class="value-cell">
+                    <div class="value-num">OEE</div>
+                    <div class="value-label">World-Class Framework</div>
+                </div>
+                <div class="value-cell">
+                    <div class="value-num">Per-Operator</div>
+                    <div class="value-label">Benchmarking</div>
+                </div>
+                <div class="value-cell">
+                    <div class="value-num">AI-Ready</div>
+                    <div class="value-label">Data Exports</div>
+                </div>
+                <div class="value-cell">
+                    <div class="value-num">Real-Time</div>
+                    <div class="value-label">Cloud Dashboard</div>
+                </div>
+            </div>
+
+            <div class="card-grid cols-3 reveal">
+                <div class="card mfg-card">
+                    <div class="card-icon mfg">⏱️</div>
+                    <div class="card-title">Availability Intelligence</div>
+                    <div class="card-desc">Know exactly when and why your line stopped. Every event is timestamped,
+                        categorised with a 3-level reason code, and attributed to an operator and shift.</div>
+                </div>
+                <div class="card mfg-card">
+                    <div class="card-icon mfg">🏎️</div>
+                    <div class="card-title">Performance Intelligence</div>
+                    <div class="card-desc">Compare actual line speed to rated speed for every product and operator.
+                        Identify speed losses that hide in "the line was running" assumptions.</div>
+                </div>
+                <div class="card mfg-card">
+                    <div class="card-icon mfg">✅</div>
+                    <div class="card-title">Quality Intelligence</div>
+                    <div class="card-desc">Track good output vs waste. Understand which products, operators, or shifts
+                        produce the most scrap — and why.</div>
+                </div>
+                <div class="card mfg-card">
+                    <div class="card-icon mfg">👥</div>
+                    <div class="card-title">Operator Benchmarking</div>
+                    <div class="card-desc">Fair, data-driven comparison of operator performance. Speed, compliance,
+                        stop frequency — objectively measured, not subjectively judged.</div>
+                </div>
+                <div class="card mfg-card">
+                    <div class="card-icon mfg">🔍</div>
+                    <div class="card-title">Downtime Pareto Analysis</div>
+                    <div class="card-desc">Automatically rank stoppage reasons by impact. Find the 20% of problems
+                        causing 80% of your losses — and focus resources there.</div>
+                </div>
+                <div class="card mfg-card">
+                    <div class="card-icon mfg">🤖</div>
+                    <div class="card-title">AI-Ready Data</div>
+                    <div class="card-desc">Every report generates a structured .min.json file with embedded LLM
+                        guidelines. Feed it to ChatGPT, Copilot, or any AI tool for instant analysis.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ INDUSTRY SECTORS ═══ -->
+    <section id="sectors" aria-label="Industry Sectors" style="background: rgba(245, 158, 11, 0.02);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag mfg">7 Sectors</span>
+                <h2>Industries We Serve</h2>
+                <p class="section-desc">Augos Manufacturing Intelligence works wherever there's a production line
+                    with quantifiable output. Here's how it applies to your industry.</p>
+            </div>
+
+            <!-- Row 1: 3 cards -->
+            <div class="card-grid cols-3 reveal" style="margin-bottom: 24px;">
+
+                <!-- FOOD MANUFACTURING -->
+                <div class="sector-card" id="sector-food">
+                    <div class="sector-icon">🍞</div>
+                    <h3>Food Manufacturing</h3>
+                    <div class="sector-isic">ISIC 10 · Food Products</div>
+                    <p>Baking, processing, ready-meals, snacks, dairy, meat, confectionery. High-speed lines with
+                        frequent product changeovers, strict hygiene standards, and perishable output windows.</p>
+                    <ul class="sector-pain-points">
+                        <li><span class="pain-icon">🔴</span> Changeover losses between product variants (SKU
+                            proliferation)</li>
+                        <li><span class="pain-icon">🔴</span> Compliance traceability for FSSC 22000 / HACCP audits
+                        </li>
+                        <li><span class="pain-icon">🔴</span> Downstream bottlenecks (packaging can't keep pace with
+                            production)</li>
+                        <li><span class="pain-icon">🟢</span> <strong>Augos:</strong> 3-level reason coding separates
+                            changeover, mechanical, and process stops</li>
+                    </ul>
+                </div>
+
+                <!-- MILLING OPERATIONS -->
+                <div class="sector-card" id="sector-milling">
+                    <div class="sector-icon">🌾</div>
+                    <h3>Milling Operations</h3>
+                    <div class="sector-isic">ISIC 10.6 · Grain Mill Products</div>
+                    <p>Wheat, maize, animal feed, and specialty flour mills. Continuous
+                        process operations where throughput is measured in tonnes/hour and even small speed
+                        losses compound into massive volume gaps.</p>
+                    <ul class="sector-pain-points">
+                        <li><span class="pain-icon">🔴</span> Bin-full / bin-empty cascading stoppages across the
+                            process chain</li>
+                        <li><span class="pain-icon">🔴</span> Sieve and screen maintenance cycles causing micro-stops
+                        </li>
+                        <li><span class="pain-icon">🔴</span> High power consumption makes load shedding particularly
+                            destructive</li>
+                        <li><span class="pain-icon">🟢</span> <strong>Augos:</strong> Pioneer Foods audit revealed
+                            "Flour Bin Full" = 45.8% of all downtime</li>
+                    </ul>
+                </div>
+
+                <!-- PACKAGING -->
+                <div class="sector-card" id="sector-packaging">
+                    <div class="sector-icon">📦</div>
+                    <h3>Packaging Manufacturing</h3>
+                    <div class="sector-isic">ISIC 17 · Paper & Packaging</div>
+                    <p>Corrugated, flexible packaging, labels, cartons, shrink-wrap. Multi-stage
+                        converting operations with printing, die-cutting, and gluing stages where each
+                        stage's speed must synchronise.</p>
+                    <ul class="sector-pain-points">
+                        <li><span class="pain-icon">🔴</span> Set-up waste on print runs (colour matching, registration)
+                        </li>
+                        <li><span class="pain-icon">🔴</span> Order-size variability creates extreme changeover
+                            frequency
+                        </li>
+                        <li><span class="pain-icon">🔴</span> Material waste tracking across converting stages</li>
+                        <li><span class="pain-icon">🟢</span> <strong>Augos:</strong> OEE per-Job Card traces each order
+                            through production</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Row 2: 2+1 cards -->
+            <div class="card-grid cols-3 reveal" style="margin-bottom: 24px;">
+
+                <!-- BOTTLING / CANNING -->
+                <div class="sector-card" id="sector-bottling">
+                    <div class="sector-icon">🍷</div>
+                    <h3>Bottling & Canning</h3>
+                    <div class="sector-isic">ISIC 11 · Beverages</div>
+                    <p>Wine, beer, spirits, juice, water, soft drinks. Ultra-high-speed filling lines
+                        (1,000+ units/minute) where seconds of downtime mean thousands of lost units. CIP
+                        (clean-in-place) cycles add planned downtime complexity.</p>
+                    <ul class="sector-pain-points">
+                        <li><span class="pain-icon">🔴</span> Filler, capper, and labeller misalignment causing
+                            micro-stops</li>
+                        <li><span class="pain-icon">🔴</span> CIP scheduling conflicts with production targets</li>
+                        <li><span class="pain-icon">🔴</span> Container breakage and reject rates at high speed</li>
+                        <li><span class="pain-icon">🟢</span> <strong>Augos:</strong> Shift Report speed overlay reveals
+                            speed loss patterns invisible to operators</li>
+                    </ul>
+                </div>
+
+                <!-- PAINT & COATINGS -->
+                <div class="sector-card" id="sector-paint">
+                    <div class="sector-icon">🎨</div>
+                    <h3>Paint & Coatings</h3>
+                    <div class="sector-isic">ISIC 20.3 · Paints & Varnishes</div>
+                    <p>Decorative, industrial, automotive, and specialty coatings. Batch-based production
+                        with complex colour-sequencing requirements where dark-to-light transitions create
+                        significant cleaning downtime.</p>
+                    <ul class="sector-pain-points">
+                        <li><span class="pain-icon">🔴</span> Colour-sequence scheduling (dark→light cleaning
+                            penalties)</li>
+                        <li><span class="pain-icon">🔴</span> Batch quality testing hold times before release</li>
+                        <li><span class="pain-icon">🔴</span> Hazardous material handling adds compliance complexity
+                        </li>
+                        <li><span class="pain-icon">🟢</span> <strong>Augos:</strong> Downtime report Pareto identifies
+                            highest-impact colour transitions</li>
+                    </ul>
+                </div>
+
+                <!-- AUTOMOTIVE COMPONENTS -->
+                <div class="sector-card" id="sector-automotive">
+                    <div class="sector-icon">🔩</div>
+                    <h3>Automotive Components</h3>
+                    <div class="sector-isic">ISIC 29 · Motor Vehicles & Components</div>
+                    <p>Catalytic converters, exhaust systems, wiring harnesses, seating, glass, brakes, springs,
+                        stampings. OEM-tier suppliers must meet exacting quality and delivery standards — OEE
+                        is typically a contractual KPI.</p>
+                    <ul class="sector-pain-points">
+                        <li><span class="pain-icon">🔴</span> OEM scorecards demand documented OEE ≥85%</li>
+                        <li><span class="pain-icon">🔴</span> JIT delivery means zero tolerance for line stoppages</li>
+                        <li><span class="pain-icon">🔴</span> IATF 16949 certification requires digital traceability
+                        </li>
+                        <li><span class="pain-icon">🟢</span> <strong>Augos:</strong> Real-time OEE dashboard provides
+                            auditor-ready production records</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Row 3: General Manufacturing -->
+            <div class="card-grid cols-3 reveal">
+                <div class="sector-card" id="sector-general">
+                    <div class="sector-icon">⚙️</div>
+                    <h3>General Discrete Manufacturing</h3>
+                    <div class="sector-isic">ISIC 22–28 · Plastics, Metals, Machinery</div>
+                    <p>Injection moulding, metal fabrication, rubber products, glass, cement, ceramics,
+                        furniture. Any factory with countable output and measurable cycle times.</p>
+                    <ul class="sector-pain-points">
+                        <li><span class="pain-icon">🔴</span> Tool changes, die set-ups, and mould swaps dominate
+                            downtime</li>
+                        <li><span class="pain-icon">🔴</span> Cycle time variability across operators and shifts</li>
+                        <li><span class="pain-icon">🔴</span> Legacy equipment without built-in data capture</li>
+                        <li><span class="pain-icon">🟢</span> <strong>Augos:</strong> Edge device connects to any PLC or
+                            sensor — no equipment replacement needed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ ISIC CLASSIFICATION REFERENCE ═══ -->
+    <section id="classifications" aria-label="Industry Classifications">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag neutral">Reference</span>
+                <h2>Manufacturing Classification Framework</h2>
+                <p class="section-desc">The International Standard Industrial Classification (ISIC) codes below cover
+                    the manufacturing sectors where Augos delivers proven value. This is not an exhaustive list — any
+                    operation with quantifiable output is a candidate.</p>
+            </div>
+
+            <div class="classification-grid reveal">
+                <div class="classification-item">
+                    <span class="classification-code">ISIC 10</span>
+                    <div>
+                        <div class="classification-name">Food Products</div>
+                        <div class="classification-note">Processing, preserving, baking, dairy, confectionery</div>
+                    </div>
+                </div>
+                <div class="classification-item">
+                    <span class="classification-code">ISIC 11</span>
+                    <div>
+                        <div class="classification-name">Beverages</div>
+                        <div class="classification-note">Soft drinks, beer, wine, spirits, bottled water</div>
+                    </div>
+                </div>
+                <div class="classification-item">
+                    <span class="classification-code">ISIC 13</span>
+                    <div>
+                        <div class="classification-name">Textiles</div>
+                        <div class="classification-note">Spinning, weaving, knitting, finishing, technical textiles
+                        </div>
+                    </div>
+                </div>
+                <div class="classification-item">
+                    <span class="classification-code">ISIC 17</span>
+                    <div>
+                        <div class="classification-name">Paper & Packaging</div>
+                        <div class="classification-note">Corrugated, labels, cartons, flexible packaging</div>
+                    </div>
+                </div>
+                <div class="classification-item">
+                    <span class="classification-code">ISIC 20</span>
+                    <div>
+                        <div class="classification-name">Chemicals & Paint</div>
+                        <div class="classification-note">Industrial chemicals, paints, coatings, adhesives</div>
+                    </div>
+                </div>
+                <div class="classification-item">
+                    <span class="classification-code">ISIC 22</span>
+                    <div>
+                        <div class="classification-name">Rubber & Plastics</div>
+                        <div class="classification-note">Injection moulding, extrusion, blow moulding, tyres</div>
+                    </div>
+                </div>
+                <div class="classification-item">
+                    <span class="classification-code">ISIC 23</span>
+                    <div>
+                        <div class="classification-name">Non-Metallic Minerals</div>
+                        <div class="classification-note">Glass, cement, ceramics, bricks, refractories</div>
+                    </div>
+                </div>
+                <div class="classification-item">
+                    <span class="classification-code">ISIC 24</span>
+                    <div>
+                        <div class="classification-name">Basic Metals</div>
+                        <div class="classification-note">Steel, aluminium, foundries, smelting, casting</div>
+                    </div>
+                </div>
+                <div class="classification-item">
+                    <span class="classification-code">ISIC 25</span>
+                    <div>
+                        <div class="classification-name">Fabricated Metal Products</div>
+                        <div class="classification-note">Structural steel, tanks, springs, stampings, fasteners</div>
+                    </div>
+                </div>
+                <div class="classification-item">
+                    <span class="classification-code">ISIC 28</span>
+                    <div>
+                        <div class="classification-name">Machinery & Equipment</div>
+                        <div class="classification-note">Industrial machinery, pumps, valves, bearings</div>
+                    </div>
+                </div>
+                <div class="classification-item">
+                    <span class="classification-code">ISIC 29</span>
+                    <div>
+                        <div class="classification-name">Motor Vehicles & Components</div>
+                        <div class="classification-note">OEM assembly, catalytic converters, exhausts, harnesses, seats
+                        </div>
+                    </div>
+                </div>
+                <div class="classification-item">
+                    <span class="classification-code">ISIC 31</span>
+                    <div>
+                        <div class="classification-name">Furniture</div>
+                        <div class="classification-note">Office, household, kitchen, upholstery, mattresses</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-block reveal" style="margin-top: 32px;">
+                <div class="insight-text">"If you have a production line with countable output and measurable cycle
+                    times, Augos can track it. The question isn't whether OEE applies to your industry —
+                    it's how much production you're losing by not measuring it."</div>
+                <div class="insight-source">— Augos Manufacturing Capability Statement</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ AUTOMOTIVE DEEP DIVE ═══ -->
+    <section id="automotive" aria-label="Automotive Industry Focus" style="background: rgba(245, 158, 11, 0.02);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag mfg">Industry Spotlight</span>
+                <h2>Automotive Component Manufacturing</h2>
+                <p class="section-desc">South Africa is Africa's largest automotive manufacturer, producing 600,000+
+                    vehicles annually. Tier-1 and Tier-2 component suppliers must meet global OEM standards — making
+                    verified OEE a contractual requirement, not a luxury.</p>
+            </div>
+
+            <div class="two-col reveal">
+                <div>
+                    <h4 style="color: var(--brand-amber); margin-bottom: 16px;">🏭 SA Automotive Landscape</h4>
+                    <div class="content-block" style="margin-bottom: 0;">
+                        <ul style="list-style: none; padding: 0;">
+                            <li
+                                style="padding: 10px 0; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: 0.9rem;">
+                                <strong style="color: var(--text-primary);">OEM Assembly:</strong> Toyota, BMW, VW,
+                                Mercedes-Benz, Ford, Isuzu, Nissan
+                            </li>
+                            <li
+                                style="padding: 10px 0; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: 0.9rem;">
+                                <strong style="color: var(--text-primary);">Component Types:</strong> Catalytic
+                                converters, exhaust systems, wiring harnesses, leather interiors, glass, springs, brake
+                                components, stampings
+                            </li>
+                            <li
+                                style="padding: 10px 0; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: 0.9rem;">
+                                <strong style="color: var(--text-primary);">Quality Standards:</strong> IATF 16949, ISO
+                                9001,
+                                OEM-specific scorecards
+                            </li>
+                            <li
+                                style="padding: 10px 0; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: 0.9rem;">
+                                <strong style="color: var(--text-primary);">Delivery Model:</strong> JIT (Just-in-Time)
+                                /
+                                JIS (Just-in-Sequence) supplying directly to assembly lines
+                            </li>
+                            <li style="padding: 10px 0; color: var(--text-secondary); font-size: 0.9rem;">
+                                <strong style="color: var(--text-primary);">APDP II:</strong> Government's Automotive
+                                Production & Development Programme supports local content targets
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <h4 style="color: var(--brand-amber); margin-bottom: 16px;">📊 Why OEE Matters for Tier Suppliers
+                    </h4>
+                    <div class="content-block" style="margin-bottom: 0;">
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                            OEM customers <em>require</em> their suppliers to report OEE metrics. Failure to meet
+                            availability targets can result in:
+                        </p>
+                        <ul
+                            style="color: var(--text-secondary); font-size: 0.9rem; padding-left: 20px; line-height: 1.8;">
+                            <li><strong style="color: var(--brand-rose);">Line-stop penalties</strong> — charged per
+                                minute when the OEM assembly line waits for your component</li>
+                            <li><strong style="color: var(--brand-rose);">Scorecard demerits</strong> — accumulate
+                                towards
+                                loss of contracts at annual reviews</li>
+                            <li><strong style="color: var(--brand-rose);">Premium freight charges</strong> — airfreight
+                                costs when JIT shipments are late</li>
+                            <li><strong style="color: var(--brand-emerald);">Augos provides</strong> real-time OEE
+                                dashboards that double as auditor-ready evidence for IATF 16949 reviews</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ HOW IT WORKS ═══ -->
+    <section id="how-it-works" aria-label="How It Works">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag mfg">Implementation</span>
+                <h2>From Shop Floor to Strategic Decisions</h2>
+                <p class="section-desc">Augos connects to your existing infrastructure — no rip-and-replace
+                    required. Here's the journey from sensor to strategy.</p>
+            </div>
+
+            <div class="timeline reveal">
+                <div class="timeline-step">
+                    <div class="step-number">01</div>
+                    <div class="step-title">Connect</div>
+                    <div class="step-desc">Lightweight edge device interfaces with your existing PLC, SCADA, or
+                        sensors. No equipment replacement needed.</div>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-number">02</div>
+                    <div class="step-title">Capture</div>
+                    <div class="step-desc">Every production event — run, stop, speed change, operator login — is
+                        timestamped and streamed to the cloud in real time.</div>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-number">03</div>
+                    <div class="step-title">Classify</div>
+                    <div class="step-desc">Operators tag stoppages with 3-level reason codes. Supervisors review
+                        via Pending Inputs. Data quality is measured, not assumed.</div>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-number">04</div>
+                    <div class="step-title">Act</div>
+                    <div class="step-desc">9 reports surface patterns. Pareto analysis finds the 20%/80% split.
+                        AI-Ready exports enable deeper analysis. Decisions are data-driven.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ ROI SECTION ═══ -->
+    <section id="roi" aria-label="ROI Framework" style="background: rgba(245, 158, 11, 0.02);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag mfg">Business Case</span>
+                <h2>The ROI of Production Visibility</h2>
+                <p class="section-desc">Real numbers from real manufacturers. These are conservative estimates based
+                    on industry benchmarks and the Pioneer Foods audit data.</p>
+            </div>
+
+            <div class="data-table-wrap reveal">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Improvement Area</th>
+                            <th>Typical Range</th>
+                            <th>How Augos Enables It</th>
+                            <th>OEE Pillar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Eliminate #1 Stop Reason</strong></td>
+                            <td class="accent-amber">10–25% availability gain</td>
+                            <td>Pareto analysis identifies the single largest contributor. At B-Mill: "Flour Bin Full"
+                                = 45.8% of downtime</td>
+                            <td><span class="badge badge-amber">Availability</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reduce Changeover Time</strong></td>
+                            <td class="accent-amber">20–40% reduction</td>
+                            <td>Job Card report tracks changeover duration per product. Enables SMED analysis across
+                                shifts</td>
+                            <td><span class="badge badge-amber">Availability</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Close Operator Speed Gap</strong></td>
+                            <td class="accent-amber">5–15% performance gain</td>
+                            <td>Operator Analysis reveals top-to-bottom speed variance (e.g., 2,400 kg/h gap at
+                                B-Mill)</td>
+                            <td><span class="badge badge-blue">Performance</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reduce Unplanned Stops</strong></td>
+                            <td class="accent-amber">30–50% fewer events</td>
+                            <td>Trending severity data enables predictive maintenance scheduling (Sieve Bearings: 1
+                                stop = 3.9% of all downtime)</td>
+                            <td><span class="badge badge-amber">Availability</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Improve Quality Yield</strong></td>
+                            <td class="accent-amber">2–5% yield increase</td>
+                            <td>Per-product quality tracking identifies problematic SKUs, materials, or recipes</td>
+                            <td><span class="badge badge-green">Quality</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Eliminate Paper Logging</strong></td>
+                            <td class="accent-green">100% digital</td>
+                            <td>Production Timesheet replaces paper logbooks. Audit-ready records generated
+                                automatically</td>
+                            <td><span class="badge badge-purple">Compliance</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-grid cols-3 reveal" style="margin-top: 32px;">
+                <div class="card">
+                    <div class="card-icon rose">💡</div>
+                    <div class="card-title">Did You Know?</div>
+                    <div class="card-desc">World-class OEE is 85%. Most South African manufacturers operate between
+                        40–65%. Moving from 50% to 65% OEE on a single line can be equivalent to
+                        <strong style="color: var(--brand-amber);">adding a half-shift of free production every
+                            day</strong>
+                        — without buying new equipment or hiring more staff.
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon mfg">📊</div>
+                    <div class="card-title">Pioneer Foods Result</div>
+                    <div class="card-desc">Within a 54-day audit window: <strong>158 stops recorded</strong>,
+                        <strong>7 operators benchmarked</strong>,
+                        <strong style="color: var(--brand-rose);">45.8% of downtime attributed to one reason</strong>.
+                        Reducing that single stop by 50% could recover an estimated
+                        <strong style="color: var(--brand-emerald);">4.9M kg/month</strong> of lost production.
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon green">⚡</div>
+                    <div class="card-title">Combined Modules</div>
+                    <div class="card-desc">Manufacturing sites also consume energy. Augos Energy Intelligence runs
+                        alongside Manufacturing Intelligence — giving you
+                        <strong style="color: var(--brand-cyan);">OEE + energy analytics</strong> on a single platform.
+                        One vendor, one login, complete factory visibility.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ BUYER PERSONAS ═══ -->
+    <section id="personas" aria-label="Who Uses This">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag mfg">Who Uses This</span>
+                <h2>Built for Every Role in the Plant</h2>
+                <p class="section-desc">From the shop floor operator to the boardroom — Augos gives everyone the
+                    view they need.</p>
+            </div>
+
+            <div class="card-grid cols-2 reveal">
+                <div class="card mfg-card">
+                    <div class="card-icon mfg">🏢</div>
+                    <div class="card-title">Plant Manager / Operations Director</div>
+                    <div class="card-desc">Executive Summary report: OEE trends, loss waterfall, cross-line
+                        comparison. "Is my plant getting better or worse this month?"</div>
+                </div>
+                <div class="card mfg-card">
+                    <div class="card-icon mfg">📈</div>
+                    <div class="card-title">Continuous Improvement Manager</div>
+                    <div class="card-desc">Performance Overview + Downtime Pareto: "What's our biggest loss driver
+                        this quarter, and is our improvement project actually working?"</div>
+                </div>
+                <div class="card mfg-card">
+                    <div class="card-icon mfg">🔧</div>
+                    <div class="card-title">Maintenance Manager</div>
+                    <div class="card-desc">Downtime Report with reason codes: "Sieve Bearings failed once but
+                        caused 3.9% of total downtime — we need predictive replacement."</div>
+                </div>
+                <div class="card mfg-card">
+                    <div class="card-icon mfg">👷</div>
+                    <div class="card-title">Line Supervisor / Shift Lead</div>
+                    <div class="card-desc">Shift Report + Operator Analysis: "Which operators need coaching? How
+                        does my shift compare to others?"</div>
+                </div>
+                <div class="card mfg-card">
+                    <div class="card-icon mfg">✅</div>
+                    <div class="card-title">Quality Manager</div>
+                    <div class="card-desc">Job Card + Production Timesheet: "Complete digital traceability for
+                        every production run — ready for ISO, HACCP, or OEM audits."</div>
+                </div>
+                <div class="card mfg-card">
+                    <div class="card-icon mfg">💰</div>
+                    <div class="card-title">CFO / Financial Director</div>
+                    <div class="card-desc">ROI metrics: "Every 1% OEE improvement translates directly to throughput
+                        gains without additional CapEx. What's our cost per unit of downtime?"</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ CTA ═══ -->
+    <section>
+        <div class="container">
+            <div class="cta-banner reveal"
+                style="border-color: rgba(245, 158, 11, 0.3); background: var(--gradient-card-mfg);">
+                <h3>Ready to See Your Production Data Clearly?</h3>
+                <p>Whether you're a flour mill, a bottling plant, or an automotive Tier-1 supplier — Augos Manufacturing
+                    Intelligence gives you the visibility to compete. Let's talk about your line.</p>
+                <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                    <a href="manufacturing-intelligence.html" class="btn btn-primary mfg">📖 Full Technical
+                        Documentation →</a>
+                    <a href="index.html" class="btn btn-outline">🏠 Knowledge Base Hub</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="site-footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-brand">AUGOS Manufacturing Intelligence — South Africa</div>
+            <div class="footer-copy">© 2026 Augos (Pty) Ltd. All rights reserved.</div>
+            <div class="footer-links">
+                <a href="index.html">Knowledge Base</a>
+                <a href="energy-intelligence.html">Energy Intelligence</a>
+                <a href="manufacturing-intelligence.html">MFG Documentation</a>
+            </div>
+            <div style="margin-top: 16px; font-size: 0.75rem; color: var(--text-muted);">
+                Last updated: 24 February 2026 · Industry data compiled from Augos audits, Statistics SA, NAAMSA, and
+                ISIC Rev.4 classifications
+            </div>
+        </div>
+    </footer>
+
+    <!-- ═══ SCRIPTS ═══ -->
+    <script>
+        // Scroll reveal
+        const revealEls = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('visible');
+                    revealObserver.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        revealEls.forEach(el => revealObserver.observe(el));
+    </script>
+</body>
+
+</html>

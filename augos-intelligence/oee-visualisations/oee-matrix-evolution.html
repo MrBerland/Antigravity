@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>OEE Evolution Matrix — Augos</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: #06080A;
+            color: #E2E8F0;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            min-height: 100vh
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 12px
+        }
+
+        .title .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            color: #F59E0B;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 12px
+        }
+
+        .title h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 8px
+        }
+
+        .title h1 span {
+            color: #94A3B8;
+            font-weight: 300
+        }
+
+        .title p {
+            font-size: .85rem;
+            color: #64748B;
+            max-width: 640px;
+            margin: 0 auto;
+            line-height: 1.6
+        }
+
+        /* Toggle */
+        .toggle-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 24px 0 28px;
+            font-size: .8rem
+        }
+
+        .toggle-track {
+            width: 52px;
+            height: 28px;
+            border-radius: 14px;
+            background: #1E293B;
+            cursor: pointer;
+            position: relative;
+            transition: background .4s
+        }
+
+        .toggle-track.active {
+            background: linear-gradient(135deg, #F59E0B, #10B981)
+        }
+
+        .toggle-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 11px;
+            background: #fff;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: transform .4s cubic-bezier(.4, 0, .2, 1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, .4)
+        }
+
+        .toggle-track.active .toggle-dot {
+            transform: translateX(24px)
+        }
+
+        .toggle-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            letter-spacing: .04em;
+            transition: color .3s
+        }
+
+        .toggle-label.dim {
+            color: #475569
+        }
+
+        .toggle-label.lit {
+            color: #F59E0B
+        }
+
+        /* Benefit badge */
+        .benefit-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 22px;
+            max-width: 880px;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all .5s .2s
+        }
+
+        .benefit-strip.show {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        .b-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: .65rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, .06);
+            background: rgba(255, 255, 255, .02)
+        }
+
+        .b-badge .b-icon {
+            font-size: .8rem
+        }
+
+        .b-badge .b-text {
+            color: #94A3B8
+        }
+
+        .b-badge .b-val {
+            font-family: 'JetBrains Mono', monospace;
+            color: #10B981
+        }
+
+        /* Matrix */
+        .matrix {
+            width: 100%;
+            max-width: 960px;
+            border: 1px solid rgba(255, 255, 255, .06);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color .5s
+        }
+
+        .matrix.enhanced {
+            border-color: rgba(245, 158, 11, .15)
+        }
+
+        .matrix-header {
+            display: grid;
+            padding: 0;
+            background: rgba(255, 255, 255, .02);
+            border-bottom: 1px solid rgba(255, 255, 255, .06);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            transition: grid-template-columns .5s
+        }
+
+        .matrix-header .mh {
+            padding: 12px 10px;
+            display: flex;
+            align-items: center
+        }
+
+        .matrix-header .mh.center {
+            justify-content: center
+        }
+
+        /* Basic mode columns */
+        .matrix-header.basic-cols {
+            grid-template-columns: 4px 180px 80px 80px 1fr
+        }
+
+        /* Enhanced mode columns */
+        .matrix-header.enhanced-cols {
+            grid-template-columns: 4px 180px 130px 70px 70px 70px 1fr
+        }
+
+        .group-row {
+            border-bottom: 1px solid rgba(255, 255, 255, .04);
+            background: rgba(255, 255, 255, .015);
+            transition: background .3s
+        }
+
+        .group-row.enhanced-group {
+            background: rgba(245, 158, 11, .02)
+        }
+
+        .gr-inner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px
+        }
+
+        .gr-band {
+            width: 4px;
+            align-self: stretch;
+            flex-shrink: 0
+        }
+
+        .gr-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: .06em
+        }
+
+        .gr-total {
+            font-weight: 600;
+            color: #94A3B8
+        }
+
+        /* Row */
+        .matrix-row {
+            border-bottom: 1px solid rgba(255, 255, 255, .03);
+            transition: background .15s, opacity .4s, transform .4s
+        }
+
+        .matrix-row:hover {
+            background: rgba(255, 255, 255, .03)
+        }
+
+        .matrix-row:last-child {
+            border-bottom: none
+        }
+
+        .matrix-row.basic-cols {
+            grid-template-columns: 4px 180px 80px 80px 1fr;
+            display: grid
+        }
+
+        .matrix-row.enhanced-cols {
+            grid-template-columns: 4px 180px 130px 70px 70px 70px 1fr;
+            display: grid
+        }
+
+        .mr-band {
+            width: 4px
+        }
+
+        .mr-name {
+            padding: 10px;
+            font-size: .78rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .mr-name .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            flex-shrink: 0
+        }
+
+        .mr-path {
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .63rem;
+            color: #475569;
+            display: flex;
+            align-items: center
+        }
+
+        .mr-val {
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .78rem;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .mr-pct {
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .72rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748B
+        }
+
+        .mr-bar-cell {
+            padding: 10px 14px;
+            display: flex;
+            align-items: center
+        }
+
+        .mr-bar {
+            height: 18px;
+            border-radius: 4px;
+            min-width: 2px;
+            position: relative;
+            transition: width .6s cubic-bezier(.4, 0, .2, 1)
+        }
+
+        .mr-bar-label {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: rgba(255, 255, 255, .7)
+        }
+
+        /* Summary */
+        .summary-row {
+            border-top: 1px solid rgba(245, 158, 11, .1);
+            background: rgba(245, 158, 11, .04);
+            transition: grid-template-columns .5s
+        }
+
+        .summary-row .mr-name {
+            font-weight: 700;
+            color: #F59E0B
+        }
+
+        .summary-row .mr-val {
+            font-weight: 700;
+            color: #F59E0B
+        }
+
+        /* Enhanced badge on row */
+        .enhanced-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: .5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            margin-left: auto;
+            opacity: 0;
+            transform: scale(.8);
+            transition: all .3s
+        }
+
+        .enhanced-badge.show {
+            opacity: 1;
+            transform: scale(1)
+        }
+
+        .enhanced-badge.new {
+            background: rgba(16, 185, 129, .12);
+            color: #10B981;
+            border: 1px solid rgba(16, 185, 129, .2)
+        }
+
+        .enhanced-badge.split {
+            background: rgba(99, 102, 241, .12);
+            color: #818CF8;
+            border: 1px solid rgba(99, 102, 241, .2)
+        }
+
+        /* Before/After insight */
+        .insight {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            font-size: .6rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: #475569;
+            margin-left: 14px
+        }
+
+        .insight .arrow {
+            color: #10B981;
+            font-size: .7rem
+        }
+
+        /* Evolution connector */
+        .evo-connector {
+            height: 0;
+            overflow: hidden;
+            transition: height .5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, rgba(245, 158, 11, .03), transparent)
+        }
+
+        .evo-connector.show {
+            height: 40px
+        }
+
+        .evo-connector .evo-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: #F59E0B;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            opacity: .6
+        }
+
+        /* Fade transition for rows */
+        .fade-out {
+            opacity: 0;
+            max-height: 0;
+            padding: 0 !important;
+            overflow: hidden;
+            border: none !important;
+            transition: all .4s
+        }
+
+        .fade-in {
+            animation: fadeSlideIn .5s forwards
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="title">
+        <div class="tag">OEE Evolution</div>
+        <h1>From Standard <span>to Enhanced</span></h1>
+        <p>Standard OEE gives you four buckets. Augos Enhanced OEE reveals the <em>eleven actionable variables</em>
+            hiding inside those buckets — showing exactly where to intervene and who owns each hour.</p>
+    </div>
+
+    <div class="toggle-wrap">
+        <span class="toggle-label" id="lbl-basic">STANDARD OEE</span>
+        <div class="toggle-track" id="toggle">
+            <div class="toggle-dot"></div>
+        </div>
+        <span class="toggle-label dim" id="lbl-enhanced">AUGOS ENHANCED</span>
+    </div>
+
+    <div class="benefit-strip" id="benefits">
+        <div class="b-badge"><span class="b-icon">🔬</span><span class="b-text">Variables</span><span class="b-val">4 →
+                11</span></div>
+        <div class="b-badge"><span class="b-icon">🎯</span><span class="b-text">Actionability</span><span
+                class="b-val">+175%</span></div>
+        <div class="b-badge"><span class="b-icon">👤</span><span class="b-text">Ownership</span><span
+                class="b-val">Named</span></div>
+        <div class="b-badge"><span class="b-icon">⏱️</span><span class="b-text">Resolution Path</span><span
+                class="b-val">Visible</span></div>
+        <div class="b-badge"><span class="b-icon">🔗</span><span class="b-text">Hierarchy Depth</span><span
+                class="b-val">2 → 6</span></div>
+    </div>
+
+    <div class="matrix" id="matrix"></div>
+
+    <script>
+        const TOTAL = 284;
+
+        function hexRGBA(h, a) {
+            return `rgba(${parseInt(h.slice(1, 3), 16)},${parseInt(h.slice(3, 5), 16)},${parseInt(h.slice(5, 7), 16)},${a})`;
+        }
+
+        // ─── DATA ───────────────────────────────────────────────────────────────
+        const basicData = [
+            {
+                group: 'Availability Loss', groupColor: '#F59E0B', groupTotal: 186, items: [
+                    { name: 'Planned Downtime', val: 42, color: '#D97706', path: 'Availability' },
+                    { name: 'Unplanned Downtime', val: 144, color: '#F43F5E', path: 'Availability' },
+                ]
+            },
+            {
+                group: 'Performance Loss', groupColor: '#3B82F6', groupTotal: 72, items: [
+                    { name: 'Speed Losses', val: 72, color: '#3B82F6', path: 'Performance' },
+                ]
+            },
+            {
+                group: 'Quality Loss', groupColor: '#8B5CF6', groupTotal: 26, items: [
+                    { name: 'Defects', val: 26, color: '#8B5CF6', path: 'Quality' },
+                ]
+            },
+        ];
+
+        const enhancedData = [
+            {
+                group: 'Availability Loss', groupColor: '#F59E0B', groupTotal: 186, items: [
+                    { name: 'Planning Efficiency', val: 28, color: '#CA8A04', path: 'Planned', parentVal: 42, badge: 'new', benefit: 'Schedulable, no ops involvement' },
+                    { name: 'Operator Discipline', val: 14, color: '#FBBF24', path: 'Planned', parentVal: 42, badge: 'new', benefit: 'Training & SOP compliance' },
+                    { name: 'Op. Resolution Time', val: 58, color: '#FB923C', path: 'Unplanned › Op. Resolved', parentVal: 58, badge: 'split', benefit: 'Operator skill development' },
+                    { name: 'Op. Evaluation Time', val: 10, color: '#FB7185', path: 'Unplanned › Tech Intv.', parentVal: 86, badge: 'new', benefit: 'Triage speed improvement' },
+                    { name: 'Tech Response Time', val: 16, color: '#EF4444', path: 'Unplanned › Tech Intv.', parentVal: 86, badge: 'new', benefit: 'Team proximity & scheduling' },
+                    { name: 'Active Wrench Time', val: 38, color: '#10B981', path: 'Unplanned › Wrench', parentVal: 60, badge: 'new', benefit: 'Actual repair — value-add work' },
+                    { name: 'Inactive Wrench Time', val: 22, color: '#EAB308', path: 'Unplanned › Wrench', parentVal: 60, badge: 'new', benefit: 'Parts, tools, info waiting' },
+                ]
+            },
+            {
+                group: 'Performance Loss', groupColor: '#3B82F6', groupTotal: 72, items: [
+                    { name: 'Interruptions', val: 24, color: '#60A5FA', path: 'Performance', parentVal: 72, badge: 'split', benefit: 'Micro-stop root causes' },
+                    { name: 'True Speed Loss', val: 48, color: '#6366F1', path: 'Performance', parentVal: 72, badge: 'split', benefit: 'Rate vs ideal cycle time' },
+                ]
+            },
+            {
+                group: 'Quality Loss', groupColor: '#8B5CF6', groupTotal: 26, items: [
+                    { name: 'Startup Rejects', val: 14, color: '#A855F7', path: 'Quality', parentVal: 26, badge: 'split', benefit: 'Changeover quality' },
+                    { name: 'In-Process Rejects', val: 12, color: '#EC4899', path: 'Quality', parentVal: 26, badge: 'split', benefit: 'Running defect rate' },
+                ]
+            },
+        ];
+
+        const maxVal = 58;
+        let isEnhanced = false;
+        const matrix = document.getElementById('matrix');
+        const toggle = document.getElementById('toggle');
+        const benefits = document.getElementById('benefits');
+        const lblBasic = document.getElementById('lbl-basic');
+        const lblEnhanced = document.getElementById('lbl-enhanced');
+
+        function renderMatrix(data, enhanced) {
+            matrix.innerHTML = '';
+            const colClass = enhanced ? 'enhanced-cols' : 'basic-cols';
+            matrix.className = 'matrix' + (enhanced ? ' enhanced' : '');
+
+            // Header
+            const header = document.createElement('div');
+            header.className = 'matrix-header ' + colClass;
+            if (enhanced) {
+                header.innerHTML = `
+            <div class="mh"></div>
+            <div class="mh">Variable</div>
+            <div class="mh">Hierarchy</div>
+            <div class="mh center">Hours</div>
+            <div class="mh center">% Total</div>
+            <div class="mh center">% Parent</div>
+            <div class="mh">Magnitude</div>`;
+            } else {
+                header.innerHTML = `
+            <div class="mh"></div>
+            <div class="mh">Category</div>
+            <div class="mh center">Hours</div>
+            <div class="mh center">% Total</div>
+            <div class="mh">Magnitude</div>`;
+            }
+            matrix.appendChild(header);
+
+            let rowIdx = 0;
+            data.forEach(group => {
+                // Group header
+                const gr = document.createElement('div');
+                gr.className = 'group-row' + (enhanced ? ' enhanced-group' : '');
+                gr.innerHTML = `
+            <div class="gr-inner">
+                <div class="gr-band" style="background:${group.groupColor}"></div>
+                <span class="gr-label">${group.group}</span>
+                <span class="gr-total">${group.groupTotal}h · ${(group.groupTotal / TOTAL * 100).toFixed(1)}%</span>
+            </div>`;
+                matrix.appendChild(gr);
+
+                group.items.forEach((item, i) => {
+                    const row = document.createElement('div');
+                    row.className = 'matrix-row ' + colClass;
+                    row.style.animationDelay = (rowIdx * 0.06) + 's';
+                    if (enhanced) row.classList.add('fade-in');
+
+                    const pctTotal = (item.val / TOTAL * 100).toFixed(1);
+                    const pctParent = item.parentVal ? (item.val / item.parentVal * 100).toFixed(1) : '—';
+                    const barW = (item.val / maxVal * 100);
+                    const intensity = item.val / maxVal;
+
+                    const badgeHTML = enhanced && item.badge
+                        ? `<span class="enhanced-badge ${item.badge} show">${item.badge === 'new' ? '✦ NEW' : '◈ SPLIT'}</span>`
+                        : '';
+
+                    const benefitHTML = enhanced && item.benefit
+                        ? `<span class="insight" title="${item.benefit}"><span class="arrow">→</span>${item.benefit}</span>`
+                        : '';
+
+                    if (enhanced) {
+                        row.innerHTML = `
+                    <div class="mr-band" style="background:${hexRGBA(group.groupColor, 0.3)}"></div>
+                    <div class="mr-name">
+                        <div class="dot" style="background:${item.color}"></div>
+                        <span>${item.name}</span>
+                        ${badgeHTML}
+                    </div>
+                    <div class="mr-path">${item.path}${benefitHTML}</div>
+                    <div class="mr-val" style="color:${hexRGBA(item.color, 0.6 + intensity * 0.4)};font-weight:${intensity > 0.5 ? '700' : '400'}">${item.val}h</div>
+                    <div class="mr-pct">${pctTotal}%</div>
+                    <div class="mr-pct">${pctParent}%</div>
+                    <div class="mr-bar-cell">
+                        <div class="mr-bar" style="width:${barW}%;background:linear-gradient(90deg,${hexRGBA(item.color, 0.7)},${hexRGBA(item.color, 0.4)})">
+                            ${barW > 30 ? `<span class="mr-bar-label">${item.val}h</span>` : ''}
+                        </div>
+                    </div>`;
+                    } else {
+                        row.innerHTML = `
+                    <div class="mr-band" style="background:${hexRGBA(group.groupColor, 0.3)}"></div>
+                    <div class="mr-name">
+                        <div class="dot" style="background:${item.color}"></div>
+                        <span>${item.name}</span>
+                    </div>
+                    <div class="mr-val" style="color:${hexRGBA(item.color, 0.6 + intensity * 0.4)};font-weight:${intensity > 0.5 ? '700' : '400'}">${item.val}h</div>
+                    <div class="mr-pct">${pctTotal}%</div>
+                    <div class="mr-bar-cell">
+                        <div class="mr-bar" style="width:${barW}%;background:linear-gradient(90deg,${hexRGBA(item.color, 0.7)},${hexRGBA(item.color, 0.4)})">
+                            ${barW > 30 ? `<span class="mr-bar-label">${item.val}h</span>` : ''}
+                        </div>
+                    </div>`;
+                    }
+                    matrix.appendChild(row);
+                    rowIdx++;
+                });
+            });
+
+            // Summary
+            const totalItems = data.reduce((s, g) => s + g.items.length, 0);
+            const sr = document.createElement('div');
+            sr.className = 'matrix-row summary-row ' + colClass;
+            if (enhanced) {
+                sr.innerHTML = `
+            <div class="mr-band" style="background:#F59E0B"></div>
+            <div class="mr-name" style="color:#F59E0B;font-weight:700">Total Accounted <span style="font-size:.6rem;color:#64748B;font-weight:400;margin-left:8px">${totalItems} variables</span></div>
+            <div class="mr-path"></div>
+            <div class="mr-val" style="color:#F59E0B;font-weight:700">${TOTAL}h</div>
+            <div class="mr-pct" style="color:#F59E0B;font-weight:600">100%</div>
+            <div class="mr-pct"></div>
+            <div class="mr-bar-cell">
+                <div class="mr-bar" style="width:100%;background:linear-gradient(90deg,rgba(245,158,11,0.5),rgba(245,158,11,0.15));height:4px;border-radius:2px"></div>
+            </div>`;
+            } else {
+                sr.innerHTML = `
+            <div class="mr-band" style="background:#F59E0B"></div>
+            <div class="mr-name" style="color:#F59E0B;font-weight:700">Total <span style="font-size:.6rem;color:#64748B;font-weight:400;margin-left:8px">${totalItems} categories</span></div>
+            <div class="mr-val" style="color:#F59E0B;font-weight:700">${TOTAL}h</div>
+            <div class="mr-pct" style="color:#F59E0B;font-weight:600">100%</div>
+            <div class="mr-bar-cell">
+                <div class="mr-bar" style="width:100%;background:linear-gradient(90deg,rgba(245,158,11,0.5),rgba(245,158,11,0.15));height:4px;border-radius:2px"></div>
+            </div>`;
+            }
+            matrix.appendChild(sr);
+        }
+
+        // Toggle
+        toggle.addEventListener('click', () => {
+            isEnhanced = !isEnhanced;
+            toggle.classList.toggle('active', isEnhanced);
+            benefits.classList.toggle('show', isEnhanced);
+            lblBasic.classList.toggle('dim', isEnhanced);
+            lblBasic.classList.toggle('lit', !isEnhanced);
+            lblEnhanced.classList.toggle('dim', !isEnhanced);
+            lblEnhanced.classList.toggle('lit', isEnhanced);
+
+            renderMatrix(isEnhanced ? enhancedData : basicData, isEnhanced);
+        });
+
+        // Init
+        lblBasic.classList.add('lit');
+        renderMatrix(basicData, false);
+    </script>
+</body>
+
+</html>

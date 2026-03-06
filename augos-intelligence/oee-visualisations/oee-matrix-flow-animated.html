@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>OEE Matrix — Animated Flow — Augos</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: #06080A;
+            color: #E2E8F0;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            min-height: 100vh;
+            overflow-x: hidden
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 32px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp .8s ease forwards
+        }
+
+        .title .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            color: #F59E0B;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 12px
+        }
+
+        .title h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 8px
+        }
+
+        .title h1 span {
+            color: #94A3B8;
+            font-weight: 300
+        }
+
+        .title p {
+            font-size: .85rem;
+            color: #64748B;
+            max-width: 620px;
+            margin: 0 auto
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: fadeUp .8s ease .3s forwards
+        }
+
+        .ctrl-btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, .08);
+            background: rgba(255, 255, 255, .03);
+            color: #64748B;
+            cursor: pointer;
+            transition: all .2s
+        }
+
+        .ctrl-btn:hover {
+            background: rgba(255, 255, 255, .06);
+            color: #94A3B8
+        }
+
+        .ctrl-btn.active {
+            background: rgba(245, 158, 11, .1);
+            border-color: rgba(245, 158, 11, .3);
+            color: #F59E0B
+        }
+
+        /* Matrix */
+        .matrix {
+            width: 100%;
+            max-width: 920px;
+            border: 1px solid rgba(255, 255, 255, .06);
+            border-radius: 12px;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeUp .6s ease .2s forwards
+        }
+
+        .matrix-header {
+            display: grid;
+            grid-template-columns: 4px 180px 120px 80px 80px 80px 1fr;
+            background: rgba(255, 255, 255, .02);
+            border-bottom: 1px solid rgba(255, 255, 255, .06)
+        }
+
+        .matrix-header .mh {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 12px 10px;
+            display: flex;
+            align-items: center
+        }
+
+        /* Group Row */
+        .group-row {
+            display: grid;
+            grid-template-columns: 4px 1fr;
+            border-bottom: 1px solid rgba(255, 255, 255, .04);
+            background: rgba(255, 255, 255, .015);
+            opacity: 0;
+            transform: translateX(-20px)
+        }
+
+        .group-row.visible {
+            animation: slideIn .5s ease forwards
+        }
+
+        .gr-band {
+            width: 4px
+        }
+
+        .gr-label {
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .gr-total {
+            font-weight: 600;
+            color: #94A3B8
+        }
+
+        /* Sub-group */
+        .subgroup-row {
+            display: grid;
+            grid-template-columns: 4px 1fr;
+            border-bottom: 1px solid rgba(255, 255, 255, .02);
+            background: rgba(255, 255, 255, .008);
+            opacity: 0;
+            transform: translateX(-10px)
+        }
+
+        .subgroup-row.visible {
+            animation: slideIn .4s ease forwards
+        }
+
+        .sg-label {
+            padding: 5px 10px 5px 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: #3E4C5E;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .sg-line {
+            width: 12px;
+            height: 1px;
+            flex-shrink: 0
+        }
+
+        /* Matrix Row */
+        .matrix-row {
+            display: grid;
+            grid-template-columns: 4px 180px 120px 80px 80px 80px 1fr;
+            border-bottom: 1px solid rgba(255, 255, 255, .03);
+            transition: all .25s ease;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(12px)
+        }
+
+        .matrix-row.visible {
+            animation: fadeUp .5s ease forwards
+        }
+
+        .matrix-row:hover {
+            background: rgba(255, 255, 255, .04);
+            transform: scale(1.005) translateY(0)
+        }
+
+        .matrix-row.expanded {
+            background: rgba(255, 255, 255, .05);
+            border-bottom: 1px solid rgba(255, 255, 255, .06)
+        }
+
+        .matrix-row:last-child {
+            border-bottom: none
+        }
+
+        .mr-band {
+            width: 4px;
+            transition: width .3s
+        }
+
+        .matrix-row:hover .mr-band {
+            width: 4px
+        }
+
+        .mr-name {
+            padding: 10px;
+            font-size: .8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color .2s
+        }
+
+        .mr-name .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            flex-shrink: 0;
+            transition: transform .2s
+        }
+
+        .matrix-row:hover .mr-name .dot {
+            transform: scale(1.4)
+        }
+
+        .mr-name .step {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: #475569;
+            background: rgba(255, 255, 255, .04);
+            border-radius: 3px;
+            padding: 1px 5px;
+            flex-shrink: 0;
+            min-width: 18px;
+            text-align: center;
+            transition: all .2s
+        }
+
+        .matrix-row:hover .mr-name .step {
+            background: rgba(245, 158, 11, .15);
+            color: #F59E0B
+        }
+
+        .mr-path {
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            color: #475569;
+            display: flex;
+            align-items: center
+        }
+
+        .mr-val {
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .mr-pct {
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748B
+        }
+
+        .mr-bar-cell {
+            padding: 10px 14px;
+            display: flex;
+            align-items: center
+        }
+
+        .mr-bar {
+            height: 18px;
+            border-radius: 4px;
+            min-width: 2px;
+            position: relative;
+            width: 0%;
+            transition: width .8s cubic-bezier(.4, 0, .2, 1)
+        }
+
+        .mr-bar.animate {
+            /* width set by JS */
+        }
+
+        .mr-bar-label {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: rgba(255, 255, 255, .7);
+            opacity: 0;
+            transition: opacity .3s .6s
+        }
+
+        .mr-bar.animate .mr-bar-label {
+            opacity: 1
+        }
+
+        /* Expand Panel */
+        .expand-panel {
+            display: grid;
+            grid-template-columns: 4px 1fr;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .4s ease, opacity .3s ease;
+            opacity: 0;
+            background: rgba(255, 255, 255, .02);
+            border-bottom: 1px solid rgba(255, 255, 255, .03)
+        }
+
+        .expand-panel.open {
+            max-height: 300px;
+            opacity: 1
+        }
+
+        .expand-content {
+            padding: 12px 16px 16px 16px;
+            display: flex;
+            gap: 24px
+        }
+
+        .expand-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 4px
+        }
+
+        .expand-stat .es-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .06em
+        }
+
+        .expand-stat .es-val {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600
+        }
+
+        .expand-desc {
+            flex: 1;
+            font-size: .78rem;
+            color: #94A3B8;
+            line-height: 1.6;
+            border-left: 1px solid rgba(255, 255, 255, .06);
+            padding-left: 20px
+        }
+
+        /* Summary */
+        .summary-row {
+            display: grid;
+            grid-template-columns: 4px 180px 120px 80px 80px 80px 1fr;
+            background: rgba(245, 158, 11, .04);
+            border-top: 1px solid rgba(245, 158, 11, .1);
+            opacity: 0
+        }
+
+        .summary-row.visible {
+            animation: fadeUp .5s ease forwards
+        }
+
+        .summary-row .mr-name {
+            font-weight: 700;
+            color: #F59E0B
+        }
+
+        .summary-row .mr-val {
+            font-weight: 700;
+            color: #F59E0B
+        }
+
+        /* Running total */
+        .running-total {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: rgba(6, 8, 10, .9);
+            border: 1px solid rgba(245, 158, 11, .2);
+            border-radius: 10px;
+            padding: 12px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+            backdrop-filter: blur(12px);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all .4s ease;
+            z-index: 10
+        }
+
+        .running-total.show {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        .running-total .rt-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: .06em
+        }
+
+        .running-total .rt-val {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #F59E0B
+        }
+
+        .running-total .rt-bar {
+            width: 100px;
+            height: 3px;
+            background: rgba(255, 255, 255, .06);
+            border-radius: 2px;
+            margin-top: 4px;
+            overflow: hidden
+        }
+
+        .running-total .rt-fill {
+            height: 100%;
+            background: #F59E0B;
+            border-radius: 2px;
+            transition: width .6s ease
+        }
+
+        /* Pulse ring on hover */
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(1);
+                opacity: .6
+            }
+
+            100% {
+                transform: scale(2.5);
+                opacity: 0
+            }
+        }
+
+        .mr-name .dot::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 2px;
+            background: inherit;
+            opacity: 0
+        }
+
+        /* Keyframes */
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        @keyframes countUp {
+            from {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="title">
+        <div class="tag">Visualisation 10c · Animated Matrix</div>
+        <h1>Watch the Losses <span>Build</span></h1>
+        <p>Each variable animates in sequence through the OEE hierarchy. Click any row
+            to reveal its story. The running counter tracks accumulating loss.</p>
+    </div>
+
+    <div class="controls">
+        <button class="ctrl-btn active" onclick="replayAll()">▶ Replay</button>
+        <button class="ctrl-btn" onclick="toggleMode('flow')" id="btn-flow">Logical Flow</button>
+        <button class="ctrl-btn" onclick="toggleMode('pareto')" id="btn-pareto">By Magnitude</button>
+    </div>
+
+    <div class="matrix" id="matrix">
+        <div class="matrix-header">
+            <div class="mh"></div>
+            <div class="mh">Variable</div>
+            <div class="mh">Hierarchy</div>
+            <div class="mh" style="justify-content:center">Hours</div>
+            <div class="mh" style="justify-content:center">% Total</div>
+            <div class="mh" style="justify-content:center">% Parent</div>
+            <div class="mh">Magnitude</div>
+        </div>
+    </div>
+
+    <div class="running-total" id="running-total">
+        <div class="rt-label">Accumulated Loss</div>
+        <div class="rt-val" id="rt-val">0h</div>
+        <div class="rt-bar">
+            <div class="rt-fill" id="rt-fill" style="width:0%"></div>
+        </div>
+    </div>
+
+    <script>
+        const descriptions = {
+            'Planning Efficiency': 'Hours lost to scheduling inefficiency — planned downtime that overran its allocation. Born from a steel press study where coil changes ranged from 6 min to 90 min.',
+            'Operator Discipline': 'Late starts, early stops, extended breaks. This variable isolates genuine operator time discipline from planning failures.',
+            'Op. Resolution Time': 'Operators resolving issues without technical support. If the operator fixes the machine, they own the "Resolution %" — encouraging frontline capability.',
+            'Op. Evaluation Time': 'The clock between the stop event and the Digital Signal — how long does the operator evaluate before escalating?',
+            'Tech Response Time': 'From Digital Signal to technician arrival — pure accountability via QR-coded handoff. Cannot be back-dated.',
+            'Active Wrench Time': 'Productive repair — the only "good" unplanned time. Tools on machine, technician actively fixing the problem.',
+            'Inactive Wrench Time': 'The hidden waste within maintenance — technician present but waiting for parts, searching, or walking.',
+            'Micro Interruptions': 'Micro-stops too brief to log but devastating in aggregate. Augos\'s first breakthrough: the "silent killers" traditional OEE completely missed.',
+            'True Speed Loss': 'Running below design speed. Separated from Small Stops in Evolution 1 — traditional OEE\'s "Performance" was a blur that hid this.',
+            'Startup Rejects': 'Reject production during startup and changeover. Material wasted before the process stabilizes.',
+            'In-Process Rejects': 'Steady-state defects during normal production. Defects that occur even when the process is "running correctly."'
+        };
+
+        const flowData = [
+            {
+                group: 'Availability Loss', groupColor: '#F59E0B', groupTotal: 186, subgroups: [
+                    {
+                        label: 'Planned Downtime', sublabel: '42h', color: '#D97706', items: [
+                            { name: 'Planning Efficiency', val: 28, color: '#CA8A04', path: 'Planned', parentVal: 42, step: 1 },
+                            { name: 'Operator Discipline', val: 14, color: '#FBBF24', path: 'Planned', parentVal: 42, step: 2 },
+                        ]
+                    },
+                    {
+                        label: 'Unplanned — Operator Resolved', sublabel: '58h', color: '#FB923C', items: [
+                            { name: 'Op. Resolution Time', val: 58, color: '#FB923C', path: 'Unplanned › Op. Resolved', parentVal: 58, step: 3 },
+                        ]
+                    },
+                    {
+                        label: 'Unplanned — Tech Intervention', sublabel: '86h', color: '#EF4444', items: [
+                            { name: 'Op. Evaluation Time', val: 10, color: '#FB7185', path: 'Unplanned › Tech Intv.', parentVal: 86, step: 4 },
+                            { name: 'Tech Response Time', val: 16, color: '#EF4444', path: 'Unplanned › Tech Intv.', parentVal: 86, step: 5 },
+                            { name: 'Active Wrench Time', val: 38, color: '#10B981', path: 'Unplanned › Tech Intv. › Wrench', parentVal: 60, step: 6 },
+                            { name: 'Inactive Wrench Time', val: 22, color: '#EAB308', path: 'Unplanned › Tech Intv. › Wrench', parentVal: 60, step: 7 },
+                        ]
+                    },
+                ]
+            },
+            {
+                group: 'Performance Loss', groupColor: '#3B82F6', groupTotal: 72, subgroups: [
+                    {
+                        label: null, items: [
+                            { name: 'Micro Interruptions', val: 24, color: '#60A5FA', path: 'Performance', parentVal: 72, step: 8 },
+                            { name: 'True Speed Loss', val: 48, color: '#6366F1', path: 'Performance', parentVal: 72, step: 9 },
+                        ]
+                    }
+                ]
+            },
+            {
+                group: 'Quality Loss', groupColor: '#8B5CF6', groupTotal: 26, subgroups: [
+                    {
+                        label: null, items: [
+                            { name: 'Startup Rejects', val: 14, color: '#A855F7', path: 'Quality', parentVal: 26, step: 10 },
+                            { name: 'In-Process Rejects', val: 12, color: '#EC4899', path: 'Quality', parentVal: 26, step: 11 },
+                        ]
+                    }
+                ]
+            },
+        ];
+
+        const maxVal = 58;
+        const TOTAL = 284;
+        let currentExpanded = null;
+        let animTimeout = [];
+
+        function hexRGBA(h, a) {
+            return `rgba(${parseInt(h.slice(1, 3), 16)},${parseInt(h.slice(3, 5), 16)},${parseInt(h.slice(5, 7), 16)},${a})`;
+        }
+
+        function buildMatrix(data) {
+            const container = document.getElementById('matrix');
+            // Remove everything after header
+            while (container.children.length > 1) container.removeChild(container.lastChild);
+            currentExpanded = null;
+
+            let allElements = [];
+            let allBars = [];
+            let runningTotal = 0;
+            let itemIndex = 0;
+
+            data.forEach(group => {
+                const gr = document.createElement('div');
+                gr.className = 'group-row';
+                gr.innerHTML = `
+                    <div class="gr-band" style="background:${group.groupColor}"></div>
+                    <div class="gr-label"><span>${group.group}</span> <span class="gr-total">${group.groupTotal}h · ${(group.groupTotal / TOTAL * 100).toFixed(1)}%</span></div>
+                `;
+                container.appendChild(gr);
+                allElements.push({ el: gr, type: 'group', delay: itemIndex * 80 });
+                itemIndex++;
+
+                group.subgroups.forEach(sg => {
+                    if (sg.label) {
+                        const sgRow = document.createElement('div');
+                        sgRow.className = 'subgroup-row';
+                        sgRow.innerHTML = `
+                            <div class="sg-band" style="background:${hexRGBA(group.groupColor, 0.15)}"></div>
+                            <div class="sg-label">
+                                <span class="sg-line" style="background:${hexRGBA(sg.color, 0.4)}"></span>
+                                <span>${sg.label}</span>
+                                <span style="color:${hexRGBA(sg.color, 0.7)};font-weight:500">${sg.sublabel}</span>
+                            </div>
+                        `;
+                        container.appendChild(sgRow);
+                        allElements.push({ el: sgRow, type: 'subgroup', delay: itemIndex * 80 });
+                        itemIndex++;
+                    }
+
+                    sg.items.forEach(item => {
+                        const row = document.createElement('div');
+                        row.className = 'matrix-row';
+                        const pctTotal = (item.val / TOTAL * 100).toFixed(1);
+                        const pctParent = (item.val / item.parentVal * 100).toFixed(1);
+                        const barW = (item.val / maxVal * 100);
+                        const intensity = item.val / maxVal;
+
+                        row.innerHTML = `
+                            <div class="mr-band" style="background:${hexRGBA(group.groupColor, 0.3)}"></div>
+                            <div class="mr-name"><span class="step">${item.step}</span><div class="dot" style="background:${item.color}"></div>${item.name}</div>
+                            <div class="mr-path">${item.path}</div>
+                            <div class="mr-val" style="color:${hexRGBA(item.color, 0.6 + intensity * 0.4)};font-weight:${intensity > 0.5 ? '700' : '400'}"><span class="counter" data-target="${item.val}">0</span>h</div>
+                            <div class="mr-pct">${pctTotal}%</div>
+                            <div class="mr-pct">${pctParent}%</div>
+                            <div class="mr-bar-cell">
+                                <div class="mr-bar" data-width="${barW}" style="background:linear-gradient(90deg,${hexRGBA(item.color, 0.7)},${hexRGBA(item.color, 0.4)})">
+                                    ${barW > 30 ? `<span class="mr-bar-label">${item.val}h</span>` : ''}
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(row);
+
+                        // Expand panel
+                        const panel = document.createElement('div');
+                        panel.className = 'expand-panel';
+                        panel.innerHTML = `
+                            <div class="mr-band" style="background:${hexRGBA(group.groupColor, 0.15)}"></div>
+                            <div class="expand-content">
+                                <div class="expand-stat">
+                                    <div class="es-label">Hours Lost</div>
+                                    <div class="es-val" style="color:${item.color}">${item.val}h</div>
+                                </div>
+                                <div class="expand-stat">
+                                    <div class="es-label">Of Total</div>
+                                    <div class="es-val">${pctTotal}%</div>
+                                </div>
+                                <div class="expand-stat">
+                                    <div class="es-label">Of Parent</div>
+                                    <div class="es-val">${pctParent}%</div>
+                                </div>
+                                <div class="expand-desc">${descriptions[item.name] || ''}</div>
+                            </div>
+                        `;
+                        container.appendChild(panel);
+
+                        row.addEventListener('click', () => toggleExpand(row, panel));
+
+                        runningTotal += item.val;
+                        const capturedTotal = runningTotal;
+                        allElements.push({
+                            el: row, type: 'row', delay: itemIndex * 120,
+                            bar: row.querySelector('.mr-bar'),
+                            barWidth: barW,
+                            counter: row.querySelector('.counter'),
+                            counterTarget: item.val,
+                            runningTotal: capturedTotal
+                        });
+                        itemIndex++;
+                    });
+                });
+            });
+
+            // Summary row
+            const sr = document.createElement('div');
+            sr.className = 'summary-row';
+            sr.innerHTML = `
+                <div class="mr-band" style="background:#F59E0B"></div>
+                <div class="mr-name" style="font-weight:700;color:#F59E0B">Total Accounted</div>
+                <div class="mr-path"></div>
+                <div class="mr-val" style="color:#F59E0B;font-weight:700">${TOTAL}h</div>
+                <div class="mr-pct" style="color:#F59E0B;font-weight:600">100%</div>
+                <div class="mr-pct"></div>
+                <div class="mr-bar-cell">
+                    <div class="mr-bar" data-width="100" style="background:linear-gradient(90deg,rgba(245,158,11,0.5),rgba(245,158,11,0.2));height:4px;border-radius:2px"></div>
+                </div>
+            `;
+            container.appendChild(sr);
+            allElements.push({ el: sr, type: 'summary', delay: itemIndex * 120, bar: sr.querySelector('.mr-bar'), barWidth: 100 });
+
+            return allElements;
+        }
+
+        function animateCounter(el, target, duration) {
+            const start = performance.now();
+            function tick(now) {
+                const p = Math.min((now - start) / duration, 1);
+                el.textContent = Math.round(p * target);
+                if (p < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+        }
+
+        function toggleExpand(row, panel) {
+            if (currentExpanded && currentExpanded !== panel) {
+                currentExpanded.classList.remove('open');
+                currentExpanded._row.classList.remove('expanded');
+            }
+            const isOpen = panel.classList.contains('open');
+            panel.classList.toggle('open');
+            row.classList.toggle('expanded');
+            if (!isOpen) {
+                currentExpanded = panel;
+                panel._row = row;
+            } else {
+                currentExpanded = null;
+            }
+        }
+
+        function replayAll() {
+            // Clear previous timeouts
+            animTimeout.forEach(t => clearTimeout(t));
+            animTimeout = [];
+
+            const rt = document.getElementById('running-total');
+            rt.classList.remove('show');
+
+            const elements = buildMatrix(flowData);
+
+            setTimeout(() => {
+                rt.classList.add('show');
+            }, 300);
+
+            elements.forEach(item => {
+                const t = setTimeout(() => {
+                    if (item.type === 'group') item.el.classList.add('visible');
+                    else if (item.type === 'subgroup') item.el.classList.add('visible');
+                    else if (item.type === 'row') {
+                        item.el.classList.add('visible');
+                        setTimeout(() => {
+                            item.bar.style.width = item.barWidth + '%';
+                            item.bar.classList.add('animate');
+                            animateCounter(item.counter, item.counterTarget, 800);
+                            document.getElementById('rt-val').textContent = item.runningTotal + 'h';
+                            document.getElementById('rt-fill').style.width = (item.runningTotal / TOTAL * 100) + '%';
+                        }, 200);
+                    }
+                    else if (item.type === 'summary') {
+                        item.el.classList.add('visible');
+                        setTimeout(() => {
+                            item.bar.style.width = '100%';
+                            item.bar.classList.add('animate');
+                        }, 200);
+                    }
+                }, item.delay + 400);
+                animTimeout.push(t);
+            });
+        }
+
+        function toggleMode(mode) {
+            document.getElementById('btn-flow').classList.toggle('active', mode === 'flow');
+            document.getElementById('btn-pareto').classList.toggle('active', mode === 'pareto');
+            // For now both use same data; pareto would reorder
+            replayAll();
+        }
+
+        // Initial build
+        replayAll();
+    </script>
+</body>
+
+</html>

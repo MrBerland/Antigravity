@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>OEE: Surface vs Intelligence — Augos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        :root {
+            --bg: #06080A;
+            --surface: #0E1116;
+            --raised: #151A21;
+            --text: #E2E8F0;
+            --muted: #94A3B8;
+            --faint: #475569;
+            --border: rgba(255, 255, 255, .08);
+            --amber: #F59E0B;
+            --amber-dim: rgba(245, 158, 11, .12);
+            --rose: #F43F5E;
+            --emerald: #22C55E;
+            --blue: #3B82F6;
+            --violet: #8B5CF6;
+            --cyan: #06B6D4
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh
+        }
+
+        /* ── HEADER ── */
+        .page-header {
+            text-align: center;
+            padding: 80px 32px 40px;
+            max-width: 900px;
+            margin: 0 auto
+        }
+
+        .page-header .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            color: var(--amber);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 20px
+        }
+
+        .page-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 600;
+            line-height: 1.1;
+            letter-spacing: -.03em;
+            margin-bottom: 20px
+        }
+
+        .page-header h1 span {
+            color: var(--muted);
+            font-weight: 300
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            color: var(--muted);
+            line-height: 1.6;
+            max-width: 680px;
+            margin: 0 auto
+        }
+
+        /* ── COMPARISON CONTAINER ── */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 60px 1fr;
+            max-width: 1400px;
+            margin: 40px auto 0;
+            padding: 0 32px;
+            gap: 0;
+            align-items: start
+        }
+
+        .divider {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 60px;
+            position: relative
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--border) 60px, var(--border) calc(100% - 60px), transparent)
+        }
+
+        .divider .vs {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            color: var(--faint);
+            position: relative;
+            z-index: 1
+        }
+
+        /* ── PANELS ── */
+        .panel {
+            padding: 24px
+        }
+
+        .panel-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .panel-label .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%
+        }
+
+        .traditional .panel-label {
+            color: var(--faint)
+        }
+
+        .traditional .panel-label .dot {
+            background: var(--faint)
+        }
+
+        .augos .panel-label {
+            color: var(--amber)
+        }
+
+        .augos .panel-label .dot {
+            background: var(--amber)
+        }
+
+        /* ── TRADITIONAL SIDE ── */
+        .flat-oee {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center
+        }
+
+        .flat-oee .oee-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1;
+            margin-bottom: 4px
+        }
+
+        .flat-oee .oee-label {
+            font-size: .8rem;
+            color: var(--faint);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 32px
+        }
+
+        .flat-bars {
+            display: flex;
+            gap: 16px;
+            justify-content: center
+        }
+
+        .flat-bar {
+            text-align: center;
+            flex: 1;
+            max-width: 140px
+        }
+
+        .flat-bar-label {
+            font-size: .7rem;
+            color: var(--faint);
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            margin-bottom: 8px
+        }
+
+        .flat-bar-track {
+            height: 120px;
+            background: rgba(255, 255, 255, .04);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end
+        }
+
+        .flat-bar-fill {
+            width: 100%;
+            border-radius: 8px;
+            transition: height 1.2s cubic-bezier(.22, 1, .36, 1)
+        }
+
+        .flat-bar-fill.a {
+            background: linear-gradient(to top, rgba(148, 163, 184, .15), rgba(148, 163, 184, .25))
+        }
+
+        .flat-bar-fill.p {
+            background: linear-gradient(to top, rgba(148, 163, 184, .12), rgba(148, 163, 184, .2))
+        }
+
+        .flat-bar-fill.q {
+            background: linear-gradient(to top, rgba(148, 163, 184, .1), rgba(148, 163, 184, .18))
+        }
+
+        .flat-bar-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .85rem;
+            color: var(--muted);
+            margin-top: 8px
+        }
+
+        .flat-caption {
+            margin-top: 32px;
+            font-size: .85rem;
+            color: var(--faint);
+            line-height: 1.6;
+            font-style: italic
+        }
+
+        .flat-caption strong {
+            color: var(--muted);
+            font-weight: 500;
+            font-style: normal
+        }
+
+        /* ── AUGOS SIDE ── */
+        .dimension-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px
+        }
+
+        .dim-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all .4s ease;
+            cursor: default
+        }
+
+        .dim-card:hover {
+            border-color: rgba(255, 255, 255, .15);
+            transform: translateX(4px)
+        }
+
+        .dim-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 3px
+        }
+
+        .dim-card.d-avail::before {
+            background: var(--emerald)
+        }
+
+        .dim-card.d-perf::before {
+            background: var(--blue)
+        }
+
+        .dim-card.d-qual::before {
+            background: var(--violet)
+        }
+
+        .dim-card.d-who::before {
+            background: var(--amber)
+        }
+
+        .dim-card.d-why::before {
+            background: var(--rose)
+        }
+
+        .dim-card.d-what::before {
+            background: var(--cyan)
+        }
+
+        .dim-card.d-when::before {
+            background: #A78BFA
+        }
+
+        .dim-card.d-how::before {
+            background: #FB923C
+        }
+
+        .dim-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px
+        }
+
+        .dim-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: .95rem;
+            font-weight: 500;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .dim-name .dim-icon {
+            font-size: 1rem
+        }
+
+        .dim-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 3px 8px;
+            border-radius: 4px
+        }
+
+        .tag-standard {
+            color: var(--muted);
+            background: rgba(255, 255, 255, .05)
+        }
+
+        .tag-augos {
+            color: var(--amber);
+            background: var(--amber-dim)
+        }
+
+        .dim-detail {
+            font-size: .8rem;
+            color: var(--muted);
+            line-height: 1.6
+        }
+
+        .dim-metrics {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+            flex-wrap: wrap
+        }
+
+        .dim-metric {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            color: var(--faint);
+            background: rgba(255, 255, 255, .03);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border)
+        }
+
+        .dim-metric strong {
+            color: var(--text);
+            font-weight: 500
+        }
+
+        /* ── SUNBURST SECTION ── */
+        .sunburst-section {
+            max-width: 1000px;
+            margin: 100px auto 0;
+            padding: 0 32px;
+            text-align: center
+        }
+
+        .sunburst-section h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+            letter-spacing: -.02em
+        }
+
+        .sunburst-section .sub {
+            color: var(--muted);
+            font-size: 1rem;
+            margin-bottom: 48px
+        }
+
+        .sunburst-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto
+        }
+
+        .sunburst-container svg {
+            width: 100%;
+            height: auto
+        }
+
+        /* ── BOTTOM QUOTE ── */
+        .bottom-quote {
+            max-width: 800px;
+            margin: 80px auto 100px;
+            padding: 48px;
+            text-align: center;
+            position: relative
+        }
+
+        .bottom-quote::before {
+            content: '"';
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 6rem;
+            color: var(--amber);
+            opacity: .3;
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            line-height: 1
+        }
+
+        .bottom-quote p {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.4rem;
+            color: #fff;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            font-weight: 400
+        }
+
+        .bottom-quote cite {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            color: var(--amber);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            font-style: normal
+        }
+
+        /* ── FORMULA BAR ── */
+        .formula-section {
+            max-width: 1000px;
+            margin: 60px auto 0;
+            padding: 0 32px
+        }
+
+        .formula-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px
+        }
+
+        .formula-box {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: .9rem;
+            font-weight: 500;
+            text-align: center;
+            min-width: 100px
+        }
+
+        .formula-box.std {
+            background: rgba(148, 163, 184, .08);
+            border: 1px solid rgba(148, 163, 184, .15);
+            color: var(--muted)
+        }
+
+        .formula-box.aug {
+            background: var(--amber-dim);
+            border: 1px solid rgba(245, 158, 11, .25);
+            color: var(--amber)
+        }
+
+        .formula-op {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            color: var(--faint)
+        }
+
+        .formula-label {
+            text-align: center;
+            font-size: .75rem;
+            color: var(--faint);
+            margin-top: 4px;
+            margin-bottom: 8px
+        }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:900px) {
+            .comparison {
+                grid-template-columns: 1fr;
+                gap: 24px
+            }
+
+            .divider {
+                display: none
+            }
+
+            .flat-bars {
+                gap: 12px
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <div class="tag">Manufacturing Intelligence · Visual Concept</div>
+        <h1>Three Numbers <span>Tell You That You Lost.</span><br>Eight Dimensions <span>Tell You Where to Go Fix
+                It.</span></h1>
+        <p>Traditional OEE reduces an entire production reality to three percentages. Augos preserves those numbers —
+            and then unfolds five additional dimensions of intelligence behind each one.</p>
+    </div>
+
+    <!-- FORMULA COMPARISON -->
+    <div class="formula-section">
+        <div class="formula-label">TRADITIONAL OEE</div>
+        <div class="formula-row">
+            <div class="formula-box std">Availability</div>
+            <span class="formula-op">×</span>
+            <div class="formula-box std">Performance</div>
+            <span class="formula-op">×</span>
+            <div class="formula-box std">Quality</div>
+            <span class="formula-op">=</span>
+            <div class="formula-box std" style="font-size:1.1rem">OEE %</div>
+        </div>
+        <div style="text-align:center;margin:20px 0">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                style="color:var(--faint)">
+                <path d="M12 5v14M5 12l7 7 7-7" />
+            </svg>
+        </div>
+        <div class="formula-label">AUGOS INTELLIGENCE</div>
+        <div class="formula-row">
+            <div class="formula-box std">A</div>
+            <span class="formula-op">×</span>
+            <div class="formula-box std">P</div>
+            <span class="formula-op">×</span>
+            <div class="formula-box std">Q</div>
+            <span class="formula-op">+</span>
+            <div class="formula-box aug">WHO</div>
+            <span class="formula-op">+</span>
+            <div class="formula-box aug">WHY</div>
+            <span class="formula-op">+</span>
+            <div class="formula-box aug">WHAT</div>
+            <span class="formula-op">+</span>
+            <div class="formula-box aug">WHEN</div>
+            <span class="formula-op">+</span>
+            <div class="formula-box aug">HOW</div>
+        </div>
+    </div>
+
+    <!-- SPLIT COMPARISON -->
+    <div class="comparison">
+        <!-- LEFT: TRADITIONAL -->
+        <div class="panel traditional">
+            <div class="panel-label"><span class="dot"></span> Traditional OEE — What You Get</div>
+            <div class="flat-oee">
+                <div class="oee-value">62<span style="font-size:2.5rem;color:var(--muted)">%</span></div>
+                <div class="oee-label">Overall Equipment Effectiveness</div>
+                <div class="flat-bars">
+                    <div class="flat-bar">
+                        <div class="flat-bar-label">Availability</div>
+                        <div class="flat-bar-track">
+                            <div class="flat-bar-fill a" style="height:78%"></div>
+                        </div>
+                        <div class="flat-bar-value">78%</div>
+                    </div>
+                    <div class="flat-bar">
+                        <div class="flat-bar-label">Performance</div>
+                        <div class="flat-bar-track">
+                            <div class="flat-bar-fill p" style="height:84%"></div>
+                        </div>
+                        <div class="flat-bar-value">84%</div>
+                    </div>
+                    <div class="flat-bar">
+                        <div class="flat-bar-label">Quality</div>
+                        <div class="flat-bar-track">
+                            <div class="flat-bar-fill q" style="height:95%"></div>
+                        </div>
+                        <div class="flat-bar-value">95%</div>
+                    </div>
+                </div>
+                <div class="flat-caption">
+                    You know the line ran at <strong>62% effectiveness</strong>.<br>
+                    You know availability was the biggest drag.<br>
+                    <strong>But you don't know why. You don't know who. You don't know what product was
+                        affected.</strong><br>
+                    You have a score. You don't have a plan.
+                </div>
+            </div>
+        </div>
+
+        <!-- DIVIDER -->
+        <div class="divider">
+            <div class="vs">vs</div>
+        </div>
+
+        <!-- RIGHT: AUGOS -->
+        <div class="panel augos">
+            <div class="panel-label"><span class="dot"></span> Augos Intelligence — What You See</div>
+            <div class="dimension-stack">
+
+                <!-- A ── Availability -->
+                <div class="dim-card d-avail">
+                    <div class="dim-header">
+                        <div class="dim-name"><span class="dim-icon">📊</span> Availability — 78%</div>
+                        <span class="dim-tag tag-standard">A × P × Q</span>
+                    </div>
+                    <div class="dim-detail">Same metric — but exploded. Not just "78%", but <strong>why</strong> the
+                        other 22% was lost. 158 stop events mapped into an 8-category, 3-level deep reason tree. Flour
+                        Bin Full alone accounts for 45.8%.</div>
+                    <div class="dim-metrics">
+                        <span class="dim-metric"><strong>158</strong> stop events</span>
+                        <span class="dim-metric"><strong>~12 days</strong> total downtime</span>
+                        <span class="dim-metric"><strong>78%</strong> unplanned</span>
+                    </div>
+                </div>
+
+                <!-- P ── Performance -->
+                <div class="dim-card d-perf">
+                    <div class="dim-header">
+                        <div class="dim-name"><span class="dim-icon">⚡</span> Performance — 84%</div>
+                        <span class="dim-tag tag-standard">A × P × Q</span>
+                    </div>
+                    <div class="dim-detail">Not just "running below speed" — but <strong>which product</strong> was
+                        running and what its rated speed should have been. 37,000 kg/h vs actual. Speed loss quantified
+                        in kg not lost, not just percentages.</div>
+                    <div class="dim-metrics">
+                        <span class="dim-metric"><strong>37,000</strong> kg/h rated</span>
+                        <span class="dim-metric">True speed per product</span>
+                        <span class="dim-metric">Speed loss in kg</span>
+                    </div>
+                </div>
+
+                <!-- Q ── Quality -->
+                <div class="dim-card d-qual">
+                    <div class="dim-header">
+                        <div class="dim-name"><span class="dim-icon">✅</span> Quality — 95%</div>
+                        <span class="dim-tag tag-standard">A × P × Q</span>
+                    </div>
+                    <div class="dim-detail">Quality tracked per product grade, per shift, per operator. Not a blended
+                        number — segmented to show <strong>which product</strong> and <strong>which operator</strong>
+                        produced the rejects.</div>
+                    <div class="dim-metrics">
+                        <span class="dim-metric">Per product grade</span>
+                        <span class="dim-metric">Per operator</span>
+                        <span class="dim-metric">Per shift window</span>
+                    </div>
+                </div>
+
+                <!-- WHO ── Operator -->
+                <div class="dim-card d-who">
+                    <div class="dim-header">
+                        <div class="dim-name"><span class="dim-icon">👤</span> WHO — Operator Attribution</div>
+                        <span class="dim-tag tag-augos">Augos Dimension</span>
+                    </div>
+                    <div class="dim-detail">Every event attributed to the operator on shift. Net production %, planning
+                        efficiency, speed compliance — per person. <strong>Fair, objective, data-driven performance
+                            records.</strong></div>
+                    <div class="dim-metrics">
+                        <span class="dim-metric"><strong>7</strong> operators tracked</span>
+                        <span class="dim-metric">Stops per operator</span>
+                        <span class="dim-metric">Compliance scores</span>
+                        <span class="dim-metric">Training signals</span>
+                    </div>
+                </div>
+
+                <!-- WHY ── Reason Hierarchy -->
+                <div class="dim-card d-why">
+                    <div class="dim-header">
+                        <div class="dim-name"><span class="dim-icon">🔍</span> WHY — 3-Level Reason Hierarchy</div>
+                        <span class="dim-tag tag-augos">Augos Dimension</span>
+                    </div>
+                    <div class="dim-detail">Not "downtime." Not even "mechanical." But <strong>"Downtime Mechanical →
+                            Rollers → Controller"</strong> — three levels deep, ~70 reason codes, Pareto-ranked. The
+                        difference between knowing you have a problem and knowing exactly where to send the technician.
+                    </div>
+                    <div class="dim-metrics">
+                        <span class="dim-metric"><strong>8</strong> top categories</span>
+                        <span class="dim-metric"><strong>~70</strong> reason codes</span>
+                        <span class="dim-metric"><strong>3</strong> levels deep</span>
+                        <span class="dim-metric">Pareto ranked</span>
+                    </div>
+                </div>
+
+                <!-- WHAT ── Product -->
+                <div class="dim-card d-what">
+                    <div class="dim-header">
+                        <div class="dim-name"><span class="dim-icon">📦</span> WHAT — Product Context</div>
+                        <span class="dim-tag tag-augos">Augos Dimension</span>
+                    </div>
+                    <div class="dim-detail">Every production run linked to a specific product. Enables product-specific
+                        OEE, changeover analysis, and job costing. Reveals <strong>which products cause the most
+                            stoppages</strong> — a correlation invisible without product data.</div>
+                    <div class="dim-metrics">
+                        <span class="dim-metric">Product-specific OEE</span>
+                        <span class="dim-metric">Changeover tracking</span>
+                        <span class="dim-metric">Job Card traceability</span>
+                    </div>
+                </div>
+
+                <!-- WHEN ── Time -->
+                <div class="dim-card d-when">
+                    <div class="dim-header">
+                        <div class="dim-name"><span class="dim-icon">🕐</span> WHEN — Shift &amp; Trend Analysis</div>
+                        <span class="dim-tag tag-augos">Augos Dimension</span>
+                    </div>
+                    <div class="dim-detail">Every event timestamped to the millisecond. Aggregated by shift, day, week,
+                        month. Trend detection shows whether failure modes are <strong>getting better or worse</strong>
+                        over time — not just a snapshot.</div>
+                    <div class="dim-metrics">
+                        <span class="dim-metric">Millisecond precision</span>
+                        <span class="dim-metric">Shift-level analysis</span>
+                        <span class="dim-metric">30/60/90 day trends</span>
+                    </div>
+                </div>
+
+                <!-- HOW ── Compliance -->
+                <div class="dim-card d-how">
+                    <div class="dim-header">
+                        <div class="dim-name"><span class="dim-icon">📋</span> HOW — Planning &amp; Compliance</div>
+                        <span class="dim-tag tag-augos">Augos Dimension</span>
+                    </div>
+                    <div class="dim-detail">For planned stops: was the operator within the allowed time? Bin change
+                        budgeted at 10 min, actual 6.8 min — <strong>operator beat the plan.</strong> Fumigation
+                        budgeted at 12 hrs, actual 44 hrs — <strong>the plan was wrong.</strong> This is the difference
+                        between blaming the operator and fixing the standard.</div>
+                    <div class="dim-metrics">
+                        <span class="dim-metric">Planned vs Actual</span>
+                        <span class="dim-metric">Operator compliance ±</span>
+                        <span class="dim-metric">Planning efficiency %</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- SUNBURST CONCEPT -->
+    <div class="sunburst-section">
+        <h2>From One Number to Five Dimensions</h2>
+        <p class="sub">Traditional OEE is the dot in the centre. Each ring is a dimension Augos adds.</p>
+        <div class="sunburst-container">
+            <svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+                <!-- Ring 5: HOW (outermost) -->
+                <circle cx="300" cy="300" r="280" fill="none" stroke="rgba(251,146,60,.08)" stroke-width="50" />
+                <text x="300" y="42" text-anchor="middle" fill="#FB923C" font-family="JetBrains Mono" font-size="10"
+                    opacity=".6">HOW · COMPLIANCE</text>
+                <!-- Ring 4: WHEN -->
+                <circle cx="300" cy="300" r="230" fill="none" stroke="rgba(167,139,250,.08)" stroke-width="46" />
+                <text x="540" y="295" text-anchor="middle" fill="#A78BFA" font-family="JetBrains Mono" font-size="10"
+                    opacity=".6" transform="rotate(0,540,295)">WHEN</text>
+                <!-- Ring 3: WHAT -->
+                <circle cx="300" cy="300" r="184" fill="none" stroke="rgba(6,182,212,.08)" stroke-width="42" />
+                <text x="300" y="558" text-anchor="middle" fill="#06B6D4" font-family="JetBrains Mono" font-size="10"
+                    opacity=".6">WHAT · PRODUCT</text>
+                <!-- Ring 2: WHY -->
+                <circle cx="300" cy="300" r="142" fill="none" stroke="rgba(244,63,94,.1)" stroke-width="38" />
+                <text x="62" y="295" text-anchor="middle" fill="#F43F5E" font-family="JetBrains Mono" font-size="10"
+                    opacity=".6">WHY</text>
+                <!-- Ring 1: WHO -->
+                <circle cx="300" cy="300" r="104" fill="none" stroke="rgba(245,158,11,.12)" stroke-width="34" />
+                <text x="300" y="208" text-anchor="middle" fill="#F59E0B" font-family="JetBrains Mono" font-size="11"
+                    opacity=".8">WHO · OPERATOR</text>
+                <!-- Centre: Traditional OEE -->
+                <circle cx="300" cy="300" r="68" fill="rgba(148,163,184,.06)" stroke="rgba(148,163,184,.15)"
+                    stroke-width="1" />
+                <text x="300" y="290" text-anchor="middle" fill="#94A3B8" font-family="Space Grotesk" font-size="11"
+                    font-weight="500">TRADITIONAL</text>
+                <text x="300" y="310" text-anchor="middle" fill="#fff" font-family="Space Grotesk" font-size="22"
+                    font-weight="600">A × P × Q</text>
+                <text x="300" y="330" text-anchor="middle" fill="#475569" font-family="JetBrains Mono" font-size="9">3
+                    NUMBERS</text>
+                <!-- Dimension labels on rings -->
+                <text x="300" y="172" text-anchor="middle" fill="#F43F5E" font-family="JetBrains Mono" font-size="9"
+                    opacity=".7">WHY · REASON TREE</text>
+                <text x="300" y="128" text-anchor="middle" fill="#06B6D4" font-family="JetBrains Mono" font-size="9"
+                    opacity=".6">WHAT · PRODUCT</text>
+                <text x="300" y="82" text-anchor="middle" fill="#A78BFA" font-family="JetBrains Mono" font-size="9"
+                    opacity=".5">WHEN · SHIFT & TREND</text>
+                <!-- Radial lines -->
+                <line x1="300" y1="232" x2="300" y2="20" stroke="rgba(255,255,255,.03)" stroke-width="1" />
+                <line x1="300" y1="368" x2="300" y2="580" stroke="rgba(255,255,255,.03)" stroke-width="1" />
+                <line x1="232" y1="300" x2="20" y2="300" stroke="rgba(255,255,255,.03)" stroke-width="1" />
+                <line x1="368" y1="300" x2="580" y2="300" stroke="rgba(255,255,255,.03)" stroke-width="1" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- CLOSING QUOTE -->
+    <div class="bottom-quote">
+        <p>Traditional OEE tells you that you scored 62%.<br>Augos Intelligence tells you that Ramon's shift lost 45.8%
+            of its availability to Flour Bin Full events on the B-Mill while running white bread flour — and that the
+            bin change he completed in 6.8 minutes was actually 3 minutes faster than plan.</p>
+        <cite>Same data. Different depth. Different decisions.</cite>
+    </div>
+
+    <script>
+        // Animate bars on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const bars = document.querySelectorAll('.flat-bar-fill');
+            bars.forEach(b => { const h = b.style.height; b.style.height = '0%'; setTimeout(() => { b.style.height = h }, 300) });
+            // Animate dimension cards
+            const cards = document.querySelectorAll('.dim-card');
+            cards.forEach((c, i) => { c.style.opacity = '0'; c.style.transform = 'translateX(20px)'; setTimeout(() => { c.style.transition = 'all .6s cubic-bezier(.22,1,.36,1)'; c.style.opacity = '1'; c.style.transform = 'translateX(0)' }, 200 + i * 80) });
+        });
+    </script>
+</body>
+
+</html>

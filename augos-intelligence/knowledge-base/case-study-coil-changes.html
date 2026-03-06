@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Case Study: The Coil Change Problem — Aveng Trident Steel — Augos</title>
+    <meta name="description"
+        content="How 2,934 coil changes across 3 steel sites revealed 537 hours of hidden production loss — and why standard deviation is more important than average.">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --gold: #CA8A04;
+            --amber: #F59E0B;
+            --yellow: #FBBF24;
+            --orange: #FB923C;
+            --red: #EF4444;
+            --emerald: #10B981;
+            --blue: #3B82F6;
+            --bluel: #60A5FA;
+            --indigo: #6366F1;
+            --rdkp: #EF4444;
+            --pe: #10B981;
+            --kzn: #6366F1;
+            --surface: rgba(255, 255, 255, .02);
+            --border: rgba(255, 255, 255, .04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            background: #050709;
+            color: #C8D1DC;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.7
+        }
+
+        /* Grain */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: .018;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: 128px
+        }
+
+        /* Progress */
+        .prog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            z-index: 200
+        }
+
+        .prog-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--pe), var(--amber), var(--rdkp));
+            transition: width 80ms linear
+        }
+
+        /* Canvas */
+        #particles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none
+        }
+
+        /* ═══ HERO ═══ */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            text-align: center;
+            padding: 60px 32px 80px;
+            z-index: 1;
+            overflow: hidden
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: -1
+        }
+
+        .hero-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(.25) saturate(.6)
+        }
+
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(5, 7, 9, .3) 0%, rgba(5, 7, 9, .6) 40%, rgba(5, 7, 9, .95) 80%, #050709 100%)
+        }
+
+        .hero-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: rgba(245, 158, 11, .4);
+            text-transform: uppercase;
+            letter-spacing: .2em;
+            margin-bottom: 12px;
+            opacity: 0;
+            transform: translateY(12px)
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 100px;
+            background: rgba(245, 158, 11, .05);
+            border: 1px solid rgba(245, 158, 11, .12);
+            margin-bottom: 32px;
+            opacity: 0;
+            transform: translateY(10px)
+        }
+
+        .hero-badge span {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .48rem;
+            color: var(--amber);
+            text-transform: uppercase;
+            letter-spacing: .08em
+        }
+
+        .hero-h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.4rem, 6vw, 4.4rem);
+            font-weight: 800;
+            line-height: 1.06;
+            max-width: 720px;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(20px) scale(.97);
+            filter: blur(2px)
+        }
+
+        .hero-h1 .hl {
+            background: linear-gradient(135deg, var(--amber), var(--orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text
+        }
+
+        .hero-sub {
+            font-size: 1.05rem;
+            color: #6B7A8D;
+            max-width: 540px;
+            line-height: 1.8;
+            margin-bottom: 48px;
+            opacity: 0;
+            transform: translateY(14px)
+        }
+
+        .hero-sub strong {
+            color: #94A3B8
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 48px;
+            flex-wrap: wrap;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(14px)
+        }
+
+        .hero-stat .hs-v {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 800;
+            line-height: 1
+        }
+
+        .hero-stat .hs-l {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .45rem;
+            color: #3E4C5E;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-top: 5px
+        }
+
+        .hero.on .hero-tag {
+            animation: up .6s ease .1s forwards
+        }
+
+        .hero.on .hero-badge {
+            animation: up .5s ease .2s forwards
+        }
+
+        .hero.on .hero-h1 {
+            animation: qIn 1s cubic-bezier(.16, 1, .3, 1) .35s forwards
+        }
+
+        .hero.on .hero-sub {
+            animation: up .6s ease .7s forwards
+        }
+
+        .hero.on .hero-stats {
+            animation: up .7s ease .9s forwards
+        }
+
+        /* ═══ MEDIA BLOCK ═══ */
+        .media {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 32px
+        }
+
+        .media-img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, .04);
+            display: block;
+            opacity: 0;
+            transform: translateY(16px)
+        }
+
+        .media-cap {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .45rem;
+            color: #2A3340;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            text-align: center;
+            margin-top: 10px;
+            opacity: 0;
+            transform: translateY(6px)
+        }
+
+        .media.on .media-img {
+            animation: up .7s ease .2s forwards
+        }
+
+        .media.on .media-cap {
+            animation: up .5s ease .5s forwards
+        }
+
+        /* ═══ IMAGE ROW ═══ */
+        .img-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 32px;
+            position: relative;
+            z-index: 1
+        }
+
+        .img-row img {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, .04);
+            opacity: 0;
+            transform: translateY(12px)
+        }
+
+        .img-row .ir-cap {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .42rem;
+            color: #1E293B;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            text-align: center;
+            margin-top: 6px;
+            grid-column: 1/-1;
+            opacity: 0;
+            transform: translateY(6px)
+        }
+
+        .img-row.on img:nth-child(1) {
+            animation: up .6s ease .2s forwards
+        }
+
+        .img-row.on img:nth-child(2) {
+            animation: up .6s ease .35s forwards
+        }
+
+        .img-row.on .ir-cap {
+            animation: up .5s ease .5s forwards
+        }
+
+        /* ═══ SECTIONS ═══ */
+        .sec {
+            position: relative;
+            z-index: 1;
+            padding: 100px 32px;
+            max-width: 900px;
+            margin: 0 auto
+        }
+
+        .sec-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .5rem;
+            text-transform: uppercase;
+            letter-spacing: .15em;
+            margin-bottom: 16px;
+            opacity: 0;
+            transform: translateY(8px)
+        }
+
+        .sec-h {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+            font-weight: 800;
+            line-height: 1.12;
+            margin-bottom: 24px;
+            opacity: 0;
+            transform: translateY(16px)
+        }
+
+        .sec-p {
+            font-size: 1rem;
+            color: #7A8899;
+            line-height: 1.85;
+            max-width: 640px;
+            margin-bottom: 16px;
+            opacity: 0;
+            transform: translateY(12px)
+        }
+
+        .sec-p strong {
+            color: #CBD5E1;
+            font-weight: 600
+        }
+
+        .sec-p em {
+            color: #94A3B8;
+            font-style: normal
+        }
+
+        .sec.on .sec-tag {
+            animation: up .5s ease .1s forwards
+        }
+
+        .sec.on .sec-h {
+            animation: up .6s ease .2s forwards
+        }
+
+        .sec.on .sec-p:nth-of-type(1) {
+            animation: up .5s ease .3s forwards
+        }
+
+        .sec.on .sec-p:nth-of-type(2) {
+            animation: up .5s ease .4s forwards
+        }
+
+        .sec.on .sec-p:nth-of-type(3) {
+            animation: up .5s ease .5s forwards
+        }
+
+        /* ─── DATA TABLE ─── */
+        .dtable {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 36px 0;
+            opacity: 0;
+            transform: translateY(14px)
+        }
+
+        .dtable th {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .5rem;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: #3E4C5E;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, .06)
+        }
+
+        .dtable td {
+            padding: 14px 16px;
+            font-size: .88rem;
+            border-bottom: 1px solid rgba(255, 255, 255, .03)
+        }
+
+        .dtable .site-col {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1rem
+        }
+
+        .dtable tr:hover td {
+            background: rgba(255, 255, 255, .01)
+        }
+
+        .dtable .val {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem
+        }
+
+        .dtable .worst {
+            position: relative
+        }
+
+        .dtable .worst::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border-radius: 6px;
+            border: 1px solid rgba(239, 68, 68, .15);
+            pointer-events: none
+        }
+
+        .dtable .best {
+            position: relative
+        }
+
+        .dtable .best::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border-radius: 6px;
+            border: 1px solid rgba(16, 185, 129, .15);
+            pointer-events: none
+        }
+
+        .sec.on .dtable {
+            animation: up .6s ease .5s forwards
+        }
+
+        /* ─── SITE COMPARISON BARS ─── */
+        .site-bars {
+            margin: 36px 0;
+            opacity: 0;
+            transform: translateY(14px)
+        }
+
+        .sb {
+            margin-bottom: 20px
+        }
+
+        .sb-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 6px
+        }
+
+        .sb-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: .85rem;
+            font-weight: 700
+        }
+
+        .sb-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .7rem;
+            color: #5A6A7D
+        }
+
+        .sb-track {
+            height: 42px;
+            background: rgba(255, 255, 255, .02);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, .03)
+        }
+
+        .sb-fill {
+            height: 100%;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 1.2s cubic-bezier(.16, 1, .3, 1) .6s;
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            justify-content: flex-end
+        }
+
+        .sb-fill-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: rgba(255, 255, 255, .6);
+            white-space: nowrap
+        }
+
+        .sec.on .site-bars {
+            animation: up .5s ease .55s forwards
+        }
+
+        /* ─── VOLATILITY VIS ─── */
+        .vol-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 36px 0;
+            opacity: 0;
+            transform: translateY(14px)
+        }
+
+        .vol-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all .3s
+        }
+
+        .vol-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, .07)
+        }
+
+        .vol-card .vc-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            margin: 0 auto 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem
+        }
+
+        .vol-card .vc-site {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: .85rem;
+            font-weight: 700;
+            margin-bottom: 4px
+        }
+
+        .vol-card .vc-sd {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 4px
+        }
+
+        .vol-card .vc-sdl {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .42rem;
+            color: #3E4C5E;
+            text-transform: uppercase;
+            letter-spacing: .08em
+        }
+
+        .vol-card .vc-desc {
+            font-size: .72rem;
+            color: #5A6A7D;
+            margin-top: 10px;
+            line-height: 1.5
+        }
+
+        .vol-card .vc-range {
+            margin-top: 14px;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, .04);
+            position: relative;
+            overflow: hidden
+        }
+
+        .vol-card .vc-range-fill {
+            height: 100%;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 1s ease .8s
+        }
+
+        .sec.on .vol-grid {
+            animation: up .6s ease .6s forwards
+        }
+
+        /* ─── INSIGHT BOX ─── */
+        .insight {
+            position: relative;
+            padding: 24px 28px;
+            margin: 36px 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(10px)
+        }
+
+        .insight .in-accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px
+        }
+
+        .insight .in-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .48rem;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            margin-bottom: 10px
+        }
+
+        .insight .in-p {
+            font-size: .88rem;
+            color: #8A96A8;
+            line-height: 1.8
+        }
+
+        .insight .in-p strong {
+            color: #E2E8F0
+        }
+
+        .sec.on .insight {
+            animation: up .5s ease .7s forwards
+        }
+
+        /* ─── CALLOUT NUMBER ─── */
+        .callout {
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
+            margin: 36px 0;
+            opacity: 0;
+            transform: translateX(-14px)
+        }
+
+        .callout .co-v {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(4rem, 10vw, 6.5rem);
+            font-weight: 900;
+            line-height: .82;
+            letter-spacing: -.04em
+        }
+
+        .callout .co-u {
+            font-size: .95rem;
+            color: #475569;
+            line-height: 1.5;
+            max-width: 220px
+        }
+
+        .sec.on .callout {
+            animation: numIn .9s cubic-bezier(.16, 1, .3, 1) .5s forwards
+        }
+
+        /* ─── ORIGIN BLOCK ─── */
+        .origin {
+            position: relative;
+            padding: 20px 0 20px 20px;
+            margin: 36px 0;
+            opacity: 0;
+            transform: translateY(10px)
+        }
+
+        .origin .o-line {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            border-radius: 1px
+        }
+
+        .origin .o-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .48rem;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            margin-bottom: 10px
+        }
+
+        .origin .o-copy {
+            font-size: .82rem;
+            color: #7A8899;
+            line-height: 1.8
+        }
+
+        .origin .o-copy strong {
+            color: #CBD5E1
+        }
+
+        .sec.on .origin {
+            animation: up .5s ease .75s forwards
+        }
+
+        /* ─── BENCHMARK TABLE ─── */
+        .bench {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 36px 0;
+            opacity: 0;
+            transform: translateY(14px)
+        }
+
+        .b-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all .3s
+        }
+
+        .b-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, .07)
+        }
+
+        .b-card .bc-site {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: .8rem;
+            font-weight: 700;
+            margin-bottom: 8px
+        }
+
+        .b-card .bc-time {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 2px
+        }
+
+        .b-card .bc-seconds {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .5rem;
+            color: #3E4C5E;
+            margin-bottom: 10px
+        }
+
+        .b-card .bc-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .42rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .06em
+        }
+
+        .sec.on .bench {
+            animation: up .6s ease .6s forwards
+        }
+
+        /* ─── METHODOLOGY ─── */
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 36px 0;
+            opacity: 0;
+            transform: translateY(14px)
+        }
+
+        .m-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            transition: all .3s
+        }
+
+        .m-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, .07)
+        }
+
+        .m-item .mi-num {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+            opacity: .3
+        }
+
+        .m-item .mi-h {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: .85rem;
+            font-weight: 700;
+            margin-bottom: 6px
+        }
+
+        .m-item .mi-p {
+            font-size: .72rem;
+            color: #5A6A7D;
+            line-height: 1.6
+        }
+
+        .sec.on .method-grid {
+            animation: up .6s ease .65s forwards
+        }
+
+        /* ─── PULLQUOTE ─── */
+        .pullquote {
+            position: relative;
+            padding: 40px 32px;
+            margin: 48px 0;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(14px)
+        }
+
+        .pullquote::before,
+        .pullquote::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 1px;
+            background: rgba(245, 158, 11, .15)
+        }
+
+        .pullquote::before {
+            top: 0
+        }
+
+        .pullquote::after {
+            bottom: 0
+        }
+
+        .pullquote .pq-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+            font-weight: 700;
+            color: #94A3B8;
+            line-height: 1.5;
+            max-width: 560px;
+            margin: 0 auto;
+            font-style: italic
+        }
+
+        .pullquote .pq-text strong {
+            color: #E2E8F0;
+            font-style: normal
+        }
+
+        .pullquote .pq-attr {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .45rem;
+            color: #2A3340;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            margin-top: 16px
+        }
+
+        .sec.on .pullquote {
+            animation: up .7s ease .6s forwards
+        }
+
+        /* ─── DIVIDER ─── */
+        .divider {
+            width: 48px;
+            height: 2px;
+            margin: 0 auto;
+            border-radius: 1px;
+            position: relative;
+            z-index: 1
+        }
+
+        /* ─── CTA ─── */
+        .cta-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            background: rgba(245, 158, 11, .06);
+            border: 1px solid rgba(245, 158, 11, .12);
+            color: var(--amber);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: .85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all .3s;
+            margin-top: 24px;
+            opacity: 0;
+            transform: translateY(8px)
+        }
+
+        .cta-link:hover {
+            background: rgba(245, 158, 11, .1);
+            border-color: rgba(245, 158, 11, .2);
+            transform: translateY(-2px)
+        }
+
+        .cta-link .arrow {
+            transition: transform .3s
+        }
+
+        .cta-link:hover .arrow {
+            transform: translateX(4px)
+        }
+
+        .sec.on .cta-link {
+            animation: up .5s ease .85s forwards
+        }
+
+        /* ─── FOOTER ─── */
+        .footer {
+            padding: 80px 32px 48px;
+            text-align: center;
+            position: relative;
+            z-index: 1
+        }
+
+        .footer .f-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 800;
+            color: #151B24;
+            margin-bottom: 8px
+        }
+
+        .footer p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .42rem;
+            color: #0F1218;
+            text-transform: uppercase;
+            letter-spacing: .1em
+        }
+
+        /* ─── QUOTE FIGURE ─── */
+        .quote-fig {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 32px
+        }
+
+        .quote-fig-inner {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            height: 320px;
+            display: flex;
+            align-items: flex-end;
+            padding: 32px
+        }
+
+        .quote-fig-inner img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(.3) saturate(.5)
+        }
+
+        .quote-fig-inner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 30%, rgba(5, 7, 9, .9) 100%)
+        }
+
+        .quote-fig-content {
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(10px)
+        }
+
+        .quote-fig-content .qf-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #E2E8F0;
+            line-height: 1.5;
+            max-width: 500px
+        }
+
+        .quote-fig-content .qf-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .42rem;
+            color: rgba(245, 158, 11, .5);
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            margin-top: 10px
+        }
+
+        .quote-fig.on .quote-fig-content {
+            animation: up .7s ease .3s forwards
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media(max-width:640px) {
+
+            .vol-grid,
+            .bench {
+                grid-template-columns: 1fr
+            }
+
+            .img-row {
+                grid-template-columns: 1fr
+            }
+
+            .img-row img {
+                height: 200px
+            }
+
+            .hero-stats {
+                gap: 24px
+            }
+
+            .callout .co-v {
+                font-size: 3.5rem
+            }
+        }
+
+        @keyframes up {
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @keyframes qIn {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0)
+            }
+        }
+
+        @keyframes numIn {
+            to {
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="particles"></canvas>
+    <div class="prog">
+        <div class="prog-fill" id="pf"></div>
+    </div>
+
+    <!-- ═══════ HERO ═══════ -->
+    <section class="hero observed" id="s0">
+        <div class="hero-bg">
+            <img src="steel_plant_aerial_1772508520118.png" alt="Steel processing facility aerial view">
+        </div>
+        <div class="hero-tag">Case Study · Steel Processing · South Africa</div>
+        <div class="hero-badge"><span>Aveng Trident Steel · 3 Sites · 2,934 Coil Changes Analysed</span></div>
+        <h1 class="hero-h1">
+            Same procedure. Three sites.<br>
+            <span class="hl">537 hours lost.</span>
+        </h1>
+        <p class="hero-sub">
+            A routine coil change — a process every steel line does hundreds of times a month.
+            <strong>The data revealed a problem nobody knew existed</strong>: the same task taking
+            anywhere from 6 minutes to 90 minutes, depending on who, where, and when.
+        </p>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hs-v" style="color:var(--rdkp)">1,464</div>
+                <div class="hs-l">Roodekop instances</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hs-v" style="color:var(--pe)">856</div>
+                <div class="hs-l">PE instances</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hs-v" style="color:var(--kzn)">614</div>
+                <div class="hs-l">KZN instances</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ CONTEXT ═══════ -->
+    <section class="sec observed" id="s1">
+        <div class="sec-tag" style="color:var(--amber)">01 · The Context</div>
+        <h2 class="sec-h" style="color:#E2E8F0">A coil change is one of the most frequent<br>planned stops in steel
+            processing</h2>
+        <p class="sec-p">Aveng Trident Steel operates slitting and processing lines across three sites in South Africa:
+            <strong>Roodekop</strong> (Gauteng), <strong>Port Elizabeth</strong> (Eastern Cape), and <strong>KwaZulu
+                Natal</strong>. Every line processes steel coils. When one coil is finished, the next one is loaded — a
+            <strong>coil change</strong>.</p>
+        <p class="sec-p">Management knew this was a planned stop. They allocated time for it. The question was simple:
+            <strong>is the time we allocate realistic?</strong> And is the process consistent across sites, products,
+            and operators?</p>
+        <p class="sec-p">Quantapower (now Augos) was engaged to analyse the data — <strong>2,934 coil change
+                instances</strong> across all three sites, measured at millisecond resolution. Box-and-whisker plots and
+            pivot tables were used to synthesize the data per product, per site.</p>
+    </section>
+
+    <!-- ═══ REFERENCE IMAGE: The Line ═══ -->
+    <div class="media observed">
+        <img class="media-img" src="steel_coil_line_1772508433026.png" alt="Steel coil processing line with operator">
+        <div class="media-cap">Reference: Steel coil processing line — a coil change is the process of removing a
+            finished coil and loading the next</div>
+    </div>
+
+    <div class="divider"
+        style="background:linear-gradient(90deg,transparent,rgba(245,158,11,.15),transparent);margin-top:60px"></div>
+
+    <!-- ═══════ THE DATA ═══════ -->
+    <section class="sec observed" id="s2">
+        <div class="sec-tag" style="color:var(--amber)">02 · The Data</div>
+        <h2 class="sec-h" style="color:#E2E8F0">Three sites. One procedure.<br>Wildly different results.</h2>
+
+        <table class="dtable">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th style="color:var(--rdkp)">Roodekop</th>
+                    <th style="color:var(--pe)">Port Elizabeth</th>
+                    <th style="color:var(--kzn)">KwaZulu Natal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Dataset / Instances</td>
+                    <td class="val">1,464</td>
+                    <td class="val">856</td>
+                    <td class="val">614</td>
+                </tr>
+                <tr>
+                    <td>Standard Deviation</td>
+                    <td class="val worst" style="color:var(--rdkp)">10,477s</td>
+                    <td class="val best" style="color:var(--pe)">840s</td>
+                    <td class="val" style="color:var(--kzn)">2,185s</td>
+                </tr>
+                <tr>
+                    <td>Best-Case Median</td>
+                    <td class="val">671.5s <span style="font-size:.7rem;color:#475569">(11.2 min)</span></td>
+                    <td class="val">482s <span style="font-size:.7rem;color:#475569">(8.0 min)</span></td>
+                    <td class="val best" style="color:var(--pe)">396.5s <span style="font-size:.7rem;color:#475569">(6.6
+                            min)</span></td>
+                </tr>
+                <tr>
+                    <td>Opportunity Lost</td>
+                    <td class="val worst" style="color:var(--rdkp)">1,032,147s <span
+                            style="font-size:.7rem;color:#475569">(287h)</span></td>
+                    <td class="val best" style="color:var(--pe)">269,621s <span
+                            style="font-size:.7rem;color:#475569">(75h)</span></td>
+                    <td class="val" style="color:var(--kzn)">631,645s <span
+                            style="font-size:.7rem;color:#475569">(175h)</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="insight">
+            <div class="in-accent" style="background:var(--amber)"></div>
+            <div class="in-tag" style="color:var(--amber)">How Opportunity Lost Is Calculated</div>
+            <div class="in-p"><strong>Total time from all instances</strong> minus (<strong>best-case median × number of
+                    instances</strong>). The best-case median is the achievable standard — the product that is processed
+                most frequently, at the interquartile median. It's not a fantasy target — it's what <strong>already
+                    happens</strong> with the best product on the same line.</div>
+        </div>
+    </section>
+
+    <div class="divider" style="background:linear-gradient(90deg,transparent,rgba(239,68,68,.15),transparent)"></div>
+
+    <!-- ═══════ OPPORTUNITY LOST ═══════ -->
+    <section class="sec observed" id="s3">
+        <div class="sec-tag" style="color:var(--rdkp)">03 · Opportunity Lost</div>
+        <h2 class="sec-h" style="color:#E2E8F0">537 hours. Just on coil changes.<br>One single planned stop type.</h2>
+
+        <div class="callout">
+            <div class="co-v" style="color:var(--amber)">537<span
+                    style="font-size:.3em;color:#475569;font-weight:400;margin-left:4px">h</span></div>
+            <div class="co-u">of production time lost<br>across all three sites</div>
+        </div>
+
+        <div class="site-bars">
+            <div class="sb">
+                <div class="sb-header">
+                    <div class="sb-name" style="color:var(--rdkp)">Roodekop</div>
+                    <div class="sb-val">287 hours lost · 53% of total</div>
+                </div>
+                <div class="sb-track">
+                    <div class="sb-fill" data-w="100"
+                        style="background:linear-gradient(90deg,rgba(239,68,68,.25),rgba(239,68,68,.5))"><span
+                            class="sb-fill-label">1,032,147 seconds</span></div>
+                </div>
+            </div>
+            <div class="sb">
+                <div class="sb-header">
+                    <div class="sb-name" style="color:var(--kzn)">KwaZulu Natal</div>
+                    <div class="sb-val">175 hours lost · 33% of total</div>
+                </div>
+                <div class="sb-track">
+                    <div class="sb-fill" data-w="61"
+                        style="background:linear-gradient(90deg,rgba(99,102,241,.25),rgba(99,102,241,.45))"><span
+                            class="sb-fill-label">631,645 seconds</span></div>
+                </div>
+            </div>
+            <div class="sb">
+                <div class="sb-header">
+                    <div class="sb-name" style="color:var(--pe)">Port Elizabeth</div>
+                    <div class="sb-val">75 hours lost · 14% of total</div>
+                </div>
+                <div class="sb-track">
+                    <div class="sb-fill" data-w="26"
+                        style="background:linear-gradient(90deg,rgba(16,185,129,.2),rgba(16,185,129,.35))"><span
+                            class="sb-fill-label">269,621 seconds</span></div>
+                </div>
+            </div>
+        </div>
+
+        <p class="sec-p">Roodekop accounts for <strong>more than half</strong> of all wasted coil change time — despite
+            having the same fundamental procedure as PE, which has <strong>3.8x less waste</strong>. This isn't a
+            machine problem. It's a <strong>process and discipline problem</strong>.</p>
+    </section>
+
+    <!-- ═══ REFERENCE IMAGE: Coil Change in Action ═══ -->
+    <div class="quote-fig observed">
+        <div class="quote-fig-inner">
+            <img src="coil_change_process_1772508449886.png" alt="Coil change process">
+            <div class="quote-fig-content">
+                <div class="qf-text">"The coil change procedure is not standardized and is volatile within a product and
+                    across products."</div>
+                <div class="qf-sub">— Newton Mapowo, Quantapower (now Augos)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider" style="background:linear-gradient(90deg,transparent,rgba(99,102,241,.15),transparent)"></div>
+
+    <!-- ═══════ VOLATILITY ═══════ -->
+    <section class="sec observed" id="s4">
+        <div class="sec-tag" style="color:var(--kzn)">04 · The Volatility Problem</div>
+        <h2 class="sec-h" style="color:#E2E8F0">Standard deviation tells you<br>what the average hides</h2>
+        <p class="sec-p">Most operations look at <strong>averages</strong>. Averages lie. A site could average 15
+            minutes per coil change — but if individual changes range from 6 minutes to 90 minutes, you don't have a
+            process. You have <strong>chaos with a polite label</strong>.</p>
+        <p class="sec-p"><strong>Standard deviation</strong> measures the spread. The higher it is, the more
+            unpredictable your line becomes. PE's deviation is <strong>12.5 times lower</strong> than Roodekop's —
+            meaning their process is <strong>12.5 times more predictable</strong>.</p>
+
+        <div class="vol-grid">
+            <div class="vol-card">
+                <div class="vc-icon" style="background:rgba(239,68,68,.08)">🔴</div>
+                <div class="vc-site" style="color:var(--rdkp)">Roodekop</div>
+                <div class="vc-sd" style="color:var(--rdkp)">10,477</div>
+                <div class="vc-sdl">Std Deviation (seconds)</div>
+                <div class="vc-desc">Extreme volatility. Unpredictable. Every coil change is a gamble.</div>
+                <div class="vc-range">
+                    <div class="vc-range-fill" data-w="100" style="background:var(--rdkp)"></div>
+                </div>
+            </div>
+            <div class="vol-card">
+                <div class="vc-icon" style="background:rgba(99,102,241,.08)">🟣</div>
+                <div class="vc-site" style="color:var(--kzn)">KwaZulu Natal</div>
+                <div class="vc-sd" style="color:var(--kzn)">2,185</div>
+                <div class="vc-sdl">Std Deviation (seconds)</div>
+                <div class="vc-desc">Moderate volatility. Better than Roodekop, but still variable.</div>
+                <div class="vc-range">
+                    <div class="vc-range-fill" data-w="21" style="background:var(--kzn)"></div>
+                </div>
+            </div>
+            <div class="vol-card">
+                <div class="vc-icon" style="background:rgba(16,185,129,.08)">🟢</div>
+                <div class="vc-site" style="color:var(--pe)">Port Elizabeth</div>
+                <div class="vc-sd" style="color:var(--pe)">840</div>
+                <div class="vc-sdl">Std Deviation (seconds)</div>
+                <div class="vc-desc">Most consistent. Most disciplined. The model to follow.</div>
+                <div class="vc-range">
+                    <div class="vc-range-fill" data-w="8" style="background:var(--pe)"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pullquote">
+            <div class="pq-text">"If you can't predict how long a planned stop will take within <strong>3
+                    hours</strong>, your production schedule is fiction."</div>
+            <div class="pq-attr">Insight from Data Analysis</div>
+        </div>
+
+        <div class="insight">
+            <div class="in-accent" style="background:var(--rdkp)"></div>
+            <div class="in-tag" style="color:var(--rdkp)">The Implication</div>
+            <div class="in-p">Roodekop's standard deviation of 10,477 seconds means individual coil changes can deviate
+                from the mean by <strong>nearly 3 hours</strong>. The varied lengths of the interquartile ranges in the
+                box-and-whisker plots — and the extreme whisker lengths — denote <strong>great variability within a
+                    product and across different products</strong>. This points to a lack of standardization and
+                systemization of the coil change procedure — or a lack of discipline in following it.</div>
+        </div>
+    </section>
+
+    <!-- ═══ REFERENCE IMAGE: Analytics ═══ -->
+    <div class="img-row observed">
+        <img src="data_analysis_viz_1772508462708.png" alt="Data analysis dashboard">
+        <img src="steel_coil_line_1772508433026.png" alt="Steel coil processing">
+        <div class="ir-cap">Left: Process analytics visualization · Right: Coil processing line environment</div>
+    </div>
+
+    <div class="divider"
+        style="background:linear-gradient(90deg,transparent,rgba(16,185,129,.15),transparent);margin-top:60px"></div>
+
+    <!-- ═══════ BENCHMARKS ═══════ -->
+    <section class="sec observed" id="s5">
+        <div class="sec-tag" style="color:var(--pe)">05 · The Benchmarks</div>
+        <h2 class="sec-h" style="color:#E2E8F0">The best-case median is not aspirational.<br>It's already happening.
+        </h2>
+        <p class="sec-p">The best-case median is the most achievable target — it's the interquartile median of the
+            best-performing product at each site. This isn't a stretch goal. <strong>It already happens on your line,
+                with your people, on certain products.</strong> The question is why it doesn't happen every time.</p>
+
+        <div class="bench">
+            <div class="b-card">
+                <div class="bc-site" style="color:var(--rdkp)">Roodekop</div>
+                <div class="bc-time" style="color:var(--rdkp)">11:12</div>
+                <div class="bc-seconds">671.5 seconds</div>
+                <div class="bc-label">Best-case median</div>
+            </div>
+            <div class="b-card">
+                <div class="bc-site" style="color:var(--pe)">Port Elizabeth</div>
+                <div class="bc-time" style="color:var(--pe)">8:02</div>
+                <div class="bc-seconds">482 seconds</div>
+                <div class="bc-label">Best-case median</div>
+            </div>
+            <div class="b-card" style="border-color:rgba(99,102,241,.15)">
+                <div class="bc-site" style="color:var(--kzn)">KwaZulu Natal</div>
+                <div class="bc-time" style="color:var(--kzn)">6:37</div>
+                <div class="bc-seconds">396.5 seconds</div>
+                <div class="bc-label">Ultimate benchmark ★</div>
+            </div>
+        </div>
+
+        <p class="sec-p">KZN achieves the fastest benchmark at <strong>6 minutes 37 seconds</strong> — nearly half of
+            Roodekop's best case. If every coil change at every site could match KZN's benchmark, the total opportunity
+            recovered would be <strong>even greater than 537 hours</strong>.</p>
+
+        <div class="origin">
+            <div class="o-line" style="background:var(--pe)"></div>
+            <div class="o-tag" style="color:var(--pe)">✦ Why PE Wins On Consistency</div>
+            <div class="o-copy">Port Elizabeth has the <strong>lowest standard deviation by a factor of 12.5×</strong>
+                compared to Roodekop. Their box-and-whisker plots show tight, compact boxes with short whiskers —
+                meaning most coil changes cluster tightly around the median. This points to <strong>a standardized
+                    procedure that is consistently followed</strong>. Roodekop's plots show wide boxes with extreme
+                outliers — the hallmark of an undisciplined or unstandardized process.</div>
+        </div>
+    </section>
+
+    <div class="divider" style="background:linear-gradient(90deg,transparent,rgba(245,158,11,.15),transparent)"></div>
+
+    <!-- ═══════ INFERENCES ═══════ -->
+    <section class="sec observed" id="s6">
+        <div class="sec-tag" style="color:var(--amber)">06 · Key Inferences</div>
+        <h2 class="sec-h" style="color:#E2E8F0">The data doesn't suggest a problem.<br>It confirms one.</h2>
+
+        <p class="sec-p"><strong>The coil change procedure is not standardized.</strong> For a given product, the
+            process currently varies between operators, between shifts, and across sites. The wide interquartile ranges
+            in the box-and-whisker plots — and the extreme outliers — confirm a lack of systemization.</p>
+
+        <p class="sec-p"><strong>Discipline varies dramatically by site.</strong> PE's tight distributions suggest a
+            team that follows a consistent method. Roodekop's wide spreads suggest either no standard method exists, or
+            it exists but isn't being followed. Both are management problems.</p>
+
+        <p class="sec-p"><strong>The question is "why so?"</strong> — why does the same procedure produce results
+            ranging from 6 minutes to 90 minutes? The answer lies in one of three places: <em>the method isn't
+                defined</em>, <em>the method isn't trained</em>, or <em>the method isn't enforced</em>. This may suggest
+            a need to either fully automate the process or conduct a work (method & work measurement/time) study.</p>
+
+        <div class="insight">
+            <div class="in-accent" style="background:var(--amber)"></div>
+            <div class="in-tag" style="color:var(--amber)">The Connection to OEE</div>
+            <div class="in-p">This case study was conducted <strong>before the evolution of Augos's 11-variable Enhanced
+                    OEE framework</strong>. In today's language, the coil change analysis sits squarely in
+                <strong>Planning Efficiency</strong> — measuring the gap between allocated time and actual time for
+                planned stops. It was studies like this one that <strong>proved the need to split Planned Downtime into
+                    Allocated vs. Actual</strong>, creating one of the most powerful diagnostic variables in the system.
+            </div>
+        </div>
+    </section>
+
+    <div class="divider" style="background:linear-gradient(90deg,transparent,rgba(16,185,129,.15),transparent)"></div>
+
+    <!-- ═══════ RECOMMENDATIONS ═══════ -->
+    <section class="sec observed" id="s7">
+        <div class="sec-tag" style="color:var(--emerald)">07 · The Path Forward</div>
+        <h2 class="sec-h" style="color:#E2E8F0">From chaos to control:<br>a four-step intervention</h2>
+        <p class="sec-p">The report recommended a systematic approach — the same principle that would later drive
+            Augos's entire product: <strong>measure, compare, standardize, sustain.</strong></p>
+
+        <div class="method-grid">
+            <div class="m-item">
+                <div class="mi-num" style="color:var(--emerald)">01</div>
+                <div class="mi-h" style="color:#E2E8F0">Benchmark to Best-Case</div>
+                <div class="mi-p">All products should be benchmarked against the best-case median for their respective
+                    site. This target is achievable — it already happens on the best runs. The best-case median was
+                    identified cognizant of the frequency of the product.</div>
+            </div>
+            <div class="m-item">
+                <div class="mi-num" style="color:var(--emerald)">02</div>
+                <div class="mi-h" style="color:#E2E8F0">Method Study & Time Study</div>
+                <div class="mi-p">Conduct rigorous work measurement to document actual steps, identify waste, and build
+                    a Gold Standard coil change procedure. Iterations should lay a foundation for continuous improvement
+                    efforts.</div>
+            </div>
+            <div class="m-item">
+                <div class="mi-num" style="color:var(--emerald)">03</div>
+                <div class="mi-h" style="color:#E2E8F0">Lean Thinking & 5S</div>
+                <div class="mi-p">Sort. Set in order. Shine. Standardize. Sustain. The 5S framework applied to the coil
+                    change work environment — tools staged, steps sequenced, waste eliminated.</div>
+            </div>
+            <div class="m-item">
+                <div class="mi-num" style="color:var(--emerald)">04</div>
+                <div class="mi-h" style="color:#E2E8F0">Continuous Improvement</div>
+                <div class="mi-p">Iteratively reduce coil change time by measuring, intervening, and re-measuring. The
+                    coil change stoppage time should thus improve to a much lower value over time.</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider" style="background:linear-gradient(90deg,transparent,rgba(245,158,11,.15),transparent)"></div>
+
+    <!-- ═══════ CONCLUSION ═══════ -->
+    <section class="sec observed" id="s8">
+        <div class="sec-tag" style="color:var(--amber)">08 · What This Proved</div>
+        <h2 class="sec-h" style="color:#E2E8F0">This study changed how<br>we think about planned stops</h2>
+        <p class="sec-p">Before this analysis, <strong>planned downtime was a single number</strong> in the OEE
+            calculation — a lump of time accepted as "necessary." Nobody questioned whether the allocated time was
+            realistic, or whether the actual time was consistent.</p>
+        <p class="sec-p">This case study proved that <strong>a single planned stop type</strong> — coil changes alone —
+            was hiding <strong>537 hours of recoverable production time</strong>. Not across the entire OEE tree. Not
+            across all stop categories. <strong>Just one.</strong></p>
+        <p class="sec-p">Facts from the data support that the coil change procedure is not standardized and is volatile
+            within a product and across products. An opportunity to improve availability and maximize production time is
+            available just within coil changes. This time, if saved, can be utilized in other productive tasks and thus
+            enhance the OEE.</p>
+
+        <div class="pullquote">
+            <div class="pq-text">"An opportunity to improve availability and maximize production time is available just
+                within coil changes. <strong>This time, if saved, can be utilized in other productive tasks and thus
+                    enhance OEE.</strong>"</div>
+            <div class="pq-attr">— Original Report Conclusion</div>
+        </div>
+
+        <div class="insight">
+            <div class="in-accent" style="background:var(--amber)"></div>
+            <div class="in-tag" style="color:var(--amber)">The Legacy</div>
+            <div class="in-p">This report was prepared by <strong>Newton Mapowo of Quantapower</strong> — now Augos. It
+                was one of the foundational studies that shaped the Enhanced OEE framework. The principle it established
+                — <strong>that the plan itself must be interrogated, not just the execution</strong> — became the first
+                of eleven diagnostic variables. Every time we reference "6 to 90 minutes" in our OEE narrative,
+                <strong>this is the original data</strong>.</div>
+        </div>
+
+        <a href="oee-questions.html" class="cta-link">
+            See how this data shaped the 7 Questions <span class="arrow">→</span>
+        </a>
+    </section>
+
+    <div class="footer">
+        <div class="f-logo">AUGOS</div>
+        <p>Case Study · Aveng Trident Steel · Coil Change Analysis · Originally by Newton Mapowo, Quantapower</p>
+    </div>
+
+    <script>
+        // Particles
+        (function () {
+            const c = document.getElementById('particles'), ctx = c.getContext('2d');
+            let w, h, pts = [];
+            function resize() { w = c.width = window.innerWidth; h = c.height = window.innerHeight }
+            resize(); window.addEventListener('resize', resize);
+            for (let i = 0; i < 45; i++) {
+                pts.push({ x: Math.random() * w, y: Math.random() * h * 8, r: Math.random() * 1 + .3, a: Math.random() * .05 + .008, s: Math.random() * .1 + .03 });
+            }
+            function draw() {
+                ctx.clearRect(0, 0, w, h);
+                const scroll = window.scrollY;
+                pts.forEach(p => {
+                    const y = (p.y - scroll * p.s) % (h * 8 + 20);
+                    const yy = y < 0 ? y + h * 8 : y;
+                    if (yy > h) return;
+                    ctx.beginPath(); ctx.arc(p.x, yy, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(245,158,11,${p.a})`; ctx.fill();
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        })();
+
+        // Progress
+        window.addEventListener('scroll', () => {
+            const p = Math.min(window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100, 100);
+            document.getElementById('pf').style.width = p + '%';
+        });
+
+        // Observer
+        const io = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('on');
+                    e.target.querySelectorAll('.sb-fill').forEach(f => {
+                        setTimeout(() => { f.style.width = f.dataset.w + '%' }, 600);
+                    });
+                    e.target.querySelectorAll('.vc-range-fill').forEach(f => {
+                        setTimeout(() => { f.style.width = f.dataset.w + '%' }, 800);
+                    });
+                }
+            });
+        }, { threshold: .15 });
+
+        document.querySelectorAll('.observed').forEach(s => io.observe(s));
+    </script>
+</body>
+
+</html>

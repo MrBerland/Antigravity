@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>OEE Loss Treemap — Augos</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: #06080A;
+            color: #E2E8F0;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            min-height: 100vh
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 24px
+        }
+
+        .title .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            color: #F59E0B;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 12px
+        }
+
+        .title h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 8px
+        }
+
+        .title h1 span {
+            color: #94A3B8;
+            font-weight: 300
+        }
+
+        .title p {
+            font-size: .85rem;
+            color: #64748B;
+            max-width: 500px;
+            margin: 0 auto
+        }
+
+        .treemap-container {
+            width: 100%;
+            max-width: 1000px;
+            aspect-ratio: 16/9;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, .06)
+        }
+
+        .tm-cell {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 6px;
+            transition: all .2s;
+            cursor: pointer;
+            overflow: hidden
+        }
+
+        .tm-cell:hover {
+            z-index: 10;
+            outline: 2px solid #fff;
+            outline-offset: -2px;
+            filter: brightness(1.3)
+        }
+
+        .tm-cell .cell-name {
+            font-size: .7rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, .95);
+            line-height: 1.2;
+            margin-bottom: 2px
+        }
+
+        .tm-cell .cell-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: rgba(255, 255, 255, .6)
+        }
+
+        .tm-cell .cell-parent {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .5rem;
+            color: rgba(255, 255, 255, .3);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 2px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="title">
+        <div class="tag">Visualisation 3 · Treemap</div>
+        <h1>Area = Time Lost <span>· Every Pixel Counts</span></h1>
+        <p>Each rectangle's area is proportional to hours consumed. The largest blocks are your biggest opportunities.
+        </p>
+    </div>
+    <div class="treemap-container" id="treemap"></div>
+
+    <script>
+        // Terminal leaf nodes with their parent category for grouping
+        const leaves = [
+            { name: 'Planning Efficiency', val: 28, color: '#CA8A04', parent: 'Availability · Planned' },
+            { name: 'Operator Discipline', val: 14, color: '#FBBF24', parent: 'Availability · Planned' },
+            { name: 'Op. Resolution Time', val: 58, color: '#FB923C', parent: 'Availability · Unplanned' },
+            { name: 'Op. Evaluation Time', val: 10, color: '#FB7185', parent: 'Availability · Unplanned' },
+            { name: 'Tech Response Time', val: 16, color: '#EF4444', parent: 'Availability · Unplanned' },
+            { name: 'Active Wrench Time', val: 38, color: '#10B981', parent: 'Availability · Unplanned' },
+            { name: 'Inactive Wrench Time', val: 22, color: '#EAB308', parent: 'Availability · Unplanned' },
+            { name: 'Interruptions', val: 24, color: '#60A5FA', parent: 'Performance' },
+            { name: 'True Speed', val: 48, color: '#6366F1', parent: 'Performance' },
+            { name: 'Startup Rejects', val: 14, color: '#A855F7', parent: 'Quality' },
+            { name: 'In-Process Rejects', val: 12, color: '#EC4899', parent: 'Quality' },
+        ];
+
+        // Squarified treemap algorithm
+        function squarify(data, x, y, w, h) {
+            if (data.length === 0) return [];
+            if (data.length === 1) {
+                return [{ ...data[0], x, y, w, h }];
+            }
+
+            const totalVal = data.reduce((s, d) => s + d.val, 0);
+            const sorted = [...data].sort((a, b) => b.val - a.val);
+
+            // Simple slice-and-dice with alternating direction
+            const isWide = w >= h;
+            let results = [];
+            let consumed = 0;
+
+            sorted.forEach(item => {
+                const frac = item.val / totalVal;
+                if (isWide) {
+                    const cellW = frac * w;
+                    results.push({ ...item, x: x + consumed, y, w: cellW, h });
+                    consumed += cellW;
+                } else {
+                    const cellH = frac * h;
+                    results.push({ ...item, x, y: y + consumed, w, h: cellH });
+                    consumed += cellH;
+                }
+            });
+
+            return results;
+        }
+
+        // Better squarified layout
+        function layoutTreemap(items, x, y, w, h) {
+            if (items.length === 0) return [];
+            if (items.length === 1) return [{ ...items[0], x, y, w, h }];
+
+            const total = items.reduce((s, i) => s + i.val, 0);
+            const sorted = [...items].sort((a, b) => b.val - a.val);
+
+            // Find best split
+            let bestRatio = Infinity, bestSplit = 1;
+            for (let i = 1; i < sorted.length; i++) {
+                const leftVal = sorted.slice(0, i).reduce((s, d) => s + d.val, 0);
+                const rightVal = total - leftVal;
+                const leftFrac = leftVal / total;
+
+                let r1, r2;
+                if (w >= h) {
+                    r1 = (leftFrac * w) / h;
+                    r2 = ((1 - leftFrac) * w) / h;
+                } else {
+                    r1 = w / (leftFrac * h);
+                    r2 = w / ((1 - leftFrac) * h);
+                }
+                const maxR = Math.max(r1 < 1 ? 1 / r1 : r1, r2 < 1 ? 1 / r2 : r2);
+                if (maxR < bestRatio) {
+                    bestRatio = maxR;
+                    bestSplit = i;
+                }
+            }
+
+            const left = sorted.slice(0, bestSplit);
+            const right = sorted.slice(bestSplit);
+            const leftFrac = left.reduce((s, d) => s + d.val, 0) / total;
+
+            if (w >= h) {
+                return [
+                    ...layoutTreemap(left, x, y, w * leftFrac, h),
+                    ...layoutTreemap(right, x + w * leftFrac, y, w * (1 - leftFrac), h),
+                ];
+            } else {
+                return [
+                    ...layoutTreemap(left, x, y, w, h * leftFrac),
+                    ...layoutTreemap(right, x, y + h * leftFrac, w, h * (1 - leftFrac)),
+                ];
+            }
+        }
+
+        const container = document.getElementById('treemap');
+        const rect = container.getBoundingClientRect();
+        const cw = container.offsetWidth, ch = container.offsetHeight || cw * 9 / 16;
+        container.style.height = ch + 'px';
+
+        const cells = layoutTreemap(leaves, 0, 0, cw, ch);
+
+        cells.forEach(cell => {
+            const div = document.createElement('div');
+            div.className = 'tm-cell';
+            div.style.left = cell.x + 'px';
+            div.style.top = cell.y + 'px';
+            div.style.width = (cell.w - 2) + 'px';
+            div.style.height = (cell.h - 2) + 'px';
+            div.style.background = cell.color;
+            div.style.margin = '1px';
+
+            const minDim = Math.min(cell.w, cell.h);
+            if (minDim > 50) {
+                div.innerHTML = `
+            <div class="cell-parent">${cell.parent}</div>
+            <div class="cell-name">${cell.name}</div>
+            <div class="cell-val">${cell.val}h · ${(cell.val / 284 * 100).toFixed(1)}%</div>
+        `;
+            } else if (minDim > 30) {
+                div.innerHTML = `<div class="cell-name" style="font-size:.6rem">${cell.val}h</div>`;
+            }
+
+            container.appendChild(div);
+        });
+    </script>
+</body>
+
+</html>

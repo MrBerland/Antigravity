@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>OEE Cascading Resolution — Augos</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: #06080A;
+            color: #E2E8F0;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            min-height: 100vh
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 32px
+        }
+
+        .title .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            color: #F59E0B;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 12px
+        }
+
+        .title h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 8px
+        }
+
+        .title h1 span {
+            color: #94A3B8;
+            font-weight: 300
+        }
+
+        .title p {
+            font-size: .85rem;
+            color: #64748B;
+            max-width: 600px;
+            margin: 0 auto
+        }
+
+        .cascade {
+            width: 100%;
+            max-width: 900px
+        }
+
+        .level {
+            margin-bottom: 4px;
+            position: relative
+        }
+
+        .level-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: #475569;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .level-label .depth {
+            background: rgba(245, 158, 11, .15);
+            color: #F59E0B;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: .6rem
+        }
+
+        .bar-row {
+            display: flex;
+            height: 52px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative
+        }
+
+        .bar-seg {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: all .3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            min-width: 2px
+        }
+
+        .bar-seg:hover {
+            filter: brightness(1.3)
+        }
+
+        .bar-seg .seg-name {
+            font-size: .7rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, .95);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 90%;
+            line-height: 1.2
+        }
+
+        .bar-seg .seg-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: rgba(255, 255, 255, .6)
+        }
+
+        .connector {
+            width: 2px;
+            height: 20px;
+            margin: 0 auto;
+            position: relative
+        }
+
+        .connector-line {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            border-left: 2px dashed rgba(255, 255, 255, .08)
+        }
+
+        .zoom-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 8px 0 4px;
+            padding: 4px 12px;
+            background: rgba(245, 158, 11, .06);
+            border: 1px solid rgba(245, 158, 11, .1);
+            border-radius: 6px;
+            width: fit-content;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: #92400E
+        }
+
+        .zoom-indicator svg {
+            width: 12px;
+            height: 12px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="title">
+        <div class="tag">Visualisation 2 · Cascading Resolution</div>
+        <h1>Zooming Into <span>the Losses</span></h1>
+        <p>Each row increases resolution. What was a single segment above expands to fill the full width below — like a
+            microscope increasing magnification.</p>
+    </div>
+
+    <div class="cascade" id="cascade"></div>
+
+    <script>
+        const levels = [
+            {
+                label: 'OEE Loss Categories', depth: 1, total: 284,
+                segments: [
+                    { name: 'Availability Loss', val: 186, color: '#F59E0B', pct: '65.5%' },
+                    { name: 'Performance Loss', val: 72, color: '#3B82F6', pct: '25.4%' },
+                    { name: 'Quality Loss', val: 26, color: '#8B5CF6', pct: '9.2%' },
+                ]
+            },
+            {
+                label: 'Availability Breakdown', depth: 2, total: 186, zoom: 'Availability Loss',
+                segments: [
+                    { name: 'Planned', val: 42, color: '#D97706', pct: '22.6%' },
+                    { name: 'Unplanned', val: 144, color: '#F43F5E', pct: '77.4%' },
+                ]
+            },
+            {
+                label: 'Unplanned Decomposition', depth: 3, total: 144, zoom: 'Unplanned',
+                segments: [
+                    { name: 'Operator Resolved', val: 58, color: '#FB923C', pct: '40.3%' },
+                    { name: 'Technical Intervention', val: 86, color: '#DC2626', pct: '59.7%' },
+                ]
+            },
+            {
+                label: 'Technical Intervention Detail', depth: 4, total: 86, zoom: 'Technical Intervention',
+                segments: [
+                    { name: 'Op. Evaluation', val: 10, color: '#FB7185', pct: '11.6%' },
+                    { name: 'Tech Response', val: 16, color: '#EF4444', pct: '18.6%' },
+                    { name: 'Active Wrench', val: 38, color: '#10B981', pct: '44.2%' },
+                    { name: 'Inactive Wrench', val: 22, color: '#EAB308', pct: '25.6%' },
+                ]
+            },
+            {
+                label: 'Performance Breakdown', depth: 2, total: 72, zoom: 'Performance Loss',
+                segments: [
+                    { name: 'Interruptions', val: 24, color: '#60A5FA', pct: '33.3%' },
+                    { name: 'True Speed', val: 48, color: '#6366F1', pct: '66.7%' },
+                ]
+            },
+            {
+                label: 'Quality Breakdown', depth: 2, total: 26, zoom: 'Quality Loss',
+                segments: [
+                    { name: 'Startup Rejects', val: 14, color: '#A855F7', pct: '53.8%' },
+                    { name: 'In-Process Rejects', val: 12, color: '#EC4899', pct: '46.2%' },
+                ]
+            },
+        ];
+
+        const container = document.getElementById('cascade');
+
+        levels.forEach((level, i) => {
+            if (level.zoom) {
+                const zi = document.createElement('div');
+                zi.className = 'zoom-indicator';
+                zi.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> Zooming into: ${level.zoom} (${level.total}h)`;
+                container.appendChild(zi);
+            }
+
+            const div = document.createElement('div');
+            div.className = 'level';
+
+            const lbl = document.createElement('div');
+            lbl.className = 'level-label';
+            lbl.innerHTML = `<span class="depth">L${level.depth}</span> ${level.label}`;
+            div.appendChild(lbl);
+
+            const row = document.createElement('div');
+            row.className = 'bar-row';
+            level.segments.forEach(seg => {
+                const s = document.createElement('div');
+                s.className = 'bar-seg';
+                s.style.width = (seg.val / level.total * 100) + '%';
+                s.style.background = seg.color;
+                if (seg.val / level.total > 0.12) {
+                    s.innerHTML = `<span class="seg-name">${seg.name}</span><span class="seg-val">${seg.val}h · ${seg.pct}</span>`;
+                }
+                row.appendChild(s);
+            });
+            div.appendChild(row);
+            container.appendChild(div);
+        });
+    </script>
+</body>
+
+</html>

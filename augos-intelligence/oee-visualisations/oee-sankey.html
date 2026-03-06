@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>The Anatomy of Loss — Augos Sankey</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        :root {
+            --bg: #06080A;
+            --surface: #0E1116;
+            --text: #E2E8F0;
+            --muted: #94A3B8;
+            --faint: #475569;
+            --border: rgba(255, 255, 255, .08);
+            --amber: #F59E0B
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px 60px
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 16px;
+            max-width: 800px
+        }
+
+        .page-title .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            color: var(--amber);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 16px
+        }
+
+        .page-title h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.6rem, 4vw, 2.6rem);
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: -.02em;
+            margin-bottom: 12px
+        }
+
+        .page-title h1 span {
+            color: var(--muted);
+            font-weight: 300
+        }
+
+        .page-title p {
+            font-size: .95rem;
+            color: var(--muted);
+            line-height: 1.6
+        }
+
+        .page-title p strong {
+            color: #fff
+        }
+
+        .sankey-wrapper {
+            width: 100%;
+            max-width: 1600px;
+            margin: 20px auto 0;
+            overflow-x: auto
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 22px;
+            justify-content: center;
+            margin-top: 28px;
+            padding: 20px 28px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            max-width: 1200px
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: .72rem;
+            color: var(--muted)
+        }
+
+        .legend-swatch {
+            width: 11px;
+            height: 11px;
+            border-radius: 3px
+        }
+
+        .bottom-note {
+            text-align: center;
+            margin-top: 32px;
+            max-width: 800px
+        }
+
+        .bottom-note p {
+            font-size: .85rem;
+            color: var(--faint);
+            line-height: 1.7
+        }
+
+        .bottom-note strong {
+            color: var(--muted);
+            font-weight: 500
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page-title">
+        <div class="tag">Manufacturing Intelligence · The Anatomy of Loss</div>
+        <h1>Every Lost Hour <span>Has a Name</span></h1>
+        <p>Standard OEE gives you <strong>A × P × Q</strong>. Augos decomposes each loss through multiple levels —
+            separating planned from unplanned, operator-resolved from technical intervention, and active wrench from
+            inactive wrench — until every minute is accounted for.</p>
+    </div>
+
+    <div class="sankey-wrapper">
+        <canvas id="sankey"></canvas>
+    </div>
+
+    <div class="legend" id="legend"></div>
+
+    <div class="bottom-note">
+        <p>Flow width is proportional to time consumed. Every branch terminates in a specific, measurable, actionable
+            variable. <strong>The deeper the decomposition, the more precise the intervention.</strong></p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('sankey');
+        const ctx = canvas.getContext('2d');
+        const DPR = window.devicePixelRatio || 1;
+
+        const W = 1520, H = 960;
+        canvas.width = W * DPR;
+        canvas.height = H * DPR;
+        canvas.style.width = W + 'px';
+        canvas.style.height = H + 'px';
+        ctx.scale(DPR, DPR);
+
+        // ── COLORS ──
+        const C = {
+            avail: '#F59E0B',
+            planned: '#D97706',
+            unplanned: '#F43F5E',
+            planEff: '#CA8A04',
+            opDisc: '#FBBF24',
+            opResolved: '#FB923C',
+            techIntv: '#DC2626',
+            opResTime: '#FB923C',
+            opEval: '#FB7185',
+            techResp: '#EF4444',
+            wrenchTime: '#14B8A6',
+            actWrench: '#10B981',
+            inactWrench: '#EAB308',
+            perf: '#3B82F6',
+            interrupts: '#60A5FA',
+            trueSpeed: '#6366F1',
+            qual: '#8B5CF6',
+            startReject: '#A855F7',
+            procReject: '#EC4899',
+        };
+
+        // ── DATA (hours) ──
+        const D = {
+            total: 284,
+            avail: 186, planned: 42, planEff: 28, opDisc: 14,
+            unplanned: 144, opResolved: 58, techIntv: 86,
+            opResTime: 58, opEval: 10, techResp: 16, wrenchTime: 60,
+            actWrench: 38, inactWrench: 22,
+            perf: 72, interrupts: 24, trueSpeed: 48,
+            qual: 26, startReject: 14, procReject: 12,
+        };
+
+        // ── LAYOUT ──
+        const NODE_W = 18;
+        const TOP = 50;
+        const BOT = 30;
+        const CHART_H = H - TOP - BOT;
+
+        // Column x-positions (intermediate nodes)
+        const cx = {
+            total: 60,     // Col 0: Total Loss
+            apq: 260,    // Col 1: A, P, Q
+            cat: 430,    // Col 2: Planned/Unplanned, Interrupts/TrueSpeed, StartRej/ProcRej
+            subcat: 620,    // Col 3: PlanEff/OpDisc, OpResolved/TechIntv
+            time: 810,    // Col 4: OpResTime, OpEval/TechResp/WrenchTime
+            detail: 1020,   // Col 5: ALL TERMINALS END HERE
+        };
+
+        // ── HELPERS ──
+        function hexRGBA(h, a) {
+            return `rgba(${parseInt(h.slice(1, 3), 16)},${parseInt(h.slice(3, 5), 16)},${parseInt(h.slice(5, 7), 16)},${a})`;
+        }
+
+        function drawFlow(x0, y0t, y0b, x1, y1t, y1b, color, alpha) {
+            const t = 0.5;
+            const cpx0 = x0 + (x1 - x0) * t;
+            const cpx1 = x1 - (x1 - x0) * t;
+            ctx.beginPath();
+            ctx.moveTo(x0, y0t);
+            ctx.bezierCurveTo(cpx0, y0t, cpx1, y1t, x1, y1t);
+            ctx.lineTo(x1, y1b);
+            ctx.bezierCurveTo(cpx1, y1b, cpx0, y0b, x0, y0b);
+            ctx.closePath();
+            const g = ctx.createLinearGradient(x0, 0, x1, 0);
+            g.addColorStop(0, hexRGBA(color, alpha * 0.55));
+            g.addColorStop(0.3, hexRGBA(color, alpha));
+            g.addColorStop(0.7, hexRGBA(color, alpha));
+            g.addColorStop(1, hexRGBA(color, alpha * 0.55));
+            ctx.fillStyle = g;
+            ctx.fill();
+        }
+
+        function drawNode(x, y, w, h, color) {
+            ctx.save();
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 8;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.roundRect(x, y, w, Math.max(h, 3), Math.min(4, h / 2));
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.restore();
+        }
+
+        function txt(str, x, y, opts = {}) {
+            const { align = 'left', color = '#94A3B8', size = 12, font = "'Inter',sans-serif", weight = '400', baseline = 'middle' } = opts;
+            ctx.fillStyle = color;
+            ctx.font = `${weight} ${size}px ${font}`;
+            ctx.textAlign = align;
+            ctx.textBaseline = baseline;
+            ctx.fillText(str, x, y);
+        }
+
+        function mono(str, x, y, opts = {}) {
+            txt(str, x, y, { font: "'JetBrains Mono',monospace", size: 9, color: '#475569', ...opts });
+        }
+
+        // ── NODE LAYOUT ENGINE ──
+        function layoutChildren(parentY, parentH, children, gap) {
+            const totalVal = children.reduce((s, c) => s + c.val, 0);
+            const MIN_H = 28;
+            gap = gap || 8;
+            let heights = children.map(c => Math.max((c.val / totalVal) * parentH, MIN_H));
+            const totalNeeded = heights.reduce((s, h) => s + h, 0) + gap * (children.length - 1);
+            let startY = parentY + parentH / 2 - totalNeeded / 2;
+            startY = Math.max(TOP, Math.min(startY, H - BOT - totalNeeded));
+            let y = startY;
+            return children.map((c, i) => {
+                const node = { ...c, y, h: heights[i] };
+                y += heights[i] + gap;
+                return node;
+            });
+        }
+
+        // ═══════════════════════════════════════════
+        // BUILD NODE POSITIONS
+        // ═══════════════════════════════════════════
+
+        // ── COL 0: Total Loss ──
+        const n_total = { val: D.total, color: '#E2E8F0', y: TOP, h: CHART_H };
+
+        // ── COL 1: A, P, Q (with generous gaps) ──
+        const APQ_GAP = 28;  // big breathing room between A, P, Q
+        const col1 = layoutChildren(n_total.y, n_total.h, [
+            { val: D.avail, color: C.avail },
+            { val: D.perf, color: C.perf },
+            { val: D.qual, color: C.qual },
+        ], APQ_GAP);
+        const n_avail = col1[0];
+        const n_perf = col1[1];
+        const n_qual = col1[2];
+
+        // ── COL 2: Category splits ──
+        const CAT_GAP = 10;
+        const col2a = layoutChildren(n_avail.y, n_avail.h, [
+            { val: D.planned, color: C.planned },
+            { val: D.unplanned, color: C.unplanned },
+        ], CAT_GAP);
+        const n_planned = col2a[0];
+        const n_unplanned = col2a[1];
+
+        // Performance & Quality don't split at col2 — they flow straight to terminal col
+        // (but we still need intermediate conceptual positions for the flow routing)
+
+        // ── COL 3: Sub-category splits ──
+        const SUBCAT_GAP = 8;
+        const col3p = layoutChildren(n_planned.y, n_planned.h, [
+            { val: D.planEff, color: C.planEff },
+            { val: D.opDisc, color: C.opDisc },
+        ], SUBCAT_GAP);
+
+        const col3u = layoutChildren(n_unplanned.y, n_unplanned.h, [
+            { val: D.opResolved, color: C.opResolved },
+            { val: D.techIntv, color: C.techIntv },
+        ], SUBCAT_GAP);
+        const n_opResolved = col3u[0];
+        const n_techIntv = col3u[1];
+
+        // ── COL 4: Time account (Tech Intervention decomposition) ──
+        const TIME_GAP = 7;
+        const col4t = layoutChildren(n_techIntv.y, n_techIntv.h, [
+            { val: D.opEval, color: C.opEval },
+            { val: D.techResp, color: C.techResp },
+            { val: D.wrenchTime, color: C.wrenchTime },
+        ], TIME_GAP);
+        const n_opEval = col4t[0];
+        const n_techResp = col4t[1];
+        const n_wrench = col4t[2];
+
+        // OpResolved → OpResTime (1:1, same position)
+        const n_opResTime = { val: D.opResTime, color: C.opResTime, y: n_opResolved.y, h: n_opResolved.h };
+
+        // ── COL 5 (TERMINAL COLUMN): All leaf nodes end here ──
+        // Wrench → Active + Inactive
+        const DETAIL_GAP = 7;
+        const col5w = layoutChildren(n_wrench.y, n_wrench.h, [
+            { val: D.actWrench, color: C.actWrench },
+            { val: D.inactWrench, color: C.inactWrench },
+        ], DETAIL_GAP);
+        const n_actWrench = col5w[0];
+        const n_inactWrench = col5w[1];
+
+        // TERMINAL nodes at column 5 (detail) — these items skip intermediate columns
+        // Planning Efficiency Loss → ends at detail col
+        const t_planEff = { val: D.planEff, color: C.planEff, y: col3p[0].y, h: col3p[0].h, name: 'Planning\nEfficiency Loss' };
+        const t_opDisc = { val: D.opDisc, color: C.opDisc, y: col3p[1].y, h: col3p[1].h, name: 'Operator\nDiscipline' };
+
+        // Op Resolution Time → ends at detail col
+        const t_opResTime = { val: D.opResTime, color: C.opResTime, y: n_opResTime.y, h: n_opResTime.h, name: 'Op. Resolution\nTime' };
+
+        // Op Eval, Tech Resp → end at detail col
+        const t_opEval = { val: D.opEval, color: C.opEval, y: n_opEval.y, h: n_opEval.h, name: 'Op. Evaluation\nTime' };
+        const t_techResp = { val: D.techResp, color: C.techResp, y: n_techResp.y, h: n_techResp.h, name: 'Tech Response\nTime' };
+
+        // Active/Inactive Wrench already at detail col
+        const t_actWrench = { val: D.actWrench, color: C.actWrench, y: n_actWrench.y, h: n_actWrench.h, name: 'Active\nWrench Time' };
+        const t_inactWrench = { val: D.inactWrench, color: C.inactWrench, y: n_inactWrench.y, h: n_inactWrench.h, name: 'Inactive\nWrench Time' };
+
+        // Performance terminals at detail col
+        const perfTerminals = layoutChildren(n_perf.y, n_perf.h, [
+            { val: D.interrupts, color: C.interrupts },
+            { val: D.trueSpeed, color: C.trueSpeed },
+        ], DETAIL_GAP);
+        const t_interrupts = { ...perfTerminals[0], name: 'Interruptions' };
+        const t_trueSpeed = { ...perfTerminals[1], name: 'True Speed' };
+
+        // Quality terminals at detail col
+        const qualTerminals = layoutChildren(n_qual.y, n_qual.h, [
+            { val: D.startReject, color: C.startReject },
+            { val: D.procReject, color: C.procReject },
+        ], DETAIL_GAP);
+        const t_startRej = { ...qualTerminals[0], name: 'Startup\nRejects' };
+        const t_procRej = { ...qualTerminals[1], name: 'In-Process\nRejects' };
+
+
+        // ═══════════════════════════════════════════
+        // RENDER
+        // ═══════════════════════════════════════════
+        function render() {
+            ctx.clearRect(0, 0, W, H);
+
+            // ── Column headers ──
+            const hy = TOP - 22;
+            mono('TOTAL LOSS', cx.total, hy, { size: 8, color: '#334155' });
+            mono('A · P · Q', cx.apq, hy, { size: 8, color: '#334155' });
+            mono('PLANNED / UNPLANNED', cx.cat, hy, { size: 8, color: '#475569' });
+            mono('RESOLUTION PATH', cx.subcat, hy, { size: 8, color: '#92400E' });
+            mono('TIME ACCOUNT', cx.time, hy, { size: 8, color: '#92400E' });
+            mono('THE SCIENCE', cx.detail, hy, { size: 8, color: '#92400E' });
+
+            // ── Divider: Traditional | Augos ──
+            ctx.save();
+            ctx.strokeStyle = 'rgba(245,158,11,0.1)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 5]);
+            const divX = cx.cat - 20;
+            ctx.beginPath();
+            ctx.moveTo(divX, TOP - 8);
+            ctx.lineTo(divX, H - BOT + 5);
+            ctx.stroke();
+            ctx.restore();
+            mono('TRADITIONAL', divX - 8, TOP - 36, { align: 'right', size: 7, color: '#334155' });
+            mono('AUGOS — THE SCIENCE OF TIME →', divX + 8, TOP - 36, { size: 7, color: '#78350F' });
+
+            // ── Terminal column line ──
+            ctx.save();
+            ctx.strokeStyle = 'rgba(245,158,11,0.06)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2, 6]);
+            ctx.beginPath();
+            ctx.moveTo(cx.detail + NODE_W + 4, TOP - 8);
+            ctx.lineTo(cx.detail + NODE_W + 4, H - BOT + 5);
+            ctx.stroke();
+            ctx.restore();
+
+            // ── FLOW HELPER ──
+            function flowSplit(parent, pCol, children, cCol, alpha) {
+                const totalVal = children.reduce((s, c) => s + c.val, 0);
+                let pY = parent.y;
+                children.forEach(child => {
+                    const pH = (child.val / totalVal) * parent.h;
+                    drawFlow(pCol + NODE_W, pY, pY + pH, cCol, child.y, child.y + child.h, child.color, alpha || 0.28);
+                    pY += pH;
+                });
+            }
+
+            function flowDirect(parent, pCol, child, cCol, color, alpha) {
+                drawFlow(pCol + NODE_W, parent.y, parent.y + parent.h, cCol, child.y, child.y + child.h, color || child.color, alpha || 0.28);
+            }
+
+            // ══════════════════════════════
+            // FLOWS — Left to Right
+            // ══════════════════════════════
+
+            // Col 0 → Col 1: Total → A, P, Q
+            flowSplit(n_total, cx.total, [n_avail, n_perf, n_qual], cx.apq, 0.25);
+
+            // Col 1 → Col 2: Availability → Planned + Unplanned
+            flowSplit(n_avail, cx.apq, [n_planned, n_unplanned], cx.cat, 0.28);
+
+            // Col 1 → TERMINAL (col 5): Performance → Interruptions + True Speed
+            flowSplit(n_perf, cx.apq, [t_interrupts, t_trueSpeed], cx.detail, 0.22);
+
+            // Col 1 → TERMINAL (col 5): Quality → Startup + InProcess Rejects
+            flowSplit(n_qual, cx.apq, [t_startRej, t_procRej], cx.detail, 0.22);
+
+            // Col 2 → Col 3: Planned → PlanEff + OpDisc (intermediate)
+            // Then col 3 intermediate → Terminal
+            // Actually: Planned → straight to terminal for PlanEff/OpDisc
+            flowSplit(n_planned, cx.cat, [t_planEff, t_opDisc], cx.detail, 0.28);
+
+            // Col 2 → Col 3: Unplanned → OpResolved + TechIntv
+            flowSplit(n_unplanned, cx.cat, [n_opResolved, n_techIntv], cx.subcat, 0.3);
+
+            // Col 3 → Terminal: OpResolved → OpResTime
+            flowDirect(n_opResolved, cx.subcat, t_opResTime, cx.detail, C.opResTime, 0.3);
+
+            // Col 3 → Col 4: TechIntv → OpEval + TechResp + Wrench
+            flowSplit(n_techIntv, cx.subcat, [n_opEval, n_techResp, n_wrench], cx.time, 0.3);
+
+            // Col 4 → Terminal: OpEval
+            flowDirect(n_opEval, cx.time, t_opEval, cx.detail, C.opEval, 0.32);
+
+            // Col 4 → Terminal: TechResp
+            flowDirect(n_techResp, cx.time, t_techResp, cx.detail, C.techResp, 0.32);
+
+            // Col 4 → Terminal: Wrench → Active + Inactive
+            flowSplit(n_wrench, cx.time, [t_actWrench, t_inactWrench], cx.detail, 0.35);
+
+            // ══════════════════════════════
+            // NODES
+            // ══════════════════════════════
+
+            // Col 0
+            drawNode(cx.total, n_total.y, NODE_W, n_total.h, '#E2E8F0');
+
+            // Col 1
+            [n_avail, n_perf, n_qual].forEach(n => drawNode(cx.apq, n.y, NODE_W, n.h, n.color));
+
+            // Col 2 (only availability splits here)
+            [n_planned, n_unplanned].forEach(n => drawNode(cx.cat, n.y, NODE_W, n.h, n.color));
+
+            // Col 3
+            [n_opResolved, n_techIntv].forEach(n => drawNode(cx.subcat, n.y, NODE_W, n.h, n.color));
+
+            // Col 4
+            [n_opEval, n_techResp, n_wrench].forEach(n => drawNode(cx.time, n.y, NODE_W, n.h, n.color));
+
+            // Col 5 — ALL TERMINALS
+            const allTerminals = [t_planEff, t_opDisc, t_opResTime, t_opEval, t_techResp, t_actWrench, t_inactWrench, t_interrupts, t_trueSpeed, t_startRej, t_procRej];
+            allTerminals.forEach(n => drawNode(cx.detail, n.y, NODE_W, n.h, n.color));
+
+            // ══════════════════════════════
+            // LABELS
+            // ══════════════════════════════
+
+            function labelRight(node, x, nameOverride) {
+                const lx = x + NODE_W + 10;
+                const cy = node.y + node.h / 2;
+                const name = nameOverride || node.name || '';
+                const lines = name.split('\n');
+                if (lines.length === 1) {
+                    txt(lines[0], lx, cy - 6, { color: '#E2E8F0', size: 11, weight: '500' });
+                    mono(`${node.val}h`, lx, cy + 9, { color: '#64748B', size: 9 });
+                } else {
+                    txt(lines[0], lx, cy - 13, { color: '#E2E8F0', size: 11, weight: '500' });
+                    txt(lines[1], lx, cy + 1, { color: '#E2E8F0', size: 11, weight: '500' });
+                    mono(`${node.val}h`, lx, cy + 16, { color: '#64748B', size: 9 });
+                }
+            }
+
+            // Label placed inside the flow between two columns
+            function labelInFlow(node, fromCol, toCol, nameOverride) {
+                const midX = (fromCol + NODE_W + toCol) / 2;
+                const cy = node.y + node.h / 2;
+                const name = nameOverride || node.name || '';
+                const lines = name.split('\n');
+                if (lines.length === 1) {
+                    txt(lines[0], midX, cy - 6, { color: '#fff', size: 12, weight: '600', align: 'center' });
+                    mono(`${node.val}h`, midX, cy + 10, { color: 'rgba(255,255,255,0.5)', size: 9, align: 'center' });
+                } else {
+                    txt(lines[0], midX, cy - 12, { color: '#fff', size: 12, weight: '600', align: 'center' });
+                    txt(lines[1], midX, cy + 2, { color: '#fff', size: 12, weight: '600', align: 'center' });
+                    mono(`${node.val}h`, midX, cy + 18, { color: 'rgba(255,255,255,0.5)', size: 9, align: 'center' });
+                }
+            }
+
+            // Col 0 label
+            txt(`${D.total}h`, cx.total - 12, n_total.y + n_total.h / 2, { align: 'right', color: '#fff', size: 26, font: "'Space Grotesk',sans-serif", weight: '600' });
+            mono('TOTAL', cx.total - 12, n_total.y + n_total.h / 2 - 22, { align: 'right', size: 9, color: '#64748B' });
+            mono('LOSS', cx.total - 12, n_total.y + n_total.h / 2 + 22, { align: 'right', size: 9, color: '#64748B' });
+            mono(`${(D.total / 744 * 100).toFixed(1)}% of 744h`, cx.total - 12, n_total.y + n_total.h / 2 + 38, { align: 'right', size: 8, color: '#334155' });
+
+            // Col 1 labels — inside the flow from Total → APQ
+            labelInFlow(n_avail, cx.total, cx.apq, 'Availability\nLoss');
+            labelInFlow(n_perf, cx.total, cx.apq, 'Performance\nLoss');
+            labelInFlow(n_qual, cx.total, cx.apq, 'Quality\nLoss');
+
+            // Col 2 labels — inside the flow from APQ → Category
+            labelInFlow(n_planned, cx.apq, cx.cat, 'Planned');
+            labelInFlow(n_unplanned, cx.apq, cx.cat, 'Unplanned');
+
+            // Col 3 labels — inside the flow from Category → SubCategory
+            labelInFlow(n_opResolved, cx.cat, cx.subcat, 'Operator\nResolved');
+            labelInFlow(n_techIntv, cx.cat, cx.subcat, 'Technical\nIntervention');
+
+            // Col 4 labels — Wrench Time inside the flow from SubCat → Time
+            labelInFlow(n_wrench, cx.subcat, cx.time, 'Wrench Time');
+
+            // Col 5 — TERMINAL labels (right of node)
+            allTerminals.forEach(n => labelRight(n, cx.detail));
+
+            // ── Depth indicators for availability ──
+            // Small connecting dots at intermediate nodes that continue
+            const intermediateNodes = [
+                { n: n_opEval, x: cx.time },
+                { n: n_techResp, x: cx.time },
+            ];
+            intermediateNodes.forEach(({ n, x }) => {
+                // Small arrow indicator showing continuation
+                ctx.fillStyle = hexRGBA(n.color, 0.5);
+                const midY = n.y + n.h / 2;
+                ctx.beginPath();
+                ctx.moveTo(x + NODE_W + 3, midY - 3);
+                ctx.lineTo(x + NODE_W + 7, midY);
+                ctx.lineTo(x + NODE_W + 3, midY + 3);
+                ctx.fill();
+            });
+        }
+
+        render();
+
+        // ── LEGEND ──
+        const legendEl = document.getElementById('legend');
+        [
+            { name: 'Availability Loss', color: C.avail },
+            { name: 'Planned', color: C.planned },
+            { name: 'Planning Efficiency', color: C.planEff },
+            { name: 'Operator Discipline', color: C.opDisc },
+            { name: 'Unplanned', color: C.unplanned },
+            { name: 'Operator Resolved', color: C.opResolved },
+            { name: 'Technical Intervention', color: C.techIntv },
+            { name: 'Op. Resolution Time', color: C.opResTime },
+            { name: 'Op. Evaluation Time', color: C.opEval },
+            { name: 'Tech Response Time', color: C.techResp },
+            { name: 'Wrench Time', color: C.wrenchTime },
+            { name: 'Active Wrench', color: C.actWrench },
+            { name: 'Inactive Wrench', color: C.inactWrench },
+            { name: 'Performance Loss', color: C.perf },
+            { name: 'Interruptions', color: C.interrupts },
+            { name: 'True Speed', color: C.trueSpeed },
+            { name: 'Quality Loss', color: C.qual },
+            { name: 'Startup Rejects', color: C.startReject },
+            { name: 'In-Process Rejects', color: C.procReject },
+        ].forEach(item => {
+            const d = document.createElement('div');
+            d.className = 'legend-item';
+            d.innerHTML = `<div class="legend-swatch" style="background:${item.color}"></div>${item.name}`;
+            legendEl.appendChild(d);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>OEE Matrix — Logical Flow — Augos</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: #06080A;
+            color: #E2E8F0;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            min-height: 100vh
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 28px
+        }
+
+        .title .tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            color: #F59E0B;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 12px
+        }
+
+        .title h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 8px
+        }
+
+        .title h1 span {
+            color: #94A3B8;
+            font-weight: 300
+        }
+
+        .title p {
+            font-size: .85rem;
+            color: #64748B;
+            max-width: 600px;
+            margin: 0 auto
+        }
+
+        .matrix {
+            width: 100%;
+            max-width: 900px;
+            border: 1px solid rgba(255, 255, 255, .06);
+            border-radius: 12px;
+            overflow: hidden
+        }
+
+        .matrix-header {
+            display: grid;
+            grid-template-columns: 4px 160px 120px 80px 80px 80px 1fr;
+            padding: 0;
+            background: rgba(255, 255, 255, .02);
+            border-bottom: 1px solid rgba(255, 255, 255, .06)
+        }
+
+        .matrix-header .mh {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 12px 10px;
+            display: flex;
+            align-items: center
+        }
+
+        .matrix-row {
+            display: grid;
+            grid-template-columns: 4px 160px 120px 80px 80px 80px 1fr;
+            border-bottom: 1px solid rgba(255, 255, 255, .03);
+            transition: background .15s
+        }
+
+        .matrix-row:hover {
+            background: rgba(255, 255, 255, .03)
+        }
+
+        .matrix-row:last-child {
+            border-bottom: none
+        }
+
+        .mr-band {
+            width: 4px
+        }
+
+        .mr-name {
+            padding: 10px;
+            font-size: .8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .mr-name .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            flex-shrink: 0
+        }
+
+        .mr-name .step {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: #475569;
+            background: rgba(255, 255, 255, .04);
+            border-radius: 3px;
+            padding: 1px 5px;
+            flex-shrink: 0;
+            min-width: 18px;
+            text-align: center
+        }
+
+        .mr-path {
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem;
+            color: #475569;
+            display: flex;
+            align-items: center
+        }
+
+        .mr-val {
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .mr-pct {
+            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748B
+        }
+
+        .mr-bar-cell {
+            padding: 10px 14px;
+            display: flex;
+            align-items: center
+        }
+
+        .mr-bar {
+            height: 18px;
+            border-radius: 4px;
+            min-width: 2px;
+            position: relative;
+            transition: width .5s ease
+        }
+
+        .mr-bar-label {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: rgba(255, 255, 255, .7)
+        }
+
+        .group-row {
+            display: grid;
+            grid-template-columns: 4px 1fr;
+            border-bottom: 1px solid rgba(255, 255, 255, .04);
+            background: rgba(255, 255, 255, .015)
+        }
+
+        .group-row .gr-band {
+            width: 4px
+        }
+
+        .group-row .gr-label {
+            padding: 8px 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .6rem;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .group-row .gr-total {
+            font-weight: 600;
+            color: #94A3B8
+        }
+
+        .subgroup-row {
+            display: grid;
+            grid-template-columns: 4px 1fr;
+            border-bottom: 1px solid rgba(255, 255, 255, .02);
+            background: rgba(255, 255, 255, .008)
+        }
+
+        .subgroup-row .sg-band {
+            width: 4px
+        }
+
+        .subgroup-row .sg-label {
+            padding: 5px 10px 5px 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .55rem;
+            color: #3E4C5E;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .subgroup-row .sg-label .sg-line {
+            width: 12px;
+            height: 1px;
+            flex-shrink: 0
+        }
+
+        .summary-row {
+            display: grid;
+            grid-template-columns: 4px 160px 120px 80px 80px 80px 1fr;
+            background: rgba(245, 158, 11, .04);
+            border-top: 1px solid rgba(245, 158, 11, .1)
+        }
+
+        .summary-row .mr-name {
+            font-weight: 700;
+            color: #F59E0B
+        }
+
+        .summary-row .mr-val {
+            font-weight: 700;
+            color: #F59E0B
+        }
+    </style>
+</head>
+
+<body>
+    <div class="title">
+        <div class="tag">Visualisation 10b · Matrix — Logical Flow</div>
+        <h1>The Loss Hierarchy <span>in Order</span></h1>
+        <p>Same 11 variables, ordered by their position in the OEE loss tree — from Planned downtime
+            through the Digital Signal escalation path, then Performance and Quality.</p>
+    </div>
+
+    <div class="matrix" id="matrix">
+        <div class="matrix-header">
+            <div class="mh"></div>
+            <div class="mh">Variable</div>
+            <div class="mh">Hierarchy</div>
+            <div class="mh" style="justify-content:center">Hours</div>
+            <div class="mh" style="justify-content:center">% Total</div>
+            <div class="mh" style="justify-content:center">% Parent</div>
+            <div class="mh">Magnitude</div>
+        </div>
+    </div>
+
+    <script>
+        // Ordered by logical flow through the OEE hierarchy tree, not by magnitude
+        const data = [
+            {
+                group: 'Availability Loss', groupColor: '#F59E0B', groupTotal: 186, subgroups: [
+                    {
+                        label: 'Planned Downtime', sublabel: '42h', color: '#D97706', items: [
+                            { name: 'Planning Efficiency', val: 28, color: '#CA8A04', path: 'Planned', parentVal: 42, step: 1 },
+                            { name: 'Operator Discipline', val: 14, color: '#FBBF24', path: 'Planned', parentVal: 42, step: 2 },
+                        ]
+                    },
+                    {
+                        label: 'Unplanned — Operator Resolved', sublabel: '58h', color: '#FB923C', items: [
+                            { name: 'Op. Resolution Time', val: 58, color: '#FB923C', path: 'Unplanned › Op. Resolved', parentVal: 58, step: 3 },
+                        ]
+                    },
+                    {
+                        label: 'Unplanned — Tech Intervention', sublabel: '86h', color: '#EF4444', items: [
+                            { name: 'Op. Evaluation Time', val: 10, color: '#FB7185', path: 'Unplanned › Tech Intv.', parentVal: 86, step: 4 },
+                            { name: 'Tech Response Time', val: 16, color: '#EF4444', path: 'Unplanned › Tech Intv.', parentVal: 86, step: 5 },
+                            { name: 'Active Wrench Time', val: 38, color: '#10B981', path: 'Unplanned › Tech Intv. › Wrench', parentVal: 60, step: 6 },
+                            { name: 'Inactive Wrench Time', val: 22, color: '#EAB308', path: 'Unplanned › Tech Intv. › Wrench', parentVal: 60, step: 7 },
+                        ]
+                    },
+                ]
+            },
+            {
+                group: 'Performance Loss', groupColor: '#3B82F6', groupTotal: 72, subgroups: [
+                    {
+                        label: null, items: [
+                            { name: 'Micro Interruptions', val: 24, color: '#60A5FA', path: 'Performance', parentVal: 72, step: 8 },
+                            { name: 'True Speed Loss', val: 48, color: '#6366F1', path: 'Performance', parentVal: 72, step: 9 },
+                        ]
+                    }
+                ]
+            },
+            {
+                group: 'Quality Loss', groupColor: '#8B5CF6', groupTotal: 26, subgroups: [
+                    {
+                        label: null, items: [
+                            { name: 'Startup Rejects', val: 14, color: '#A855F7', path: 'Quality', parentVal: 26, step: 10 },
+                            { name: 'In-Process Rejects', val: 12, color: '#EC4899', path: 'Quality', parentVal: 26, step: 11 },
+                        ]
+                    }
+                ]
+            },
+        ];
+
+        const maxVal = 58; // for bar width scaling
+        const TOTAL = 284;
+        const container = document.getElementById('matrix');
+
+        function hexRGBA(h, a) {
+            return `rgba(${parseInt(h.slice(1, 3), 16)},${parseInt(h.slice(3, 5), 16)},${parseInt(h.slice(5, 7), 16)},${a})`;
+        }
+
+        data.forEach(group => {
+            // Group header
+            const gr = document.createElement('div');
+            gr.className = 'group-row';
+            gr.innerHTML = `
+        <div class="gr-band" style="background:${group.groupColor}"></div>
+        <div class="gr-label"><span>${group.group}</span> <span class="gr-total">${group.groupTotal}h · ${(group.groupTotal / TOTAL * 100).toFixed(1)}%</span></div>
+    `;
+            container.appendChild(gr);
+
+            group.subgroups.forEach(sg => {
+                // Sub-group divider (only for Availability sub-paths)
+                if (sg.label) {
+                    const sgRow = document.createElement('div');
+                    sgRow.className = 'subgroup-row';
+                    sgRow.innerHTML = `
+                <div class="sg-band" style="background:${hexRGBA(group.groupColor, 0.15)}"></div>
+                <div class="sg-label">
+                    <span class="sg-line" style="background:${hexRGBA(sg.color, 0.4)}"></span>
+                    <span>${sg.label}</span>
+                    <span style="color:${hexRGBA(sg.color, 0.7)};font-weight:500">${sg.sublabel}</span>
+                </div>
+            `;
+                    container.appendChild(sgRow);
+                }
+
+                sg.items.forEach(item => {
+                    const row = document.createElement('div');
+                    row.className = 'matrix-row';
+
+                    const pctTotal = (item.val / TOTAL * 100).toFixed(1);
+                    const pctParent = (item.val / item.parentVal * 100).toFixed(1);
+                    const barW = (item.val / maxVal * 100);
+                    const intensity = item.val / maxVal;
+
+                    row.innerHTML = `
+                <div class="mr-band" style="background:${hexRGBA(group.groupColor, 0.3)}"></div>
+                <div class="mr-name"><span class="step">${item.step}</span><div class="dot" style="background:${item.color}"></div>${item.name}</div>
+                <div class="mr-path">${item.path}</div>
+                <div class="mr-val" style="color:${hexRGBA(item.color, 0.6 + intensity * 0.4)};font-weight:${intensity > 0.5 ? '700' : '400'}">${item.val}h</div>
+                <div class="mr-pct">${pctTotal}%</div>
+                <div class="mr-pct">${pctParent}%</div>
+                <div class="mr-bar-cell">
+                    <div class="mr-bar" style="width:${barW}%;background:linear-gradient(90deg,${hexRGBA(item.color, 0.7)},${hexRGBA(item.color, 0.4)})">
+                        ${barW > 30 ? `<span class="mr-bar-label">${item.val}h</span>` : ''}
+                    </div>
+                </div>
+            `;
+                    container.appendChild(row);
+                });
+            });
+        });
+
+        // Summary row
+        const sr = document.createElement('div');
+        sr.className = 'summary-row';
+        sr.innerHTML = `
+    <div class="mr-band" style="background:#F59E0B"></div>
+    <div class="mr-name" style="font-weight:700;color:#F59E0B">Total Accounted</div>
+    <div class="mr-path"></div>
+    <div class="mr-val" style="color:#F59E0B;font-weight:700">${TOTAL}h</div>
+    <div class="mr-pct" style="color:#F59E0B;font-weight:600">100%</div>
+    <div class="mr-pct"></div>
+    <div class="mr-bar-cell">
+        <div class="mr-bar" style="width:100%;background:linear-gradient(90deg,rgba(245,158,11,0.5),rgba(245,158,11,0.2));height:4px;border-radius:2px"></div>
+    </div>
+`;
+        container.appendChild(sr);
+    </script>
+</body>
+
+</html>
