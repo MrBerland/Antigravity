@@ -62,3 +62,9 @@ CFAO_Mobility_Proposal_V15_INTERNAL.html
 extracted.txt
 faqs_dump.txt
 kb_analysis.txt
+
+# ── Large binary / image assets (stay on originating machine) ──────────────────
+Meter Raw Images/
+Meter Studio Renders/
+NotebookLM/
+logos/*.png

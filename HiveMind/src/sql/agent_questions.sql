@@ -3,7 +3,8 @@
 
 CREATE OR REPLACE PROCEDURE `hive_mind_core.analyze_questions`(batch_size INT64)
 BEGIN
-  -- 1. Identify Candidates (Inbound emails to our users)
+  -- 1. Identify Candidates (Inbound emails to our users from external senders)
+  -- Source: v_business_emails — clean, classified, personal/MARKETING filtered out.
   EXECUTE IMMEDIATE FORMAT("""
     CREATE TEMP TABLE pending_questions_analysis AS
     SELECT 
@@ -11,11 +12,12 @@ BEGIN
       sender, 
       subject,
       snippet
-    FROM `hive_mind_core.messages`
-    WHERE sender NOT LIKE '%%@augos.io' -- External sender
+    FROM `augos-core-data.hive_mind_core.v_business_emails`
+    WHERE sender NOT LIKE '%%@augos.io'  -- External sender only
       AND message_id NOT IN (SELECT message_id FROM `hive_mind_core.fact_questions`)
     LIMIT %d
   """, batch_size);
+
 
   -- 2. Analyze with Gemini
   INSERT INTO `hive_mind_core.fact_questions` (message_id, sender, question_text, topic, difficulty, urgency, analysis_json)

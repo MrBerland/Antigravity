@@ -1,7 +1,14 @@
 'use server';
 
 import { getGmailService } from './gmail';
-// import { addGovernanceRule } from './governance'; // Fallback?
+import { addGovernanceRule } from './governance';
+
+
+// Extract domain from a sender string like "Name <user@domain.com>" or "user@domain.com"
+function extractSenderDomain(sender: string): string | null {
+    const match = sender.match(/@([\w.-]+)/);
+    return match ? match[1].toLowerCase() : null;
+}
 
 // Helper to parse headers case-insensitively
 function getHeader(headers: any[], name: string): string | null {
@@ -78,7 +85,15 @@ export async function unsubscribeSender(sender: string) {
             });
 
             if (response.ok) {
-                return { success: true, message: 'Successfully unsubscribed via One-Click POST.' };
+                // Auto-insert MARKETING governance rule for this domain
+                try {
+                    const domain = extractSenderDomain(sender);
+                    if (domain) {
+                        await addGovernanceRule(domain, 'MARKETING', 'DOMAIN_WILDCARD',
+                            `Auto-added after unsubscribe from ${sender}`);
+                    }
+                } catch (e) { console.warn('Could not auto-add governance rule:', e); }
+                return { success: true, message: 'Unsubscribed via One-Click POST. Domain rule added.' };
             } else {
                 console.warn(`One-Click POST failed: ${response.status} ${response.statusText}`);
                 // Fallthrough to mailto if available
@@ -121,7 +136,15 @@ export async function unsubscribeSender(sender: string) {
                 },
             });
 
-            return { success: true, message: `Sent unsubscribe request to ${toEmail}` };
+            // Auto-insert MARKETING governance rule for this domain
+            try {
+                const domain = extractSenderDomain(sender);
+                if (domain) {
+                    await addGovernanceRule(domain, 'MARKETING', 'DOMAIN_WILDCARD',
+                        `Auto-added after mailto unsubscribe from ${sender}`);
+                }
+            } catch (e) { console.warn('Could not auto-add governance rule:', e); }
+            return { success: true, message: `Unsubscribed. Email sent to ${toEmail}. Domain rule added.` };
         }
 
         // STRATEGY 3: Standard HTTP GET (Fallback/Click)

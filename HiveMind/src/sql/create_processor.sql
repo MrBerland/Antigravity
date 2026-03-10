@@ -1,76 +1,102 @@
--- 1. Create the Remote Model (Temporarily Disabled for Debugging)
--- CREATE OR REPLACE MODEL `augos-core-data.hive_mind_core.gemini_bouncer`
--- REMOTE WITH CONNECTION `augos-core-data.us.gemini_conn`
--- OPTIONS (endpoint = 'gemini-pro');
+-- =============================================================================
+-- create_processor.sql
+-- =============================================================================
+-- Layer 1 processor: applies deterministic governance rules to staging emails.
+--
+-- This procedure handles ONLY Layer 1 (rule-based, free, instant).
+-- Layer 2 (AI classification via Gemini) is handled by:
+--   hivemind_pipeline.py  →  run_classifier.py --layer2
+--
+-- Called by:
+--   python3 HiveMind/src/sql/run_classifier.py --layer1
+-- =============================================================================
 
--- 2. The Processor Procedure
 CREATE OR REPLACE PROCEDURE `augos-core-data.hive_mind_core.process_staging_data`()
 BEGIN
-    -- 0. Apply Governance Rules (Deterministic / Free)
-    -- Block known bad domains/emails
+
+    -- ── 0. BLOCK: match governance rules with rule_type = 'BLOCK' ────────────
     UPDATE `augos-core-data.hive_mind_core.staging_raw_emails` t
-    SET 
-        security_verdict = 'BLOCK',
-        processing_status = 'PROCESSED',
-        ai_category = 'RULE_BLOCKED'
+    SET
+        security_verdict  = 'BLOCK',
+        processing_status = 'CLASSIFIED_L1',
+        ai_category       = 'RULE_BLOCKED'
     FROM `augos-core-data.hive_mind_core.dim_governance_rules` r
     WHERE t.processing_status = 'PENDING'
-      AND t.ingest_time < TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 HOUR) -- Avoid Streaming Buffer
+      AND t.ingest_time < TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 HOUR)  -- Streaming buffer safety
       AND r.rule_type = 'BLOCK'
       AND (
-          (r.match_type = 'EXACT_EMAIL' AND t.sender LIKE CONCAT('%<', r.pattern, '>')) -- Handle angle brackets
-          OR 
-          (r.match_type = 'DOMAIN_WILDCARD' AND t.sender LIKE CONCAT('%', r.pattern, '%')) -- Safer containment check
+          (r.match_type = 'EXACT_EMAIL'     AND LOWER(t.sender) LIKE CONCAT('%<', LOWER(r.pattern), '>'))
+          OR
+          (r.match_type = 'DOMAIN_WILDCARD' AND LOWER(t.sender) LIKE CONCAT('%', LOWER(r.pattern), '%'))
       );
 
-    -- Allow known good domains (Internal) - Skip AI
+    -- ── 1. MARKETING: newsletters, promos, known marketing platforms ─────────
     UPDATE `augos-core-data.hive_mind_core.staging_raw_emails` t
-    SET 
-        security_verdict = 'ALLOW',
-        processing_status = 'PROCESSED',
-        ai_category = 'RULE_ALLOWED'
+    SET
+        security_verdict  = 'MARKETING',
+        processing_status = 'CLASSIFIED_L1',
+        ai_category       = 'RULE_MARKETING'
     FROM `augos-core-data.hive_mind_core.dim_governance_rules` r
     WHERE t.processing_status = 'PENDING'
-      AND t.ingest_time < TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 HOUR) -- Avoid Streaming Buffer
-      AND r.rule_type = 'ALLOW'
+      AND t.ingest_time < TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 HOUR)
+      AND r.rule_type = 'MARKETING'
       AND (
-          (r.match_type = 'EXACT_EMAIL' AND t.sender LIKE CONCAT('%<', r.pattern, '>')) -- Handle angle brackets
-          OR 
-          (r.match_type = 'DOMAIN_WILDCARD' AND t.sender LIKE CONCAT('%', r.pattern, '%')) -- Safer containment check
+          (r.match_type = 'EXACT_EMAIL'     AND LOWER(t.sender) LIKE CONCAT('%<', LOWER(r.pattern), '>'))
+          OR
+          (r.match_type = 'DOMAIN_WILDCARD' AND LOWER(t.sender) LIKE CONCAT('%', LOWER(r.pattern), '%'))
       );
 
-    -- A. Classify REMAINING PENDING items (The Grey Area) with AI
-    -- (DISABLED for now - awaiting Model Availability)
-    -- We will leave them as PENDING for now so they can be processed once AI is up.
-    
-    /*
-    CREATE TEMP TABLE ai_results AS
-    SELECT
-        message_id,
-        ml_generate_text_result as ai_response
-    FROM
-    ML.GENERATE_TEXT(
-        MODEL `augos-core-data.hive_mind_core.gemini_bouncer`,
-        ...
-    );
-    ...
-    */
+    -- ── 2. PERSONAL: personal email providers ────────────────────────────────
+    UPDATE `augos-core-data.hive_mind_core.staging_raw_emails` t
+    SET
+        security_verdict  = 'PERSONAL',
+        processing_status = 'CLASSIFIED_L1',
+        ai_category       = 'RULE_PERSONAL'
+    FROM `augos-core-data.hive_mind_core.dim_governance_rules` r
+    WHERE t.processing_status = 'PENDING'
+      AND t.ingest_time < TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 HOUR)
+      AND r.rule_type = 'PERSONAL'
+      AND (
+          (r.match_type = 'EXACT_EMAIL'     AND LOWER(t.sender) LIKE CONCAT('%<', LOWER(r.pattern), '>'))
+          OR
+          (r.match_type = 'DOMAIN_WILDCARD' AND LOWER(t.sender) LIKE CONCAT('%', LOWER(r.pattern), '%'))
+      );
 
-    -- C. Promote Safe Emails (From Rules) to Production
-    -- C. Promote Safe Emails (From Rules) to Production (Idempotent MERGE)
-    MERGE `augos-core-data.hive_mind_core.messages` T
-    USING (
-        SELECT DISTINCT message_id, thread_id, timestamp, sender, subject, snippet, raw_gcs_uri
-        FROM `augos-core-data.hive_mind_core.staging_raw_emails`
-        WHERE processing_status = 'PROCESSED' 
-          AND security_verdict = 'ALLOW'
-    ) S
-    ON T.message_id = S.message_id
-    WHEN NOT MATCHED THEN
-        INSERT (message_id, thread_id, timestamp, sender, subject, snippet, gcs_uri)
-        VALUES (S.message_id, S.thread_id, S.timestamp, S.sender, S.subject, S.snippet, S.raw_gcs_uri);
+    -- ── 3. SYSTEM: automated alerts, notifications, no-reply senders ─────────
+    UPDATE `augos-core-data.hive_mind_core.staging_raw_emails` t
+    SET
+        security_verdict  = 'SYSTEM',
+        processing_status = 'CLASSIFIED_L1',
+        ai_category       = 'RULE_SYSTEM'
+    FROM `augos-core-data.hive_mind_core.dim_governance_rules` r
+    WHERE t.processing_status = 'PENDING'
+      AND t.ingest_time < TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 HOUR)
+      AND r.rule_type = 'SYSTEM'
+      AND (
+          (r.match_type = 'EXACT_EMAIL'     AND LOWER(t.sender) LIKE CONCAT('%<', LOWER(r.pattern), '>'))
+          OR
+          (r.match_type = 'DOMAIN_WILDCARD' AND LOWER(t.sender) LIKE CONCAT('%', LOWER(r.pattern), '%'))
+      );
 
-    -- D. Trigger Entity Matcher
+    -- ── 4. ALLOW: known internal/trusted senders → pass directly as BUSINESS ─
+    UPDATE `augos-core-data.hive_mind_core.staging_raw_emails` t
+    SET
+        security_verdict  = 'BUSINESS',
+        processing_status = 'CLASSIFIED_L1',
+        ai_category       = 'RULE_ALLOWED'
+    FROM `augos-core-data.hive_mind_core.dim_governance_rules` r
+    WHERE t.processing_status = 'PENDING'
+      AND t.ingest_time < TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 HOUR)
+      AND r.rule_type = 'ALLOW'
+      AND (
+          (r.match_type = 'EXACT_EMAIL'     AND LOWER(t.sender) LIKE CONCAT('%<', LOWER(r.pattern), '>'))
+          OR
+          (r.match_type = 'DOMAIN_WILDCARD' AND LOWER(t.sender) LIKE CONCAT('%', LOWER(r.pattern), '%'))
+      );
+
+    -- ── 5. Promote BUSINESS emails to entity matching ─────────────────────────
+    -- Emails in CLASSIFIED_L1 with BUSINESS verdict are immediately ready.
+    -- Layer 2 (AI) will promote additional emails once hivemind_pipeline.py runs.
     CALL `augos-core-data.hive_mind_core.match_entities`();
 
 END;

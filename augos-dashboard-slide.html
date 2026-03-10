@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Augos — Platform Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #020617;
+            --surface: #0b1221;
+            --surface2: #0f1a2e;
+            --border: rgba(0, 209, 255, 0.12);
+            --border-dim: rgba(255, 255, 255, 0.06);
+            --cyan: #00d1ff;
+            --cyan-glow: rgba(0, 209, 255, 0.15);
+            --cyan-dim: rgba(0, 209, 255, 0.06);
+            --blue: #2463eb;
+            --emerald: #10b981;
+            --amber: #f59e0b;
+            --rose: #f43f5e;
+            --purple: #8b5cf6;
+            --text: #e2e8f0;
+            --text-muted: #64748b;
+            --text-dim: #334155;
+            --font-head: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        html,
+        body {
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── GRID ── */
+        .slide {
+            width: 1920px;
+            height: 1080px;
+            display: grid;
+            grid-template-columns: 240px 1fr 340px;
+            grid-template-rows: 64px 1fr;
+            gap: 0;
+            position: relative;
+        }
+
+        /* ── TOP BAR ── */
+        .topbar {
+            grid-column: 1/-1;
+            background: rgba(11, 18, 33, 0.98);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 28px;
+            gap: 32px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            position: relative;
+        }
+
+        .logo-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .logo-wordmark {
+            font-family: var(--font-head);
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: #fff;
+        }
+
+        .logo-wordmark span {
+            color: var(--cyan);
+        }
+
+        .topbar-divider {
+            width: 1px;
+            height: 28px;
+            background: var(--border-dim);
+            flex-shrink: 0;
+        }
+
+        .site-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .site-name {
+            font-family: var(--font-head);
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .site-id {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+        }
+
+        .fuel-tabs {
+            display: flex;
+            gap: 4px;
+            margin-left: 8px;
+        }
+
+        .fuel-tab {
+            padding: 5px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: default;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .fuel-tab.active {
+            background: var(--cyan-dim);
+            border-color: var(--border);
+            color: var(--cyan);
+        }
+
+        .fuel-tab.inactive {
+            color: var(--text-muted);
+        }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .date-range {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-dim);
+            border-radius: 6px;
+            padding: 5px 12px;
+        }
+
+        .ai-badge {
+            background: linear-gradient(135deg, rgba(36, 99, 235, 0.3), rgba(139, 92, 246, 0.3));
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #a78bfa;
+            font-family: var(--font-mono);
+            letter-spacing: 0.04em;
+        }
+
+        /* ── LEFT SIDEBAR ── */
+        .sidebar {
+            background: var(--surface);
+            border-right: 1px solid var(--border-dim);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .nav-section-label {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            padding: 0 20px 8px;
+            margin-top: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 20px;
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: default;
+            border-left: 2px solid transparent;
+            transition: all 0.15s;
+            position: relative;
+        }
+
+        .nav-item.active {
+            color: var(--cyan);
+            background: var(--cyan-dim);
+            border-left-color: var(--cyan);
+        }
+
+        .nav-item .nav-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            flex-shrink: 0;
+            opacity: 0.6;
+        }
+
+        .nav-item.active .nav-dot {
+            opacity: 1;
+        }
+
+        /* ── MAIN CONTENT ── */
+        .main {
+            background: var(--bg);
+            padding: 14px 20px;
+            overflow: hidden;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 10px;
+        }
+
+        /* KPI CARDS ROW */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .kpi-card {
+            background: var(--surface);
+            border: 1px solid var(--border-dim);
+            border-radius: 10px;
+            padding: 12px 16px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-color, var(--cyan));
+            opacity: 0.6;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .kpi-label {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .kpi-value {
+            font-family: var(--font-head);
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .kpi-value small {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .kpi-sub {
+            font-size: 10px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 6px;
+        }
+
+        .kpi-trend-up {
+            color: var(--rose);
+        }
+
+        .kpi-trend-down {
+            color: var(--emerald);
+        }
+
+        .kpi-mini-chart {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            height: 28px;
+            opacity: 0.3;
+        }
+
+        /* MIDDLE ROW */
+        .mid-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            overflow: hidden;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border-dim);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 14px 8px;
+            border-bottom: 1px solid var(--border-dim);
+            flex-shrink: 0;
+        }
+
+        .panel-title {
+            font-family: var(--font-head);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-title .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--cyan);
+            box-shadow: 0 0 6px var(--cyan);
+        }
+
+        .panel-badge {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: var(--text-muted);
+            border: 1px solid var(--border-dim);
+        }
+
+        .panel-body {
+            flex: 1;
+            padding: 10px 14px;
+            overflow: hidden;
+        }
+
+        /* COST DISTRIBUTION BAR */
+        .dist-bar {
+            height: 14px;
+            border-radius: 7px;
+            overflow: hidden;
+            display: flex;
+            gap: 1px;
+            margin-bottom: 14px;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .dist-seg {
+            height: 100%;
+            transition: all 0.5s;
+        }
+
+        .cost-legend {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 16px;
+            margin-bottom: 14px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 11px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .legend-name {
+            color: var(--text-muted);
+            flex: 1;
+        }
+
+        .legend-val {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .legend-pct {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        /* DEMAND CHART */
+        .chart-area {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* METER TABLE */
+        .meter-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .meter-table th {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            text-align: right;
+            padding: 0 8px 8px;
+            border-bottom: 1px solid var(--border-dim);
+        }
+
+        .meter-table th:first-child {
+            text-align: left;
+            padding-left: 0;
+        }
+
+        .meter-table td {
+            padding: 8px 8px;
+            font-size: 11.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            text-align: right;
+            color: var(--text-muted);
+            vertical-align: middle;
+        }
+
+        .meter-table td:first-child {
+            text-align: left;
+            padding-left: 0;
+        }
+
+        .meter-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .meter-name {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .meter-name-main {
+            font-size: 11.5px;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .meter-name-id {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--text-dim);
+        }
+
+        .meter-val-em {
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .pf-pill {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .pf-good {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--emerald);
+        }
+
+        .pf-warn {
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--amber);
+        }
+
+        .pf-bad {
+            background: rgba(244, 63, 94, 0.12);
+            color: var(--rose);
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-live {
+            background: var(--emerald);
+            box-shadow: 0 0 6px var(--emerald);
+        }
+
+        .status-warn {
+            background: var(--amber);
+        }
+
+        /* ── RIGHT PANEL ── */
+        .right-panel {
+            background: var(--surface);
+            border-left: 1px solid var(--border-dim);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* HEATMAP */
+        .heatmap-panel {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .heatmap-title {
+            font-family: var(--font-head);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: 28px repeat(7, 1fr);
+            gap: 2px;
+            flex: 1;
+        }
+
+        .heatmap-label {
+            font-family: var(--font-mono);
+            font-size: 8px;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 4px;
+        }
+
+        .heatmap-day-label {
+            font-family: var(--font-mono);
+            font-size: 8px;
+            color: var(--text-dim);
+            text-align: center;
+            padding-bottom: 2px;
+        }
+
+        .heatmap-cell {
+            border-radius: 3px;
+            min-height: 0;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        /* PF GAUGE */
+        .pf-section {
+            border-top: 1px solid var(--border-dim);
+            padding: 14px 16px;
+            flex-shrink: 0;
+        }
+
+        .pf-section-title {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+        }
+
+        .pf-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .pf-mini-card {
+            background: var(--surface2);
+            border: 1px solid var(--border-dim);
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .pf-mini-label {
+            font-family: var(--font-mono);
+            font-size: 8px;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .pf-mini-value {
+            font-family: var(--font-head);
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .pf-mini-sub {
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        /* BOTTOM STATUS */
+        .bottom-bar {
+            grid-column: 1/-1;
+            /* not needed, using grid rows */
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes drawLine {
+            from {
+                stroke-dashoffset: 1000;
+            }
+
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scaleX(0);
+                transform-origin: left;
+            }
+
+            to {
+                transform: scaleX(1);
+                transform-origin: left;
+            }
+        }
+
+        @keyframes countUp {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .kpi-card {
+            animation: fadeInUp 0.5s ease both;
+        }
+
+        .kpi-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .kpi-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .kpi-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .kpi-card:nth-child(4) {
+            animation-delay: 0.2s;
+        }
+
+        .panel {
+            animation: fadeInUp 0.5s 0.3s ease both;
+        }
+
+        .right-panel {
+            animation: fadeInUp 0.5s 0.25s ease both;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--emerald);
+            letter-spacing: 0.06em;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--emerald);
+            animation: pulse 2s infinite;
+        }
+
+        /* SPARKLINES */
+        .sparkline-svg {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="slide">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 32 32" fill="none">
+                        <!-- Triangle shape -->
+                        <path d="M16 2L30 28H2L16 2Z" fill="#111827" />
+                        <!-- Blue accent at base -->
+                        <path d="M9 22L16 28L23 22L16 16L9 22Z" fill="#00d1ff" opacity="0.9" />
+                        <!-- Dark overlay triangle -->
+                        <path d="M16 4L28 27H4L16 4Z" fill="#0b1221" />
+                        <!-- Blue inner -->
+                        <path d="M10 22L16 27L22 22L16 17L10 22Z" fill="#00d1ff" opacity="0.8" />
+                    </svg>
+                </div>
+                <div class="logo-wordmark">AUGOS<span>™</span></div>
+            </div>
+            <div class="topbar-divider"></div>
+            <div class="site-info">
+                <div class="site-name">One &amp; Only | Cape Town</div>
+                <div class="site-id">POINT ID: 8323 · CITY OF CAPE TOWN · LARGE POWER USER MV TOU</div>
+            </div>
+            <div class="fuel-tabs">
+                <div class="fuel-tab active">⚡ Electricity</div>
+                <div class="fuel-tab inactive">💧 Water</div>
+                <div class="fuel-tab inactive">⛽ Fuel</div>
+                <div class="fuel-tab inactive">🔥 Gas</div>
+            </div>
+            <div class="topbar-right">
+                <div class="live-indicator">
+                    <div class="live-dot"></div>LIVE
+                </div>
+                <div class="date-range">Jan 2026 · 2026/01/01 – 2026/01/31</div>
+                <div class="ai-badge">⬇ AI-READY FILE</div>
+            </div>
+        </header>
+
+        <!-- LEFT SIDEBAR -->
+        <nav class="sidebar">
+            <div class="nav-section-label">Energy Intelligence</div>
+            <div class="nav-item active">
+                <div class="nav-dot"></div>Dashboard
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Technical Analysis
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Consumption Breakdown
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Cost Breakdown
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Cost Allocation
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Bill Verification
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Power Factor &amp; Demand
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Time of Use
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Tariff Comparison
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Load Curtailment
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Charting
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Data Download
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Triggers
+            </div>
+
+            <div class="nav-section-label" style="margin-top:12px;">Sensing &amp; Monitoring</div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Sensors
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Charting
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Triggers
+            </div>
+
+            <div class="nav-section-label" style="margin-top:12px;">Tenant Billing</div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Portfolio
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Billing Run
+            </div>
+            <div class="nav-item">
+                <div class="nav-dot"></div>Properties
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main class="main">
+
+            <!-- KPI ROW -->
+            <div class="kpi-row">
+                <!-- Monthly Bill -->
+                <div class="kpi-card" style="--accent-color: var(--cyan);">
+                    <div class="kpi-label">Monthly Bill</div>
+                    <div class="kpi-value">R1.38<small>M</small></div>
+                    <div class="kpi-sub">
+                        <span class="kpi-trend-up">↑ 4.2%</span>
+                        <span style="color: var(--text-dim);">vs Dec 2025</span>
+                    </div>
+                    <svg class="kpi-mini-chart" viewBox="0 0 200 28" preserveAspectRatio="none">
+                        <polyline points="0,22 25,18 50,20 75,14 100,16 125,10 150,12 175,8 200,10" fill="none"
+                            stroke="var(--cyan)" stroke-width="1.5" />
+                        <path d="M0,22 25,18 50,20 75,14 100,16 125,10 150,12 175,8 200,10 200,28 0,28Z"
+                            fill="var(--cyan)" opacity="0.15" />
+                    </svg>
+                </div>
+                <!-- Consumption -->
+                <div class="kpi-card" style="--accent-color: var(--blue);">
+                    <div class="kpi-label">Consumption</div>
+                    <div class="kpi-value">587<small>k kWh</small></div>
+                    <div class="kpi-sub">
+                        <span class="kpi-trend-down">↓ 1.8%</span>
+                        <span style="color: var(--text-dim);">vs Jan avg</span>
+                    </div>
+                    <svg class="kpi-mini-chart" viewBox="0 0 200 28" preserveAspectRatio="none">
+                        <polyline points="0,14 25,16 50,12 75,18 100,10 125,14 150,8 175,12 200,10" fill="none"
+                            stroke="var(--blue)" stroke-width="1.5" />
+                        <path d="M0,14 25,16 50,12 75,18 100,10 125,14 150,8 175,12 200,10 200,28 0,28Z"
+                            fill="var(--blue)" opacity="0.15" />
+                    </svg>
+                </div>
+                <!-- Peak Demand -->
+                <div class="kpi-card" style="--accent-color: var(--amber);">
+                    <div class="kpi-label">Peak Demand</div>
+                    <div class="kpi-value">1,234<small> kVA</small></div>
+                    <div class="kpi-sub">
+                        <span style="color: var(--amber);">⚠ R93,619 charge</span>
+                    </div>
+                    <svg class="kpi-mini-chart" viewBox="0 0 200 28" preserveAspectRatio="none">
+                        <polyline points="0,20 25,18 50,22 75,8 100,20 125,18 150,22 175,20 200,18" fill="none"
+                            stroke="var(--amber)" stroke-width="1.5" />
+                        <path d="M0,20 25,18 50,22 75,8 100,20 125,18 150,22 175,20 200,18 200,28 0,28Z"
+                            fill="var(--amber)" opacity="0.12" />
+                    </svg>
+                </div>
+                <!-- Power Factor -->
+                <div class="kpi-card" style="--accent-color: var(--rose);">
+                    <div class="kpi-label">Power Factor</div>
+                    <div class="kpi-value">0.96<small></small></div>
+                    <div class="kpi-sub">
+                        <span class="kpi-trend-up">↓ from 0.99</span>
+                        <span style="color: var(--rose); margin-left: 4px;">329 kVAr needed</span>
+                    </div>
+                    <svg class="kpi-mini-chart" viewBox="0 0 200 28" preserveAspectRatio="none">
+                        <polyline points="0,8 25,8 50,8 75,10 100,10 125,12 150,14 175,16 200,18" fill="none"
+                            stroke="var(--rose)" stroke-width="1.5" />
+                        <path d="M0,8 25,8 50,8 75,10 100,10 125,12 150,14 175,16 200,18 200,28 0,28Z"
+                            fill="var(--rose)" opacity="0.12" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- MID ROW -->
+            <div class="mid-row">
+
+                <!-- Cost Breakdown Panel -->
+                <div class="panel">
+                    <div class="panel-head">
+                        <div class="panel-title">
+                            <div class="dot"></div>Cost Distribution — January 2026
+                        </div>
+                        <div class="panel-badge">R 1,381,685 TOTAL</div>
+                    </div>
+                    <div class="panel-body">
+                        <!-- Distribution Bar -->
+                        <div class="dist-bar" style="margin-bottom:12px;">
+                            <div class="dist-seg" style="width:36.3%;background:#3b82f6;border-radius:7px 0 0 7px;">
+                            </div>
+                            <div class="dist-seg" style="width:20.9%;background:#f43f5e;"></div>
+                            <div class="dist-seg" style="width:34.3%;background:#60a5fa;"></div>
+                            <div class="dist-seg" style="width:6.8%;background:#f59e0b;"></div>
+                            <div class="dist-seg" style="width:1.7%;background:#475569;border-radius:0 7px 7px 0;">
+                            </div>
+                        </div>
+                        <!-- Legend -->
+                        <div class="cost-legend">
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background:#3b82f6;"></div><span
+                                    class="legend-name">Standard</span><span
+                                    class="legend-val">R501,610</span>&nbsp;<span class="legend-pct">36.3%</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background:#f43f5e;"></div><span
+                                    class="legend-name">Peak</span><span class="legend-val">R288,516</span>&nbsp;<span
+                                    class="legend-pct">20.9%</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background:#60a5fa;"></div><span
+                                    class="legend-name">Off-Peak</span><span
+                                    class="legend-val">R473,986</span>&nbsp;<span class="legend-pct">34.3%</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background:#f59e0b;"></div><span
+                                    class="legend-name">Demand</span><span class="legend-val">R93,619</span>&nbsp;<span
+                                    class="legend-pct">6.8%</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background:#475569;"></div><span
+                                    class="legend-name">Network &amp; Services</span><span
+                                    class="legend-val">R23,954</span>&nbsp;<span class="legend-pct">1.7%</span>
+                            </div>
+                        </div>
+                        <!-- Rate insight -->
+                        <div
+                            style="background: rgba(244,63,94,0.06); border: 1px solid rgba(244,63,94,0.15); border-radius: 8px; padding: 10px 12px; margin-top: 4px;">
+                            <div
+                                style="font-family: var(--font-mono); font-size: 9px; color: var(--rose); letter-spacing: 0.06em; margin-bottom: 4px;">
+                                PEAK RATE PREMIUM</div>
+                            <div style="font-size: 12px; color: var(--text);">Peak (R3.34/kWh) costs <strong
+                                    style="color:var(--rose);">90% more</strong> than Off-peak (R1.76/kWh). Peak is 15%
+                                of volume but 21% of cost. Shifting 10% of peak load saves <strong
+                                    style="color:var(--emerald);">~R22,000/month</strong>.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demand Chart Panel -->
+                <div class="panel">
+                    <div class="panel-head">
+                        <div class="panel-title">
+                            <div class="dot"></div>Demand Profile — January 2026
+                        </div>
+                        <div class="panel-badge">PEAK 1,234 kVA · 07:00</div>
+                    </div>
+                    <div class="panel-body" style="padding:10px 12px;">
+                        <svg id="demandChart" viewBox="0 0 580 190" style="width:100%;height:100%;">
+                            <defs>
+                                <linearGradient id="demGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#00d1ff" stop-opacity="0.3" />
+                                    <stop offset="100%" stop-color="#00d1ff" stop-opacity="0.02" />
+                                </linearGradient>
+                                <linearGradient id="pwrGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.2" />
+                                    <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0.02" />
+                                </linearGradient>
+                            </defs>
+                            <!-- Grid lines -->
+                            <line x1="40" y1="10" x2="580" y2="10" stroke="rgba(255,255,255,0.04)" stroke-width="1" />
+                            <line x1="40" y1="47" x2="580" y2="47" stroke="rgba(255,255,255,0.04)" stroke-width="1" />
+                            <line x1="40" y1="84" x2="580" y2="84" stroke="rgba(255,255,255,0.04)" stroke-width="1" />
+                            <line x1="40" y1="121" x2="580" y2="121" stroke="rgba(255,255,255,0.04)" stroke-width="1" />
+                            <line x1="40" y1="158" x2="580" y2="158" stroke="rgba(255,255,255,0.04)" stroke-width="1" />
+                            <!-- Y axis labels -->
+                            <text x="36" y="13" fill="#334155" font-size="8" text-anchor="end"
+                                font-family="JetBrains Mono">1400</text>
+                            <text x="36" y="50" fill="#334155" font-size="8" text-anchor="end"
+                                font-family="JetBrains Mono">1200</text>
+                            <text x="36" y="87" fill="#334155" font-size="8" text-anchor="end"
+                                font-family="JetBrains Mono">1000</text>
+                            <text x="36" y="124" fill="#334155" font-size="8" text-anchor="end"
+                                font-family="JetBrains Mono">800</text>
+                            <text x="36" y="161" fill="#334155" font-size="8" text-anchor="end"
+                                font-family="JetBrains Mono">600</text>
+                            <!-- Demand fill path -->
+                            <path
+                                d="M42,155 C70,150 100,145 130,130 C160,115 175,60 210,45 C240,30 260,40 290,50 C320,60 340,70 370,65 C400,60 420,80 450,90 C480,100 510,110 540,118 C560,123 575,128 578,130 L578,158 L42,158 Z"
+                                fill="url(#demGrad)" />
+                            <!-- Demand line -->
+                            <path
+                                d="M42,155 C70,150 100,145 130,130 C160,115 175,60 210,45 C240,30 260,40 290,50 C320,60 340,70 370,65 C400,60 420,80 450,90 C480,100 510,110 540,118 C560,123 575,128 578,130"
+                                fill="none" stroke="#00d1ff" stroke-width="2" stroke-dasharray="1000"
+                                stroke-dashoffset="1000">
+                                <animate attributeName="stroke-dashoffset" from="1000" to="0" dur="1.5s" fill="freeze"
+                                    begin="0.2s" />
+                            </path>
+                            <!-- Power fill -->
+                            <path
+                                d="M42,158 C70,154 100,149 130,135 C160,121 175,68 210,54 C240,40 260,48 290,57 C320,67 340,76 370,71 C400,66 420,85 450,95 C480,105 510,114 540,122 L578,130 L578,158 L42,158Z"
+                                fill="url(#pwrGrad)" />
+                            <!-- Power line -->
+                            <path
+                                d="M42,158 C70,154 100,149 130,135 C160,121 175,68 210,54 C240,40 260,48 290,57 C320,67 340,76 370,71 C400,66 420,85 450,95 C480,105 510,114 540,122 L578,130"
+                                fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="1000"
+                                stroke-dashoffset="1000">
+                                <animate attributeName="stroke-dashoffset" from="1000" to="0" dur="1.5s" fill="freeze"
+                                    begin="0.4s" />
+                            </path>
+                            <!-- Peak annotation -->
+                            <line x1="210" y1="45" x2="210" y2="158" stroke="rgba(244,63,94,0.3)" stroke-width="1"
+                                stroke-dasharray="3,2" />
+                            <circle cx="210" cy="45" r="4" fill="var(--rose)" opacity="0.95" />
+                            <rect x="180" y="20" width="88" height="20" rx="4" fill="rgba(244,63,94,0.15)"
+                                stroke="rgba(244,63,94,0.3)" stroke-width="1" />
+                            <text x="224" y="33" fill="#f43f5e" font-size="9" text-anchor="middle"
+                                font-family="JetBrains Mono">1,234 kVA · 07:00</text>
+                            <!-- X axis labels -->
+                            <text x="42" y="172" fill="#334155" font-size="8" text-anchor="middle"
+                                font-family="JetBrains Mono">1</text>
+                            <text x="117" y="172" fill="#334155" font-size="8" text-anchor="middle"
+                                font-family="JetBrains Mono">7</text>
+                            <text x="192" y="172" fill="#334155" font-size="8" text-anchor="middle"
+                                font-family="JetBrains Mono">13</text>
+                            <text x="267" y="172" fill="#334155" font-size="8" text-anchor="middle"
+                                font-family="JetBrains Mono">17</text>
+                            <text x="342" y="172" fill="#334155" font-size="8" text-anchor="middle"
+                                font-family="JetBrains Mono">21</text>
+                            <text x="418" y="172" fill="#334155" font-size="8" text-anchor="middle"
+                                font-family="JetBrains Mono">24</text>
+                            <text x="493" y="172" fill="#334155" font-size="8" text-anchor="middle"
+                                font-family="JetBrains Mono">28</text>
+                            <text x="578" y="172" fill="#334155" font-size="8" text-anchor="middle"
+                                font-family="JetBrains Mono">31</text>
+                            <!-- Legend -->
+                            <circle cx="52" cy="183" r="4" fill="#00d1ff" />
+                            <text x="60" y="186" fill="#94a3b8" font-size="9" font-family="Inter">Demand (kVA)</text>
+                            <circle cx="162" cy="183" r="4" fill="#8b5cf6" />
+                            <text x="170" y="186" fill="#94a3b8" font-size="9" font-family="Inter">Active Power
+                                (kW)</text>
+                        </svg>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- METER TABLE -->
+            <div class="panel" style="flex:0;">
+                <div class="panel-head">
+                    <div class="panel-title">
+                        <div class="dot"></div>Site Meter Hierarchy
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);">14 METERS ·
+                            ALL REPORTING</span>
+                        <div class="live-indicator">
+                            <div class="live-dot"></div>LIVE · 08:12
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body" style="padding:0 16px 12px;">
+                    <table class="meter-table">
+                        <thead>
+                            <tr>
+                                <th>Measurement Point</th>
+                                <th>Last Activity</th>
+                                <th>Consumption</th>
+                                <th>Demand</th>
+                                <th>PF</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="meter-name">
+                                        <div class="meter-name-main"><span class="status-dot status-live"></span>One
+                                            &amp; Only Cape Town <span
+                                                style="color:var(--cyan);font-family:var(--font-mono);font-size:9px;">(8323)</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="color:var(--emerald);font-family:var(--font-mono);font-size:10px;">08:09</td>
+                                <td><span class="meter-val-em">4,889 kWh</span></td>
+                                <td><span class="meter-val-em">805.8 kVA</span></td>
+                                <td><span class="pf-pill pf-good">0.99</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left:16px;">
+                                    <div class="meter-name">
+                                        <div class="meter-name-main" style="color:var(--text-muted);">AC1 &amp; AC2
+                                            <span
+                                                style="color:var(--text-dim);font-family:var(--font-mono);font-size:9px;">(8325)</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="color:var(--emerald);font-family:var(--font-mono);font-size:10px;">08:08</td>
+                                <td>1,037 kWh</td>
+                                <td>248.8 kVA</td>
+                                <td><span class="pf-pill pf-warn">0.78</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left:16px;">
+                                    <div class="meter-name">
+                                        <div class="meter-name-main" style="color:var(--text-muted);">Heat Pump Hot
+                                            Water <span
+                                                style="color:var(--text-dim);font-family:var(--font-mono);font-size:9px;">(8328)</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="color:var(--emerald);font-family:var(--font-mono);font-size:10px;">08:09</td>
+                                <td>101.4 kWh</td>
+                                <td>17.38 kVA</td>
+                                <td><span class="pf-pill pf-good">0.90</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left:16px;">
+                                    <div class="meter-name">
+                                        <div class="meter-name-main" style="color:var(--text-muted);">Boiler <span
+                                                style="color:var(--text-dim);font-family:var(--font-mono);font-size:9px;">(8337)</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="color:var(--emerald);font-family:var(--font-mono);font-size:10px;">08:07</td>
+                                <td>377.6 kWh</td>
+                                <td>153.2 kVA</td>
+                                <td><span class="pf-pill pf-good">1.00</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left:16px;">
+                                    <div class="meter-name">
+                                        <div class="meter-name-main" style="color:var(--text-muted);">Spa <span
+                                                style="color:var(--text-dim);font-family:var(--font-mono);font-size:9px;">(8339)</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="color:var(--emerald);font-family:var(--font-mono);font-size:10px;">08:09</td>
+                                <td>234.1 kWh</td>
+                                <td>68.06 kVA</td>
+                                <td><span class="pf-pill pf-good">1.00</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- RIGHT PANEL -->
+        <aside class="right-panel">
+
+            <!-- Heatmap -->
+            <div class="heatmap-panel">
+                <div class="heatmap-title">
+                    <span>Consumption Heatmap</span>
+                    <div style="display:flex;gap:6px;">
+                        <span
+                            style="font-family:var(--font-mono);font-size:8px;color:var(--cyan);background:var(--cyan-dim);border:1px solid var(--border);border-radius:4px;padding:2px 7px;">CONSUMPTION</span>
+                        <span
+                            style="font-family:var(--font-mono);font-size:8px;color:var(--text-dim);padding:2px 7px;">DEMAND</span>
+                        <span
+                            style="font-family:var(--font-mono);font-size:8px;color:var(--text-dim);padding:2px 7px;">PF</span>
+                    </div>
+                </div>
+                <div id="heatmap" class="heatmap-grid">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+
+            <!-- PF Summary -->
+            <div class="pf-section">
+                <div class="pf-section-title">Power Factor &amp; Demand · 24 Months</div>
+                <div class="pf-cards">
+                    <div class="pf-mini-card">
+                        <div class="pf-mini-label">ACTUAL LOSS</div>
+                        <div class="pf-mini-value" style="color:var(--rose);">R62,201</div>
+                        <div class="pf-mini-sub">Over 24 months</div>
+                    </div>
+                    <div class="pf-mini-card">
+                        <div class="pf-mini-label">CORRECTION NEEDED</div>
+                        <div class="pf-mini-value" style="color:var(--amber);">329 kVAr</div>
+                        <div class="pf-mini-sub">~R150K CapEx · 5yr payback</div>
+                    </div>
+                    <div class="pf-mini-card">
+                        <div class="pf-mini-label">TARIFF SCHEME</div>
+                        <div class="pf-mini-value" style="color:var(--emerald);font-size:13px;">OPTIMAL</div>
+                        <div class="pf-mini-sub">Saves R2.3M/yr vs alt</div>
+                    </div>
+                    <div class="pf-mini-card">
+                        <div class="pf-mini-label">PF TREND</div>
+                        <div class="pf-mini-value" style="color:var(--rose);">↓ 0.96</div>
+                        <div class="pf-mini-sub">From 0.99 · Action needed</div>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+    </div>
+
+    <script>
+        // ── BUILD HEATMAP ──
+        (function () {
+            const grid = document.getElementById('heatmap');
+            const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+            const weeks = 14;
+
+            // Heatmap data – relative intensity 0–10
+            const heat = [
+                [5, 6, 5, 7, 6, 8, 7], [4, 5, 6, 5, 7, 6, 9], [6, 5, 4, 6, 5, 7, 8],
+                [7, 6, 5, 4, 6, 8, 7], [5, 4, 6, 5, 4, 7, 8], [6, 5, 5, 6, 5, 6, 9],
+                [8, 7, 6, 7, 5, 8, 7], [5, 6, 7, 6, 8, 7, 9], [6, 5, 5, 4, 6, 7, 8],
+                [7, 6, 6, 7, 5, 8, 7], [5, 7, 6, 5, 7, 6, 9], [6, 5, 6, 6, 5, 8, 8],
+                [7, 6, 7, 5, 6, 7, 9], [5, 6, 5, 6, 7, 8, 7]
+            ]; // weeks × days
+
+            const colScale = (v) => {
+                if (v <= 1) return 'rgba(16,185,129,0.1)';
+                if (v <= 2) return 'rgba(16,185,129,0.2)';
+                if (v <= 3) return 'rgba(16,185,129,0.4)';
+                if (v <= 4) return 'rgba(132,204,22,0.5)';
+                if (v <= 5) return 'rgba(234,179,8,0.5)';
+                if (v <= 6) return 'rgba(245,158,11,0.6)';
+                if (v <= 7) return 'rgba(249,115,22,0.6)';
+                if (v <= 8) return 'rgba(244,63,94,0.55)';
+                if (v <= 9) return 'rgba(244,63,94,0.75)';
+                return 'rgba(244,63,94,0.9)';
+            };
+
+            // Header row
+            const blank = document.createElement('div');
+            grid.appendChild(blank);
+            days.forEach(d => {
+                const el = document.createElement('div');
+                el.className = 'heatmap-day-label';
+                el.textContent = d;
+                grid.appendChild(el);
+            });
+
+            const weekLabels = ['W46', 'W47', 'W48', 'W49', 'W50', 'W51', 'W52', 'W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7'];
+            heat.forEach((row, wi) => {
+                const wLabel = document.createElement('div');
+                wLabel.className = 'heatmap-label';
+                wLabel.textContent = weekLabels[wi] || '';
+                grid.appendChild(wLabel);
+                row.forEach((val, di) => {
+                    const cell = document.createElement('div');
+                    cell.className = 'heatmap-cell';
+                    cell.style.background = colScale(val);
+                    cell.title = `W${wi + 46} ${days[di]}: ${(val * 500 + 800).toLocaleString()} kWh`;
+                    grid.appendChild(cell);
+                });
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

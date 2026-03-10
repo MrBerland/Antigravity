@@ -69,7 +69,8 @@ def call_ai_bouncer(email_content):
     vertexai.init(project=PROJECT_ID, location="us-central1")
     
     # Try 2.0 Flash first (Smarter/Free-Preview), fallback to 1.5 Flash (Reliable/Cheap)
-    model_name = "gemini-2.0-flash-exp"
+    model_name = "gemini-2.0-flash"
+
     
     prompt = f"""
     You are the "Bouncer" for a corporate knowledge base (Hive Mind).
@@ -257,50 +258,182 @@ def process_message_id(msg_id, gmail_service=None, user_email=None):
     else:
         print("BigQuery Staging insert success.")
 
+def get_last_history_id(email_address: str) -> str | None:
+    """
+    Retrieve the last processed historyId for this user from BigQuery.
+    We store it as a watermark so we don't re-process old messages.
+    """
+    try:
+        query = f"""
+            SELECT MAX(history_id) as last_history_id
+            FROM `{PROJECT_ID}.{DATASET_ID}.ingest_watermarks`
+            WHERE user_email = @email
+        """
+        results = list(get_bq_client().query(
+            query,
+            job_config=bigquery.QueryJobConfig(
+                query_parameters=[bigquery.ScalarQueryParameter('email', 'STRING', email_address)]
+            )
+        ).result())
+        val = results[0]['last_history_id'] if results else None
+        return str(val) if val else None
+    except Exception as e:
+        print(f"Warning: Could not fetch watermark for {email_address}: {e}")
+        return None
+
+
+def save_history_watermark(email_address: str, history_id: str):
+    """Upsert the latest processed historyId for this user."""
+    try:
+        rows = [{'user_email': email_address, 'history_id': history_id, 'updated_at': time.time()}]
+        get_bq_client().insert_rows_json(
+            f"{PROJECT_ID}.{DATASET_ID}.ingest_watermarks", rows
+        )
+    except Exception as e:
+        print(f"Warning: Could not save watermark for {email_address}: {e}")
+
+
+def message_already_ingested(msg_id: str) -> bool:
+    """Quick idempotency check — skip if message_id already exists in staging."""
+    try:
+        rows = list(get_bq_client().query(
+            f"SELECT 1 FROM `{PROJECT_ID}.{DATASET_ID}.staging_raw_emails` WHERE message_id = @id LIMIT 1",
+            job_config=bigquery.QueryJobConfig(
+                query_parameters=[bigquery.ScalarQueryParameter('id', 'STRING', msg_id)]
+            )
+        ).result())
+        return len(rows) > 0
+    except Exception:
+        return False  # Fail open — attempt insert; BQ will handle dupe gracefully
+
+
 def ingest_gmail_event(event, context):
-    """Triggered from a message on a Cloud Pub/Sub topic."""
+    """Triggered from a message on a Cloud Pub/Sub topic.
     
+    Uses the Gmail History API with the historyId from the push payload
+    to fetch ONLY new messages added since the last event — not maxResults=1
+    which races against concurrent pushes.
+    """
     # 1. Decode Pub/Sub message
-    if 'data' in event:
-        pubsub_message = base64.b64decode(event['data']).decode('utf-8')
-        message_data = json.loads(pubsub_message)
-    else:
-        print("No data in event")
+    if 'data' not in event:
+        print("No data in Pub/Sub event — skipping.")
         return
 
+    message_data = json.loads(base64.b64decode(event['data']).decode('utf-8'))
     email_address = message_data.get('emailAddress')
-    history_id = message_data.get('historyId')
-    
-    print(f"Processing event for {email_address}, historyId: {history_id}")
+    new_history_id = str(message_data.get('historyId', ''))
 
-    if not email_address:
-        print("❌ Error: No emailAddress in Pub/Sub message. Cannot impersonate.")
+    print(f"📨 Push notification: {email_address}, historyId={new_history_id}")
+
+    if not email_address or not new_history_id:
+        print("❌ Missing emailAddress or historyId in payload.")
         return
 
-    # 2. Fetch Sync Logic (Simplified for MVP)
-    # CRITICAL: Authenticate AS THIS USER
     try:
         gmail = get_gmail_service(user_email=email_address)
-        
-        # List one message just to test connectivity/history
-        # In full production we'd use historyId to get the exact change, 
-        # but for now we just check the latest message or specific logic.
-        # Let's keep it simple: Just look at the latest message for the demo purpose, 
-        # or rely on History API if we were robust.
-        # For 'Ingest everything', fetching the latest might duplicate works. 
-        # Ideally: users().history().list(startHistoryId=history_id)
-        
-        # MVP: Just fetch the latest 1 message to prove connection
-        results = gmail.users().messages().list(userId='me', maxResults=1).execute()
-        messages = results.get('messages', [])
 
-        if not messages:
-            print(f"No messages found for {email_address}.")
+        # 2. Determine start point for history fetch
+        start_history_id = get_last_history_id(email_address)
+
+        if not start_history_id:
+            # First run — fall back to fetching the single latest message
+            print(f"  No watermark found for {email_address}. Fetching latest message as seed.")
+            results = gmail.users().messages().list(userId='me', maxResults=1, labelIds=['INBOX']).execute()
+            messages = results.get('messages', [])
+            if messages:
+                process_message_id(messages[0]['id'], gmail_service=gmail)
+            save_history_watermark(email_address, new_history_id)
             return
 
-        msg_id = messages[0]['id']
-        process_message_id(msg_id, gmail_service=gmail)
-        
-    except Exception as e:
-        print(f"❌ Failed to process event for {email_address}: {e}")
+        # 3. Use History API to get only ADDED messages since our watermark
+        print(f"  Fetching history since historyId={start_history_id}")
+        history_response = gmail.users().history().list(
+            userId='me',
+            startHistoryId=start_history_id,
+            historyTypes=['messageAdded'],
+            labelId='INBOX',
+        ).execute()
 
+        history_pages = history_response.get('history', [])
+        new_messages = []
+        for page in history_pages:
+            for added in page.get('messagesAdded', []):
+                msg_id = added.get('message', {}).get('id')
+                if msg_id:
+                    new_messages.append(msg_id)
+
+        print(f"  Found {len(new_messages)} new message(s) to ingest.")
+
+        # 4. Ingest each new message (idempotent)
+        for msg_id in new_messages:
+            if message_already_ingested(msg_id):
+                print(f"  ⏭️  Skipping {msg_id} — already ingested.")
+                continue
+            process_message_id(msg_id, gmail_service=gmail)
+
+        # 5. Advance watermark
+        save_history_watermark(email_address, new_history_id)
+        print(f"  ✅ Done. Watermark advanced to historyId={new_history_id}")
+
+    except Exception as e:
+        print(f"❌ Failed to process push for {email_address}: {e}")
+
+
+# ── HTTP entrypoint: Gmail Watch Renewal ──────────────────────────────────────
+# Called by Cloud Scheduler (weekly) to keep push notifications alive.
+# Deploy with: --entry-point=renew_gmail_watches --trigger-http
+
+def renew_gmail_watches(request):
+    """HTTP Cloud Function — re-registers Gmail push watch for all monitored mailboxes.
+    
+    Triggered weekly by Cloud Scheduler. Returns a plain-text summary.
+    """
+    import json as _json
+
+    TOPIC_NAME = f"projects/{PROJECT_ID}/topics/gmail-ingest-topic"
+    SCOPES = [
+        'https://www.googleapis.com/auth/gmail.readonly',
+        'https://www.googleapis.com/auth/gmail.modify',
+    ]
+
+    # Load user list from env var WATCH_USERS (JSON array) or a default set
+    users_json = os.environ.get('WATCH_USERS', '[]')
+    try:
+        users = _json.loads(users_json)
+    except Exception:
+        users = []
+
+    if not users:
+        return ("No WATCH_USERS configured in environment.", 400, {"Content-Type": "text/plain"})
+
+    SKIP = {"canned.response@augos.io", "notifications@augos.io"}
+    results = {"success": [], "failed": []}
+
+    sa_file = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+
+    for user in users:
+        if user in SKIP:
+            continue
+        try:
+            if sa_file and os.path.exists(sa_file):
+                creds = service_account.Credentials.from_service_account_file(sa_file, scopes=SCOPES)
+            else:
+                import google.auth
+                creds, _ = google.auth.default(scopes=SCOPES)
+            creds = creds.with_subject(user)
+            svc = build('gmail', 'v1', credentials=creds, cache_discovery=False)
+            svc.users().watch(
+                userId='me',
+                body={'labelIds': ['INBOX'], 'topicName': TOPIC_NAME, 'labelFilterAction': 'include'}
+            ).execute()
+            results["success"].append(user)
+        except Exception as e:
+            results["failed"].append({"user": user, "error": str(e)})
+
+    body = (
+        f"Watch renewal complete.\n"
+        f"Success ({len(results['success'])}): {', '.join(results['success'])}\n"
+        f"Failed ({len(results['failed'])}): {_json.dumps(results['failed'], indent=2)}\n"
+    )
+    status = 200 if not results["failed"] else 207
+    return (body, status, {"Content-Type": "text/plain"})
