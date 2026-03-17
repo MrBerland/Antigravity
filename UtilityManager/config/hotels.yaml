@@ -1,0 +1,56 @@
+
+# Hotel Registry — Utility Manager Agent
+# Add additional properties here as the portfolio grows.
+
+hotels:
+  - id: "one_only_cape_town"
+    name: "One & Only Cape Town"
+    point_id: 8323
+    environment: live           # live | dev
+    base_url: "https://live.augos.io"
+    location:
+      city: "Cape Town"
+      country: "South Africa"
+      timezone: "Africa/Johannesburg"
+      utc_offset_minutes: -120
+      latitude: -33.9249
+      longitude: 18.4241
+      climate_zone: "mediterranean"
+    utilities:
+      - name: electricity
+        product_type_id: 2
+        unit: kWh
+        active: true
+      - name: water
+        product_type_id: null   # auto-discovered on first run
+        unit: kL
+        active: true
+      - name: gas
+        product_type_id: null   # auto-discovered on first run
+        unit: m3
+        active: true
+    tariff:
+      scheme: "Large Power User (Medium Voltage) TOU"
+      authority: "City of Cape Town"
+      currency: ZAR
+    certification: EarthCheck
+    sustainability_framework: "World Sustainable Hospitality Alliance — Net Positive Hospitality"
+    personas:
+      chief_engineer:
+        email: "${CHIEF_ENGINEER_EMAIL}"
+        schedule_daily: "06:30"
+        schedule_weekly: "Monday 07:00"
+      general_manager:
+        email: "${GM_EMAIL}"
+        schedule_weekly: "Monday 08:00"
+        schedule_monthly: "1st of month"
+      financial_controller:
+        email: "${FINANCE_EMAIL}"
+        schedule_monthly: "1st of month"
+      sustainability_officer:
+        email: "${SUSTAINABILITY_EMAIL}"
+        schedule_monthly: "1st of month"
+        schedule_quarterly: "Jan/Apr/Jul/Oct 1st"
+
+# Default site used when no point_id is specified
+default_site: "one_only_cape_town"

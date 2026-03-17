@@ -59,8 +59,11 @@ cd /Users/timstevens/Antigravity && git pull
 
 ### Step 6 — Restart services if code changed
 ```bash
+# Set NVM node on PATH (required on Mac mini — npm/pm2 not in default PATH)
+export PATH="/Users/timstevens/.nvm/versions/node/v24.13.0/bin:$PATH"
+
 # Only needed if hive-mind-ui source changed
-cd /Users/timstevens/Antigravity/hive-mind-ui && npm install && pm2 restart hive-mind-ui
+cd /Users/timstevens/Antigravity/hive-mind-ui && npm install && npm run build && pm2 restart hive-mind-ui
 
 # Only needed if HiveMind Python scripts changed
 # (scripts run fresh each time — no restart needed)

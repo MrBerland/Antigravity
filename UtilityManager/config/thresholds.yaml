@@ -1,0 +1,75 @@
+
+# Anomaly Detection Thresholds — One & Only Cape Town
+# These are starting defaults. The agent derives dynamic baselines from 2-year history
+# and these serve as hard-floor limits and multipliers.
+
+anomaly:
+  # Z-score thresholds for statistical anomaly detection
+  z_score_warning: 2.5     # P2 Warning
+  z_score_critical: 3.5    # P1 Critical
+
+  # Minimum deviation to report (avoids noise from tiny sites)
+  min_deviation_percent: 10.0
+
+electricity:
+  # Power Factor
+  power_factor_good: 0.95        # No action
+  power_factor_warning: 0.92     # P2 — Chief Engineer alert
+  power_factor_critical: 0.90    # P1 — Immediate, capacitor bank review
+
+  # Base load window: 02:00–05:00
+  base_load_window_start: 2      # hour (24h)
+  base_load_window_end: 5        # hour (24h)
+
+  # Base load as % of daytime peak — if above this, investigate
+  base_load_max_percent_of_peak: 30.0
+
+  # Demand overage — alert if demand exceeds contracted maximum by this %
+  demand_overage_warning_percent: 95.0   # Approaching limit
+  demand_overage_critical_percent: 100.0 # Exceeding contract
+
+  # Spike detection: % above 30-day rolling average
+  spike_warning_percent: 20.0
+  spike_critical_percent: 40.0
+
+water:
+  # Base load — overnight flow between 02:00–05:00
+  # Any consistent flow above this is a suspected leak
+  base_load_window_start: 2      # hour (24h)
+  base_load_window_end: 5        # hour (24h)
+  base_load_warning_litres_per_hour: 100     # P2 — investigate
+  base_load_critical_litres_per_hour: 200    # P1 — suspected significant leak
+
+  # EarthCheck benchmarks (Mediterranean climate zone, luxury hotels)
+  # m3 per guest night (activated when occupancy data is available)
+  earthcheck_excellent_m3_per_guest_night: 0.60
+  earthcheck_satisfactory_m3_per_guest_night: 0.75
+  earthcheck_high_m3_per_guest_night: 1.10
+  earthcheck_excessive_m3_per_guest_night: 1.10
+
+  # Spike detection
+  spike_warning_percent: 25.0
+  spike_critical_percent: 50.0
+
+gas:
+  # Base load — overnight consumption outside kitchen hours
+  kitchen_hours_start: 6         # hour (24h) — kitchen day starts
+  kitchen_hours_end: 22          # hour (24h) — kitchen day ends
+  base_load_window_start: 0      # hour (24h) — deepest overnight
+  base_load_window_end: 5        # hour (24h)
+
+  # Outside kitchen hours: if gas > this % of peak kitchen flow = anomaly
+  off_hours_gas_max_percent_of_peak: 20.0
+
+  # Spike detection
+  spike_warning_percent: 25.0
+  spike_critical_percent: 50.0
+
+# Meter health monitoring
+telemetry:
+  # How long a meter can be silent before raising an alert
+  offline_warning_hours: 2
+  offline_critical_hours: 4
+
+  # Minimum expected readings per day (based on meter polling interval)
+  min_daily_readings: 24    # At least 1 per hour

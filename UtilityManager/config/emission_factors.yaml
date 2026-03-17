@@ -1,0 +1,37 @@
+
+# Emission Factors — South Africa (2025)
+# Source: Eskom NGER 2023/24 & IPCC AR6 defaults
+
+emissions:
+  electricity:
+    factor: 0.930              # kgCO2e per kWh — Eskom national grid (NGER 2023/24)
+    unit: "kgCO2e/kWh"
+    source: "Eskom NGER 2023/24"
+    notes: "City of Cape Town draws from national Eskom grid. Use this conservative value."
+    scope: 2                   # Scope 2 — purchased electricity
+
+  water:
+    factor: 0.000344           # kgCO2e per litre — water treatment & reticulation
+    unit: "kgCO2e/L"
+    source: "City of Cape Town Water Department estimate"
+    scope: 3
+
+  gas:
+    # Natural gas (LPG / reticulated gas)
+    lpg_factor: 2.983          # kgCO2e per litre LPG
+    natural_gas_factor: 1.884  # kgCO2e per m3 natural gas
+    unit_lpg: "kgCO2e/L"
+    unit_natural_gas: "kgCO2e/m3"
+    source: "IPCC AR6"
+    scope: 1                   # Scope 1 — direct combustion
+    default: "natural_gas"     # Use natural_gas unless LPG confirmed
+
+carbon_tax:
+  # South Africa Carbon Tax (2025)
+  rate_zar_per_tonne: 236.0   # ZAR per tonne CO2e (2025 rate)
+  unit: "ZAR/tCO2e"
+  effective_date: "2025-01-01"
+  notes: >
+    Carbon Tax Act (Act 15 of 2019). Hotels are typically in the 
+    indirect emissions category. Verify with financial/legal team 
+    whether the property is directly liable or exposed via electricity tariff.

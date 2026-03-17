@@ -1,0 +1,9 @@
+google-adk>=0.1.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+pyyaml>=6.0.1
+
+# Gmail API (service account + domain-wide delegation)
+google-auth>=2.27.0
+google-auth-httplib2>=0.2.0
+google-api-python-client>=2.115.0

@@ -1,0 +1,31 @@
+# Utility Manager — Git Ignore
+
+# Credentials — never commit
+credentials/service_account.json
+credentials/*.json
+credentials/*.p12
+
+# Environment — never commit
+.env
+
+# Runtime state
+memory/token_cache.json
+memory/anomaly_log.json
+memory/product_type_cache.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/

@@ -1,0 +1,38 @@
+
+# Augos Product Type ID Mapping
+# productTypeID 2 = Electricity (confirmed from API)
+# Water and Gas IDs are auto-discovered on first run via the consumption-breakdown endpoint.
+# Update the discovered IDs below after first successful query.
+
+product_types:
+  electricity:
+    id: 2
+    name: "Electricity"
+    unit: "kWh"
+    confirmed: true
+
+  water:
+    id: null            # Set after first successful discovery
+    candidate_ids:      # Tried in order on auto-discovery
+      - 3
+      - 4
+      - 5
+      - 6
+    name: "Water"
+    unit: "kL"
+    confirmed: false
+
+  gas:
+    id: null            # Set after first successful discovery
+    candidate_ids:
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+    name: "Gas"
+    unit: "m3"
+    confirmed: false
+
+# Discovery cache — written at runtime
+discovery_cache: "memory/product_type_cache.json"
