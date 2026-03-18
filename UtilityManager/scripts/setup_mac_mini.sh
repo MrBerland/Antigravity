@@ -77,19 +77,19 @@ mkdir -p "$LOG_DIR"
 # Build crontab entries
 CRON_JOBS="# Utility Manager Agent — One & Only Cape Town
 # Chief Engineer brief — every day at 06:00
-0 6 * * * cd $SCRIPT_DIR && $PYTHON -c \"from utility_manager.tools.analysis_engine import run_engineering_analysis; run_engineering_analysis()\" >> $LOG_DIR/engineer.log 2>&1
+0 6 * * * cd $SCRIPT_DIR && $PYTHON scripts/send_report.py --persona chief_engineer >> $LOG_DIR/engineer.log 2>&1
 
-# GM executive summary — every Monday at 07:00
-0 7 * * 1 cd $SCRIPT_DIR && $PYTHON -c \"from utility_manager.tools.analysis_engine import run_executive_analysis; run_executive_analysis()\" >> $LOG_DIR/gm.log 2>&1
+# GM executive summary — every day at 06:05 (daily during dev)
+5 6 * * * cd $SCRIPT_DIR && $PYTHON scripts/send_report.py --persona general_manager >> $LOG_DIR/gm.log 2>&1
 
-# Sustainability report — 1st of each month at 07:30
-30 7 1 * * cd $SCRIPT_DIR && $PYTHON -c \"from utility_manager.tools.analysis_engine import run_sustainability_analysis; run_sustainability_analysis()\" >> $LOG_DIR/sustainability.log 2>&1
+# Sustainability report — every day at 06:10 (daily during dev)
+10 6 * * * cd $SCRIPT_DIR && $PYTHON scripts/send_report.py --persona sustainability_officer >> $LOG_DIR/sustainability.log 2>&1
 
-# Financial report — 1st of each month at 08:00
-0 8 1 * * cd $SCRIPT_DIR && $PYTHON -c \"from utility_manager.tools.analysis_engine import run_financial_analysis; run_financial_analysis()\" >> $LOG_DIR/finance.log 2>&1
+# Financial report — every day at 06:15 (daily during dev)
+15 6 * * * cd $SCRIPT_DIR && $PYTHON scripts/send_report.py --persona financial_controller >> $LOG_DIR/finance.log 2>&1
 
-# Anomaly watchdog — every 2 hours (overnight focus)
-0 */2 * * * cd $SCRIPT_DIR && $PYTHON -c \"from utility_manager.tools.anomaly_detection import run_anomaly_check; run_anomaly_check()\" >> $LOG_DIR/anomaly.log 2>&1
+# Anomaly watchdog — every 2 hours
+0 */2 * * * cd $SCRIPT_DIR && $PYTHON scripts/send_report.py --persona chief_engineer >> $LOG_DIR/anomaly.log 2>&1
 "
 
 # Write to a temp file and install
