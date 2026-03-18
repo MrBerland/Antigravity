@@ -184,8 +184,8 @@ def _check_power_factor(point_id: int) -> Optional[Dict]:
     severity = pf.get("severity", "NORMAL")
     avg_pf = pf.get("average_power_factor", 1.0)
 
-    if severity == "NORMAL":
-        return None  # All clear — suppress
+    if pf.get("severity") in ("NO_DATA", "NORMAL", "P3_WATCH"):
+        return None
 
     is_p1 = severity == "P1_CRITICAL"
     score = _score(deviation_pct=(0.95 - avg_pf) * 100, is_p1=is_p1, duration_days=30, zar_impact=15000 if is_p1 else 5000)
@@ -408,7 +408,17 @@ def run_full_analysis(point_id: int, persona: str = "chief_engineer") -> Dict[st
     except Exception as e:
         errors.append(f"savings: {e}")
 
-    # ─── Filter by persona and significance threshold ─────────────────────
+    # Deduplicate — same anomaly can appear once per sub-meter; keep unique by headline
+    seen_headlines: set = set()
+    unique_findings: list = []
+    for f in all_findings:
+        key = f.get("headline", "")
+        if key not in seen_headlines:
+            seen_headlines.add(key)
+            unique_findings.append(f)
+    all_findings = unique_findings
+
+    # Filter by persona and significance threshold
 
     persona_findings = [
         f for f in all_findings

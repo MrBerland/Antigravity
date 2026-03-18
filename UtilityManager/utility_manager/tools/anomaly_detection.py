@@ -88,7 +88,7 @@ def _z_score_anomalies(values: List[float], z_threshold: float = _Z_WARNING) -> 
                 "value": round(v, 3),
                 "z_score": round(z, 3),
                 "expected_range": {
-                    "low": round(mean - 2 * std, 3),
+                    "low": max(0.0, round(mean - 2 * std, 3)),  # consumption can't be negative
                     "high": round(mean + 2 * std, 3),
                 },
                 "deviation_percent": round(((v - mean) / mean) * 100, 1) if mean != 0 else None,
@@ -280,6 +280,17 @@ def check_power_factor_risk(point_id: int) -> Dict[str, Any]:
 
     avg_pf = pf_data.get("average_power_factor", 0)
     min_pf = pf_data.get("minimum_power_factor")
+    data_points = pf_data.get("data_points", 0)
+
+    # No data returned — don't treat as critical, return no-data status
+    if data_points == 0 or avg_pf == 0:
+        return {
+            "point_id": point_id,
+            "severity": "NO_DATA",
+            "average_power_factor": avg_pf,
+            "data_points": data_points,
+            "message": "No power factor data available for this point/period. Check that PF meters are active in Augos.",
+        }
 
     if avg_pf < _PF_CRITICAL:
         severity = "P1_CRITICAL"
