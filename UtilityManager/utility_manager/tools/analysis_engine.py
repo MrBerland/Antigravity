@@ -179,32 +179,64 @@ def _check_gas_base_load(point_id: int, base_load_result: Dict) -> Optional[Dict
 
 
 def _check_power_factor(point_id: int) -> Optional[Dict]:
-    """Returns a PF finding only if it's below the warning threshold."""
-    pf = check_power_factor_risk(point_id)
-    severity = pf.get("severity", "NORMAL")
-    avg_pf = pf.get("average_power_factor", 1.0)
+    """
+    Check PF at SWITCH level (8324, 8336) — site-level PF (8323) is not diagnostic.
+    Two independent PFC systems: Main Switch 1 (PFC-A) and Main Switch 2 (PFC-B).
+    Returns a finding if either switch is below threshold.
+    """
+    PF_SWITCH_POINTS = [
+        (8324, "Main Switch 1 (PFC-A)"),
+        (8336, "Main Switch 2 (PFC-B)"),
+    ]
+    findings_for_caller = []
 
-    if pf.get("severity") in ("NO_DATA", "NORMAL", "P3_WATCH"):
+    for sw_id, sw_label in PF_SWITCH_POINTS:
+        pf = check_power_factor_risk(sw_id)
+        severity = pf.get("severity", "NO_DATA")
+        avg_pf = pf.get("average_power_factor", 0)
+
+        if severity in ("NO_DATA", "NORMAL", "P3_WATCH"):
+            continue
+
+        is_p1 = severity == "P1_CRITICAL"
+        score = _score(
+            deviation_pct=(0.95 - avg_pf) * 100,
+            is_p1=is_p1,
+            duration_days=30,
+            zar_impact=40000 / 12,   # ~R40K annual saving potential / 12 months
+        )
+
+        findings_for_caller.append({
+            "category": "Power Factor",
+            "utility": "electricity",
+            "severity": severity,
+            "score": score,
+            "headline": (
+                f"{sw_label}: PF {avg_pf:.3f} — "
+                f"{'CoCT penalties being incurred' if is_p1 else 'below 0.95 threshold — demand charge inflated'}"
+            ),
+            "detail": {
+                "switch": sw_label,
+                "average_pf": avg_pf,
+                "minimum_pf": pf.get("minimum_power_factor"),
+                "target_pf": 0.95,
+                "max_demand_kva": pf.get("max_demand_kva"),
+                "estimated_annual_saving": "R40,000–R77,000 (requires PFC Assessment to confirm)",
+            },
+            "action": (
+                f"Contact Augos to arrange a PFC Assessment for {sw_label} "
+                f"(<R5,000). The assessment will identify the root cause and provide accurate "
+                f"pricing for the remedy. Main Switch 2 (PFC-B) can serve as reference — "
+                f"it maintains PF 0.97+ consistently."
+            ),
+            "personas": ["chief_engineer", "general_manager"] if is_p1 else ["chief_engineer"],
+        })
+
+    # Return the worst finding (highest score), or None if all clear
+    if not findings_for_caller:
         return None
-
-    is_p1 = severity == "P1_CRITICAL"
-    score = _score(deviation_pct=(0.95 - avg_pf) * 100, is_p1=is_p1, duration_days=30, zar_impact=15000 if is_p1 else 5000)
-
-    return {
-        "category": "Power Factor",
-        "utility": "electricity",
-        "severity": severity,
-        "score": score,
-        "headline": f"Power Factor {avg_pf:.3f} — {'CoCT penalties being incurred' if is_p1 else 'CoCT penalties may be accruing'}",
-        "detail": {
-            "average_pf": avg_pf,
-            "minimum_pf": pf.get("minimum_power_factor"),
-            "target_pf": 0.95,
-            "max_demand_kva": pf.get("max_demand_kva"),
-        },
-        "action": pf.get("action"),
-        "personas": ["chief_engineer", "general_manager"] if is_p1 else ["chief_engineer"],
-    }
+    findings_for_caller.sort(key=lambda f: -f.get("score", 0))
+    return findings_for_caller[0]
 
 
 def _check_consumption_anomalies(point_id: int, anomaly_result: Dict) -> List[Dict]:

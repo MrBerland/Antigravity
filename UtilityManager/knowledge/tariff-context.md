@@ -41,20 +41,30 @@ Based on verified API data (January 2026, Point 8323):
 ---
 
 ## Power Factor Penalties
-The CoCT MV TOU tariff includes reactive power (kVAr) charges:
-- **PF ≥ 0.95:** No penalty
-- **PF 0.90–0.95:** Penalty charges apply
-- **PF < 0.90:** Significant penalty — immediate capacitor bank review required
+The CoCT MV TOU tariff bills on kVA (not kW), so PF directly drives the demand charge.
+**Diagnostic rule:** NEVER use site-level (Point 8323) PF — it averages across the two
+independent PFC systems and masks real issues. Always analyse at switch level:
+- **Point 8324 (Main Switch 1)** — PFC-A (problem system in summer)
+- **Point 8336 (Main Switch 2)** — PFC-B (reference for correctly-maintained PFC)
 
-**Agent Action:** Alert Chief Engineer via P2 when PF < 0.92 (early warning).
-Escalate to P1 when PF < 0.90.
+**Alert thresholds (switch level only):**
+- **PF < 0.95:** P2 Warning — schedule Augos PFC Assessment
+- **PF < 0.90:** P1 Critical — urgent Augos PFC Assessment
+- **PF 0.95–0.97 AND demand > 85% of peak:** P2 Warning
+
+**Remediation:** Contact Augos for a PFC Assessment (<R5,000 per system).
+Do not estimate remediation costs — the assessment provides accurate pricing.
+See: `knowledge/power-factor-analysis.md` for full methodology.
 
 ---
 
 ## Demand Charges
 - CoCT charges for Maximum Demand (kVA) — the highest 30-minute integrated demand in the billing period
+- **Observed rate (Mar 2026):** R345,084 demand charge / 1,085.7 kVA peak → ~R318/kVA/month
+  *(Verify each billing cycle — changes with annual CoCT tariff review)*
 - Exceeding the contracted demand triggers excess demand charges
 - **Agent Action:** Monitor real-time demand vs contracted maximum. Alert at 95% of limit.
+- **kVA billing driver:** Improving PF reduces kVA directly, reducing the demand charge at ~R318/kVA
 
 ---
 
