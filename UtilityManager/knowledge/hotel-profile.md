@@ -37,8 +37,46 @@ One & Only Cape Town is a flagship ultra-luxury resort operated by Kerzner Inter
 - **Peak gas demand:** Breakfast service (06:00–10:00) and dinner service (17:00–22:00)
 - **Overnight base loads:** Refrigeration, BMS, security, emergency lighting, boiler standby
 
-## Cape Town Electricity Grid Context
 - Eskom supplies the national grid; CoCT distributes locally
 - Load shedding (Eskom rotational power cuts) was a significant issue 2022–2024 — hotel likely has backup generation
 - Grid emission factor: **0.93 kgCO₂e/kWh** (Eskom NGER 2023/24)
 - South Africa carbon tax: **ZAR 236/tonne CO₂e** (2025)
+
+---
+
+## Energy Sources — Confirmed Status (March 2026)
+
+| Source | Status | Notes |
+|---|---|---|
+| Grid (CoCT MV TOU) | ✅ Active | Primary supply. 100% of recorded consumption is grid import |
+| Solar PV | ❌ Not installed | Feed-in tariff line (tariffTypeID 11, R-0.01) is a CoCT billing template artifact — not actual generation |
+| Generator | ❓ Unknown | Likely present given property size and load shedding history. Confirm with Chief Engineer |
+| BESS | ❓ Unknown | Confirm with Chief Engineer |
+
+**Implication for analysis:**
+All consumption recorded in Augos is grid import. The EnPI model (kWh/CDD) is
+accurate as-is — no generation offset required. The R-0.01 feed-in credit in
+the billing data is noise and should be filtered in bill verification.
+
+**Strategic note — Solar opportunity:**
+Cape Town has one of the best solar resources in South Africa (~2,200 kWh/kWp/year).
+At R2.483/kWh grid rate (rising ~12%/year), a solar PV installation would be
+on a compelling payback. The feed-in tariff (R1.1517/kWh) is pre-configured in
+the billing structure — CoCT is ready to accept generation if installed.
+This is a Phase 3 what-if simulation candidate once the core system is established.
+
+---
+
+## Open Site Profile Items (Require Confirmation)
+
+| Item | Why it matters | From whom |
+|---|---|---|
+| NMD (kVA) | Enables demand monitoring + potential NMD reduction saving | CoCT electricity supply agreement |
+| Generator: installed, capacity, ATS | Load shedding diesel cost, Scope 1 carbon, maintenance calendar | Chief Engineer |
+| BESS: installed, capacity | Demand management strategy | Chief Engineer |
+| Transformer: capacity, last oil test, last thermal scan | Compliance calendar | Chief Engineer / Electrical records |
+| PFC Switch 1: capacity, stages, last survey | PF remediation sizing | Chief Engineer / Augos |
+| PFC Switch 2: capacity, stages, last survey | Confirmation this system is correctly sized | Chief Engineer / Augos |
+| Certificate of Compliance: last issued, expiry | Legal compliance flag | Chief Engineer |
+| Last thermographic scan date | Compliance calendar — recommended annual | Chief Engineer |
+
