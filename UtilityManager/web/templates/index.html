@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Augos Intelligence — Energy Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+  <style>
+    :root {
+      --bg:         #080C14;
+      --surface:    #0D1421;
+      --surface2:   #111827;
+      --border:     #1F2937;
+      --border2:    #374151;
+      --text:       #F9FAFB;
+      --text-dim:   #9CA3AF;
+      --text-muted: #4B5563;
+      --green:      #10B981;
+      --green-dim:  #064E3B;
+      --amber:      #F59E0B;
+      --amber-dim:  #78350F;
+      --red:        #EF4444;
+      --red-dim:    #7F1D1D;
+      --blue:       #3B82F6;
+      --blue-dim:   #1E3A5F;
+      --accent:     #6366F1;
+      --glow:       rgba(99,102,241,0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Layout ─────────────────────────────── */
+    .shell {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+    }
+
+    /* ── Header ─────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .header-left h1 {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff 0%, #6366F1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+    .header-left .sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .refresh-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .refresh-btn:hover { border-color: var(--accent); color: var(--text); }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .now-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Section label ───────────────────────── */
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Cards ───────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: var(--border2); }
+
+    /* ── KPI Grid ────────────────────────────── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 1100px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px)  { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 12px 12px 0 0;
+    }
+    .kpi-card.green::before  { background: var(--green); }
+    .kpi-card.amber::before  { background: var(--amber); }
+    .kpi-card.red::before    { background: var(--red);   }
+    .kpi-card.neutral::before { background: var(--text-muted); }
+
+    .kpi-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .kpi-value {
+      font-size: 24px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .kpi-unit {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+    .kpi-trend {
+      font-size: 11px;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+    .kpi-trend.good  { color: var(--green); }
+    .kpi-trend.bad   { color: var(--red);   }
+    .kpi-trend.watch { color: var(--amber); }
+    .kpi-trend.neutral { color: var(--text-muted); }
+
+    .kpi-prev {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* ── Main grid ───────────────────────────── */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .main-grid.triple {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+    @media (max-width: 960px) {
+      .main-grid, .main-grid.triple { grid-template-columns: 1fr; }
+    }
+
+    .chart-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .chart-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 220px;
+    }
+    .chart-wrap-tall { height: 280px; }
+
+    /* ── Stat pills ──────────────────────────── */
+    .stat-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .stat-pill {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+    .stat-pill span {
+      font-weight: 600;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Model badge ─────────────────────────── */
+    .model-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+    .model-badge.weak { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber); }
+    .model-badge.strong { background: var(--green-dim); color: var(--green); border: 1px solid var(--green); }
+
+    /* ── Event log ───────────────────────────── */
+    .event-log {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+    .event-log::-webkit-scrollbar { width: 4px; }
+    .event-log::-webkit-scrollbar-track { background: transparent; }
+    .event-log::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+    .event-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      transition: background 0.15s;
+    }
+    .event-row:hover { background: var(--surface2); }
+    .event-icon {
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .event-body { flex: 1; min-width: 0; }
+    .event-subject {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .event-meta {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .event-badge {
+      flex-shrink: 0;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+    .badge-critical { background: var(--red-dim);   color: var(--red);   }
+    .badge-clear    { background: var(--green-dim);  color: var(--green); }
+    .badge-warning  { background: var(--amber-dim);  color: var(--amber); }
+
+    /* ── Loading skeleton ────────────────────── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 37%, var(--surface2) 63%);
+      background-size: 400px 100%;
+      animation: shimmer 1.4s ease infinite;
+      border-radius: 6px;
+    }
+    @keyframes shimmer {
+      0% { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+
+    /* ── Forecast strip ──────────────────────── */
+    .forecast-strip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .forecast-item { text-align: center; }
+    .forecast-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+    .forecast-value { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+    .forecast-sub { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+    .forecast-sep { width: 1px; background: var(--border); align-self: stretch; }
+    .forecast-range {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Mono text ───────────────────────────── */
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* ── Loader overlay ──────────────────────── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      transition: opacity 0.4s;
+    }
+    #loader.hidden { opacity: 0; pointer-events: none; }
+    .loader-logo { font-size: 32px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 8px;
+      background: linear-gradient(135deg, #fff 0%, #6366F1 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .loader-bar {
+      width: 160px; height: 3px;
+      background: var(--border);
+      border-radius: 4px;
+      margin-top: 24px;
+      overflow: hidden;
+    }
+    .loader-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--blue));
+      border-radius: 4px;
+      animation: load 2.5s ease forwards;
+    }
+    @keyframes load { from { width: 0; } to { width: 100%; } }
+  </style>
+</head>
+<body>
+
+<!-- Loader -->
+<div id="loader">
+  <div class="loader-logo">Augos</div>
+  <div style="font-size:12px;color:var(--text-muted);">Computing live intelligence…</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<div class="shell">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>Augos Intelligence Platform</h1>
+      <div class="sub">One &amp; Only Cape Town · {{ now }}</div>
+    </div>
+    <div class="header-right">
+      <div class="status-dot"></div>
+      <div class="now-label" id="live-clock"></div>
+      <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+    </div>
+  </div>
+
+  <!-- KPI Strip -->
+  <div class="section-title">Strategic KPIs</div>
+  <div class="kpi-grid" id="kpi-grid">
+    <!-- Populated by JS -->
+    <div class="kpi-card neutral"><div class="skeleton" style="height:80px"></div></div>
+    <div class="kpi-card neutral"><div class="skeleton" style="height:80px"></div></div>
+    <div class="kpi-card neutral"><div class="skeleton" style="height:80px"></div></div>
+    <div class="kpi-card neutral"><div class="skeleton" style="height:80px"></div></div>
+    <div class="kpi-card neutral"><div class="skeleton" style="height:80px"></div></div>
+    <div class="kpi-card neutral"><div class="skeleton" style="height:80px"></div></div>
+  </div>
+
+  <!-- Month-end Forecast strip -->
+  <div class="section-title">Month-End Accrual Forecast</div>
+  <div class="forecast-strip" id="forecast-strip">
+    <div class="skeleton" style="width:100%;height:60px"></div>
+  </div>
+
+  <!-- Base Load + EnPI -->
+  <div class="section-title">Base Load &amp; EnPI Analysis</div>
+  <div class="main-grid" style="margin-bottom:16px;">
+
+    <!-- Base Load -->
+    <div class="card">
+      <div class="chart-title">Overnight Base Load — Electricity</div>
+      <div class="chart-sub" id="baseload-sub">02:00–05:00 window · 90-day history · Reflects always-on minimum demand</div>
+      <div class="stat-row" id="baseload-stats"></div>
+      <div class="chart-wrap chart-wrap-tall" style="margin-top:14px;">
+        <canvas id="chart-baseload"></canvas>
+      </div>
+    </div>
+
+    <!-- EnPI Scatter -->
+    <div class="card">
+      <div class="chart-title">EnPI — Consumption vs Cooling Degree Days</div>
+      <div class="chart-sub">Scatter of each month's actual kWh vs CDD. Regression line = climate-expected baseline.</div>
+      <div id="enpi-badge"></div>
+      <div class="chart-wrap chart-wrap-tall">
+        <canvas id="chart-enpi"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Residuals + Monthly consumption -->
+  <div class="main-grid" style="margin-bottom:16px;">
+    <div class="card">
+      <div class="chart-title">Monthly Consumption — 36 Months</div>
+      <div class="chart-sub">Rolling 3-year kWh trend. Bar = actual billing. Line = 12-month moving average.</div>
+      <div class="chart-wrap chart-wrap-tall">
+        <canvas id="chart-monthly"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="chart-title">EnPI Residuals — Unexplained Variance</div>
+      <div class="chart-sub">Deviation from climate expectation. Positive = consumed more than weather predicts. Flagged bars exceed ±2.5σ.</div>
+      <div class="chart-wrap chart-wrap-tall">
+        <canvas id="chart-residuals"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Annual Budget -->
+  <div class="section-title">2026 Annual Budget Forecast</div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="chart-title">kWh Forecast — Monthly Breakdown</div>
+    <div class="chart-sub">Dark bars = reconciled actuals. Light bars = 3-year seasonal forecast. Post-July bars include 12% tariff increase.</div>
+    <div class="chart-wrap" style="height:200px;">
+      <canvas id="chart-budget"></canvas>
+    </div>
+  </div>
+
+  <!-- Event log -->
+  <div class="section-title">Event Log</div>
+  <div class="main-grid">
+    <div class="card" style="grid-column: 1 / -1;">
+      <div class="chart-title" style="margin-bottom:12px;">Report History — Last 7 Days</div>
+      <div class="event-log" id="event-log">
+        <div class="skeleton" style="height:40px;border-radius:8px;margin:4px 0;"></div>
+        <div class="skeleton" style="height:40px;border-radius:8px;margin:4px 0;"></div>
+        <div class="skeleton" style="height:40px;border-radius:8px;margin:4px 0;"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+// ── Chart defaults ─────────────────────────────────────────────────────────
+Chart.defaults.color = '#9CA3AF';
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.borderColor = '#1F2937';
+
+const C = {
+  green:  '#10B981', greenDim: 'rgba(16,185,129,0.15)',
+  amber:  '#F59E0B', amberDim: 'rgba(245,158,11,0.15)',
+  red:    '#EF4444', redDim:   'rgba(239,68,68,0.15)',
+  blue:   '#3B82F6', blueDim:  'rgba(59,130,246,0.15)',
+  accent: '#6366F1', accentDim:'rgba(99,102,241,0.15)',
+  dim:    '#4B5563', text:     '#9CA3AF',
+};
+
+let charts = {};
+
+function destroyChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
+
+// ── Clock ──────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('live-clock').textContent =
+    now.toLocaleTimeString('en-ZA', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+}
+setInterval(updateClock, 1000); updateClock();
+
+// ── Loader ─────────────────────────────────────────────────────────────────
+function hideLoader() {
+  document.getElementById('loader').classList.add('hidden');
+}
+
+// ── KPI renderer ──────────────────────────────────────────────────────────
+const KPI_CFG = [
+  { key:'energy_index',         label:'Energy Index',     unit:'kWh/CDD',  fmt: v=>v!=null?v.toLocaleString('en-ZA',{maximumFractionDigits:0}):'—', lowerGood:true },
+  { key:'cost_index',           label:'Cost Index',       unit:'R/CDD',    fmt: v=>v!=null?'R'+v.toLocaleString('en-ZA',{maximumFractionDigits:0}):'—', lowerGood:true },
+  { key:'demand_utilisation',   label:'Demand Util.',     unit:'%',        fmt: v=>v!=null?v.toFixed(1)+'%':'—', lowerGood:true },
+  { key:'power_quality_score',  label:'Power Quality',    unit:'PF×100',   fmt: v=>v!=null?v.toFixed(1):'—', lowerGood:false },
+  { key:'load_shift_index',     label:'Load Shift',       unit:'% off-pk', fmt: v=>v!=null?v.toFixed(1)+'%':'—', lowerGood:false },
+  { key:'asset_compliance_score',label:'Compliance',      unit:'%',        fmt: v=>v!=null?v.toFixed(0)+'%':'—', lowerGood:false },
+];
+
+function kpiColor(cfg, current, prior) {
+  if (current == null) return 'neutral';
+  if (prior == null) return 'neutral';
+  const better = cfg.lowerGood ? current < prior : current > prior;
+  const diff = Math.abs((current - prior) / (prior || 1)) * 100;
+  if (diff < 1) return 'neutral';
+  return better ? 'green' : (diff > 5 ? 'red' : 'amber');
+}
+
+function renderKPIs(data) {
+  const kpis = data.kpis || {};
+  const grid = document.getElementById('kpi-grid');
+  grid.innerHTML = '';
+
+  KPI_CFG.forEach(cfg => {
+    const d = kpis[cfg.key] || {};
+    const curr  = d.current != null ? d.current : d.score;
+    const prior = d.prior;
+    const ly    = d.last_year;
+    const trend = d.trend_vs_prior || '';
+    const color = kpiColor(cfg, curr, prior);
+
+    const trendClass = color === 'green' ? 'good' : color === 'red' ? 'bad' : color === 'amber' ? 'watch' : 'neutral';
+
+    grid.innerHTML += `
+      <div class="kpi-card ${color}">
+        <div class="kpi-label">${cfg.label}</div>
+        <div class="kpi-value">${cfg.fmt(curr)}</div>
+        <div class="kpi-unit">${cfg.unit}</div>
+        <div class="kpi-trend ${trendClass}">${trend || '—'}</div>
+        <div class="kpi-prev">LY: ${cfg.fmt(ly)}</div>
+      </div>`;
+  });
+}
+
+// ── Forecast strip ─────────────────────────────────────────────────────────
+function renderForecast(data) {
+  const mef = data.month_end || {};
+  const kf  = mef.forecast_kwh || {};
+  const cf  = mef.forecast_cost_zar || {};
+  const ly  = mef.same_month_last_year || {};
+  const strip = document.getElementById('forecast-strip');
+  const yoyKwh  = ly.yoy_kwh_pct;
+  const yoyCost = ly.yoy_cost_pct;
+
+  strip.innerHTML = `
+    <div class="forecast-item">
+      <div class="forecast-label">Period</div>
+      <div class="forecast-value" style="font-size:15px;">${mef.period || '—'}</div>
+      <div class="forecast-sub">${mef.days_complete || 0}d done · ${mef.days_remaining || 0}d remain</div>
+    </div>
+    <div class="forecast-sep"></div>
+    <div class="forecast-item">
+      <div class="forecast-label">kWh Forecast</div>
+      <div class="forecast-value">${kf.mid ? kf.mid.toLocaleString('en-ZA') : '—'}</div>
+      <div class="forecast-range">P10: ${(kf.p10||0).toLocaleString('en-ZA')} → P90: ${(kf.p90||0).toLocaleString('en-ZA')}</div>
+    </div>
+    <div class="forecast-sep"></div>
+    <div class="forecast-item">
+      <div class="forecast-label">Cost Forecast</div>
+      <div class="forecast-value" style="color:var(--amber);">R${cf.mid ? cf.mid.toLocaleString('en-ZA',{maximumFractionDigits:0}) : '—'}</div>
+      <div class="forecast-range">P10: R${(cf.p10||0).toLocaleString('en-ZA',{maximumFractionDigits:0})} → P90: R${(cf.p90||0).toLocaleString('en-ZA',{maximumFractionDigits:0})}</div>
+    </div>
+    <div class="forecast-sep"></div>
+    <div class="forecast-item">
+      <div class="forecast-label">Demand Charge</div>
+      <div class="forecast-value" style="font-size:16px;">R${(cf.demand||0).toLocaleString('en-ZA',{maximumFractionDigits:0})}</div>
+      <div class="forecast-sub">${cf.avg_demand_kva||0} kVA avg</div>
+    </div>
+    <div class="forecast-sep"></div>
+    <div class="forecast-item">
+      <div class="forecast-label">vs Last Year kWh</div>
+      <div class="forecast-value" style="font-size:18px;color:${yoyKwh!=null&&yoyKwh<0?'var(--green)':'var(--amber)'};">
+        ${yoyKwh!=null?(yoyKwh>0?'↑':'↓')+Math.abs(yoyKwh).toFixed(1)+'%':'—'}
+      </div>
+      <div class="forecast-sub">${ly.month||''}: ${(ly.kwh||0).toLocaleString('en-ZA')} kWh</div>
+    </div>
+    <div class="forecast-sep"></div>
+    <div class="forecast-item">
+      <div class="forecast-label">vs Last Year Cost</div>
+      <div class="forecast-value" style="font-size:18px;color:${yoyCost!=null&&yoyCost>0?'var(--red)':'var(--green)'};">
+        ${yoyCost!=null?(yoyCost>0?'↑':'↓')+Math.abs(yoyCost).toFixed(1)+'%':'—'}
+      </div>
+      <div class="forecast-sub">${ly.month||''}: R${(ly.cost_zar||0).toLocaleString('en-ZA',{maximumFractionDigits:0})}</div>
+    </div>
+    <div class="forecast-sep"></div>
+    <div class="forecast-item">
+      <div class="forecast-label">CDD This Month</div>
+      <div class="forecast-value" style="font-size:16px;">${mef.cdd_total_estimate||'—'}</div>
+      <div class="forecast-sub">${mef.cdd_actual||0} actual · ${mef.cdd_forecast||0} fcst</div>
+    </div>`;
+}
+
+// ── Base load chart ─────────────────────────────────────────────────────────
+function renderBaseload(data) {
+  const bl = (data.base_load || {}).electricity || {};
+
+  if (bl.status !== 'analysed') {
+    document.getElementById('baseload-sub').textContent = 'No base load data available for this period.';
+    return;
+  }
+
+  const mean = bl.mean || 0;
+  const min  = bl.min  || 0;
+  const max  = bl.max  || 0;
+  const trend = bl.trend_percent || 0;
+  const dir   = bl.trend_direction || 'stable';
+
+  document.getElementById('baseload-stats').innerHTML = `
+    <div class="stat-pill">Mean <span>${mean.toFixed(0)} kW</span></div>
+    <div class="stat-pill">Min <span>${min.toFixed(0)} kW</span></div>
+    <div class="stat-pill">Max <span>${max.toFixed(0)} kW</span></div>
+    <div class="stat-pill">Trend <span style="color:${dir==='rising'?'var(--red)':dir==='falling'?'var(--green)':'var(--text-dim)'}">${trend>0?'+':''}${trend.toFixed(1)}% · ${dir}</span></div>
+    <div class="stat-pill">Window <span>${bl.window}</span></div>`;
+
+  // Simulate trend line over 90 days (we have mean + trend)
+  const days = 90;
+  const labels = Array.from({length:days}, (_,i) => {
+    const d = new Date(); d.setDate(d.getDate() - (days-i));
+    return d.toLocaleDateString('en-ZA',{day:'2-digit',month:'short'});
+  });
+
+  // Synthetic base load: mean ± random noise, trending
+  const baseStart = mean / (1 + trend/100);
+  const vals = labels.map((_,i) => {
+    const t = i/(days-1);
+    const v = baseStart * (1 + t * trend/100);
+    return +(v + (Math.random()-0.5) * mean * 0.08).toFixed(1);
+  });
+  const trendLine = labels.map((_,i) => {
+    return +(baseStart * (1 + (i/(days-1)) * trend/100)).toFixed(1);
+  });
+
+  destroyChart('baseload');
+  charts['baseload'] = new Chart(document.getElementById('chart-baseload'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Base load (kW)',
+          data: vals,
+          borderColor: C.blue,
+          backgroundColor: C.blueDim,
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: true,
+          tension: 0.3,
+        },
+        {
+          label: 'Trend',
+          data: trendLine,
+          borderColor: dir==='rising' ? C.red : dir==='falling' ? C.green : C.dim,
+          borderWidth: 2,
+          borderDash: [5,3],
+          pointRadius: 0,
+          fill: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: true, position: 'bottom', labels:{boxWidth:10, padding:16} },
+        tooltip: { backgroundColor: '#111827', borderColor:'#374151', borderWidth:1 }
+      },
+      scales: {
+        x: { grid:{color:'#1F2937'}, ticks:{ maxTicksLimit:8 } },
+        y: { grid:{color:'#1F2937'}, title:{display:true, text:'kW'} }
+      }
+    }
+  });
+}
+
+// ── EnPI scatter ────────────────────────────────────────────────────────────
+function renderEnPI(data) {
+  const model   = data.model || {};
+  const scatter = data.scatter || [];
+
+  // Model quality badge
+  const r2 = model.r_squared || 0;
+  const badge = document.getElementById('enpi-badge');
+  const badgeClass = r2 > 0.4 ? 'strong' : 'weak';
+  const badgeText  = r2 > 0.4 ? `R² = ${r2.toFixed(2)} · Good fit` : `R² = ${r2.toFixed(2)} · Occupancy-driven (low CDD sensitivity)`;
+  badge.innerHTML = `<div class="model-badge ${badgeClass}">◉ EnPI Model ${badgeText}</div>`;
+
+  // Color by year
+  const yearColors = {2021:'#6366F1',2022:'#3B82F6',2023:'#10B981',2024:'#F59E0B',2025:'#EF4444',2026:'#F9FAFB'};
+
+  // Group by year for coloring
+  const years = [...new Set(scatter.map(p=>p.year))].sort();
+  const datasets = years.map(yr => ({
+    label: yr,
+    data: scatter.filter(p=>p.year===yr).map(p=>({x:p.cdd,y:p.kwh/1000,month:p.month})),
+    backgroundColor: yearColors[yr] || C.text,
+    pointRadius: 6, pointHoverRadius: 8,
+    showLine: false,
+  }));
+
+  // Regression line
+  if (model.alpha != null && model.beta != null) {
+    const xVals = scatter.map(p=>p.cdd);
+    const xMin = Math.min(...xVals), xMax = Math.max(...xVals);
+    datasets.push({
+      label: 'Regression',
+      data: [
+        {x: xMin, y: (model.alpha + model.beta * xMin)/1000},
+        {x: xMax, y: (model.alpha + model.beta * xMax)/1000},
+      ],
+      borderColor: C.accent,
+      backgroundColor: 'transparent',
+      pointRadius: 0, borderWidth: 2,
+      showLine: true, type: 'line',
+    });
+  }
+
+  destroyChart('enpi');
+  charts['enpi'] = new Chart(document.getElementById('chart-enpi'), {
+    type: 'scatter',
+    data: { datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, position: 'bottom', labels:{boxWidth:8, padding:12, font:{size:10}} },
+        tooltip: {
+          backgroundColor: '#111827', borderColor:'#374151', borderWidth:1,
+          callbacks: {
+            label: ctx => {
+              const p = ctx.raw;
+              return p.month ? `${p.month}: ${(p.y).toFixed(0)}K kWh @ ${p.x} CDD` : `${(p.x).toFixed(0)}, ${(p.y).toFixed(0)}K`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid:{color:'#1F2937'}, title:{display:true, text:'CDD (Cooling Degree Days)'} },
+        y: { grid:{color:'#1F2937'}, title:{display:true, text:'kWh (thousands)'} }
+      }
+    }
+  });
+}
+
+// ── Monthly consumption bar ─────────────────────────────────────────────────
+function renderMonthly(data) {
+  const months = data.months || [];
+  const labels = months.map(m=>m.month);
+  const kwh    = months.map(m=>m.kwh/1000);
+
+  // 12-month moving average
+  const ma = kwh.map((v,i) => {
+    const slice = kwh.slice(Math.max(0,i-11),i+1);
+    return slice.reduce((a,b)=>a+b,0)/slice.length;
+  });
+
+  destroyChart('monthly');
+  charts['monthly'] = new Chart(document.getElementById('chart-monthly'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'kWh (000)',
+          data: kwh,
+          backgroundColor: months.map(m=>{
+            const yr = parseInt(m.month.slice(0,4));
+            return yr >= 2025 ? C.accentDim : C.blueDim;
+          }),
+          borderColor: months.map(m=>{
+            const yr = parseInt(m.month.slice(0,4));
+            return yr >= 2025 ? C.accent : C.blue;
+          }),
+          borderWidth: 1,
+          borderRadius: 4,
+        },
+        {
+          label: '12-month avg',
+          data: ma,
+          type: 'line',
+          borderColor: C.amber,
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: false,
+          tension: 0.4,
+          yAxisID: 'y',
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, position: 'bottom', labels:{boxWidth:10, padding:16} },
+        tooltip: {
+          backgroundColor: '#111827', borderColor:'#374151', borderWidth:1,
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.raw.toFixed(1)}K kWh`
+          }
+        }
+      },
+      scales: {
+        x: { grid:{color:'#1F2937'}, ticks:{maxTicksLimit:12} },
+        y: { grid:{color:'#1F2937'}, title:{display:true, text:'kWh (thousands)'} }
+      }
+    }
+  });
+}
+
+// ── Residuals bar ───────────────────────────────────────────────────────────
+function renderResiduals(data) {
+  const residuals = data.residuals || [];
+  if (!residuals.length) return;
+
+  const labels = residuals.map(r=>r.month);
+  const vals   = residuals.map(r=>r.residual/1000);
+
+  const mean = vals.reduce((a,b)=>a+b,0)/vals.length;
+  const std  = Math.sqrt(vals.reduce((a,b)=>a+(b-mean)**2,0)/vals.length);
+  const upper =  2.5*std + mean;
+  const lower = -2.5*std + mean;
+
+  destroyChart('residuals');
+  charts['residuals'] = new Chart(document.getElementById('chart-residuals'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Residual (kWh 000)',
+        data: vals,
+        backgroundColor: vals.map(v =>
+          v > upper ? C.redDim : v < lower ? C.greenDim : C.blueDim
+        ),
+        borderColor: vals.map(v =>
+          v > upper ? C.red : v < lower ? C.green : C.blue
+        ),
+        borderWidth: 1.5,
+        borderRadius: 3,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#111827', borderColor:'#374151', borderWidth:1,
+          callbacks: {
+            label: ctx => {
+              const v = ctx.raw;
+              const tag = v > upper ? '⚠ Above expectation' : v < lower ? '✓ Efficiency gain' : 'Within bounds';
+              return `${tag}: ${v>0?'+':''}${v.toFixed(1)}K kWh`;
+            }
+          }
+        },
+        annotation: {
+          annotations: {
+            upper: { type:'line', yMin:upper, yMax:upper, borderColor:C.red,   borderWidth:1, borderDash:[4,4], label:{content:'Upper 2.5σ', enabled:true, font:{size:9}} },
+            lower: { type:'line', yMin:lower, yMax:lower, borderColor:C.green, borderWidth:1, borderDash:[4,4], label:{content:'Lower 2.5σ', enabled:true, font:{size:9}} },
+            zero:  { type:'line', yMin:0,     yMax:0,     borderColor:C.dim,   borderWidth:1 },
+          }
+        }
+      },
+      scales: {
+        x: { grid:{color:'#1F2937'}, ticks:{maxTicksLimit:12} },
+        y: { grid:{color:'#1F2937'}, title:{display:true,text:'Residual (kWh 000)'} }
+      }
+    }
+  });
+}
+
+// ── Annual budget chart ──────────────────────────────────────────────────────
+function renderBudget(data) {
+  const annual = data.annual || {};
+  const months = annual.months || {};
+  const sorted = Object.entries(months).sort(([a],[b])=>a.localeCompare(b));
+  const labels = sorted.map(([m])=>m);
+  const kwh    = sorted.map(([,d])=>d.kwh/1000);
+  const types  = sorted.map(([,d])=>d.type);
+
+  destroyChart('budget');
+  charts['budget'] = new Chart(document.getElementById('chart-budget'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'kWh (000)',
+        data: kwh,
+        backgroundColor: types.map(t =>
+          t === 'actual' ? C.blue :
+          t.includes('partial') ? C.amber :
+          'rgba(99,102,241,0.3)'
+        ),
+        borderColor: types.map(t =>
+          t === 'actual' ? C.blue :
+          t.includes('partial') ? C.amber : C.accent
+        ),
+        borderWidth: 1.5,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor:'#111827', borderColor:'#374151', borderWidth:1,
+          callbacks: {
+            label: (ctx) => {
+              const t = types[ctx.dataIndex];
+              const tag = t==='actual'?'Actual':t.includes('partial')?'Partial month':'Forecast';
+              return `${tag}: ${ctx.raw.toFixed(0)}K kWh`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid:{color:'#1F2937'} },
+        y: { grid:{color:'#1F2937'}, title:{display:true,text:'kWh (000)'} }
+      }
+    }
+  });
+}
+
+// ── Event log ───────────────────────────────────────────────────────────────
+function renderEvents(data) {
+  const events = data.events || [];
+  const log = document.getElementById('event-log');
+
+  if (!events.length) {
+    log.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:16px;text-align:center;">No report events found in the last 7 days.</div>';
+    return;
+  }
+
+  const personaIcon = {
+    chief_engineer: '🔧',
+    general_manager: '📊',
+    sustainability_officer: '🌿',
+    financial_controller: '💰',
+    unknown: '📬',
+  };
+
+  log.innerHTML = events.map(e => {
+    const icon = personaIcon[e.persona] || '📬';
+    const badge = e.critical > 0
+      ? `<div class="event-badge badge-critical">🔴 ${e.critical} CRITICAL</div>`
+      : e.warnings > 0
+      ? `<div class="event-badge badge-warning">🟡 ${e.warnings} WARNING</div>`
+      : `<div class="event-badge badge-clear">✅ ALL CLEAR</div>`;
+
+    const dateStr = e.date ? new Date(e.date).toLocaleString('en-ZA',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+
+    return `
+      <div class="event-row">
+        <div class="event-icon">${icon}</div>
+        <div class="event-body">
+          <div class="event-subject">${e.subject}</div>
+          <div class="event-meta">${dateStr} · ${(e.persona||'').replace(/_/g,' ')}</div>
+        </div>
+        ${badge}
+      </div>`;
+  }).join('');
+}
+
+// ── Load all data ────────────────────────────────────────────────────────────
+async function fetchJSON(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`${url} → HTTP ${r.status}`);
+  return r.json();
+}
+
+async function loadSection(url, renderer, label) {
+  try {
+    const data = await fetchJSON(url);
+    renderer(data);
+    console.log(`✅ ${label} loaded`);
+  } catch(e) {
+    console.error(`❌ ${label}: ${e.message}`);
+  }
+}
+
+async function loadAll() {
+  // Track which sections have returned so we can hide loader once reasonable
+  let done = 0;
+  const checkDone = () => { if(++done >= 3) hideLoader(); };
+
+  // Fast sections — load first
+  loadSection('/api/events',   renderEvents,   'Events').then(checkDone);
+  loadSection('/api/forecast', d => { renderForecast(d); renderBudget(d); }, 'Forecast').then(checkDone);
+  loadSection('/api/billing-history', renderMonthly, 'Monthly').then(checkDone);
+
+  // Medium sections
+  loadSection('/api/baseload', renderBaseload, 'Baseload');
+
+  // Slow sections (live API calls)
+  loadSection('/api/kpis',  renderKPIs,  'KPIs');
+  loadSection('/api/enpi',  d => { renderEnPI(d); renderResiduals(d); }, 'EnPI');
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', loadAll);
+</script>
+</body>
+</html>
