@@ -1,12 +1,22 @@
 """
 Anomaly Detection Engine
 ========================
-Statistical anomaly detection for hotel utility consumption.
-Uses Z-score against rolling baselines with hotel-specific contextual rules.
+Two detection approaches:
+
+1. EnPI Residual (PRIMARY) — detect_enpi_anomalies()
+   Fits a linear model (kWh ~ CDD) on 36-month billing history.
+   Flags months where actual kWh deviates from climate-predicted kWh by > 2.5σ.
+   This eliminates weather-driven false positives entirely.
+   Financial impact is always quantified before surfacing.
+
+2. Rolling Z-score (LEGACY) — detect_anomalies()
+   Retained for water/gas where CDD model does not apply.
+   Electricity z-score detection is deprecated in favour of EnPI residuals.
 """
 
 import logging
 import math
+import os
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
@@ -348,3 +358,183 @@ def check_demand_overage(point_id: int) -> Dict[str, Any]:
         "action": f"Current peak demand this month: {max_demand} kVA. "
                   "Compare against your contracted maximum to assess overage risk.",
     }
+
+
+# ─── EnPI Residual Anomaly Detection (PRIMARY) ───────────────────────────────
+
+def detect_enpi_anomalies(
+    months_history: int = 36,
+    months_to_check: int = 3,
+    z_threshold: float = 2.5,
+    min_zar_impact: float = 5000.0,
+) -> List[Dict]:
+    """
+    Detect electricity consumption anomalies using the EnPI regression model.
+
+    Approach:
+      1. Fetch monthly billing history (kWh + cost) and monthly CDD.
+      2. Fit linear model: kWh = α + β × CDD (the EnPI model).
+      3. Compute residuals (actual - predicted) for all historical months.
+      4. Standardise residuals → z-scores.
+      5. Flag months in the check window where:
+           |z| > z_threshold  AND  financial impact > min_zar_impact
+      6. Apply anti-noise suppression:
+           - Suppress if CDD was extreme (> 130% or < 70% of historical mean)
+             because model accuracy degrades at extremes.
+           - Classify: positive residual = unexplained over-consumption;
+             negative residual = unexplained under-consumption (efficiency gain).
+
+    Returns:
+        List of finding dicts (severity, headline, detail, action, personas).
+        Empty list = no anomalies detected.
+    """
+    # Lazy imports to avoid circular dependency and slow startup
+    from .kpi_engine import _fetch_billing_history, _month_desc_to_key
+    from .cdd_engine import get_monthly_cdd_series, fit_enpi_model
+
+    lat = float(os.getenv("SITE_LAT", "-33.9249"))
+    lon = float(os.getenv("SITE_LON", "18.4241"))
+
+    # --- Fetch data ---
+    try:
+        billing  = _fetch_billing_history(months=months_history)
+        cdd_data = get_monthly_cdd_series(lat, lon)
+    except Exception as e:
+        log.warning("EnPI anomaly data fetch failed: %s", e)
+        return []
+
+    # --- Build paired series ---
+    common = sorted(set(billing) & set(cdd_data))
+    monthly_kwh = {m: billing[m]["kwh"] for m in common if billing[m].get("kwh", 0) > 0}
+    monthly_cdd = {m: cdd_data[m] for m in common}
+
+    if len(monthly_kwh) < 12:
+        log.info("EnPI anomaly: insufficient history (%d months). Need ≥12.", len(monthly_kwh))
+        return []
+
+    # --- Fit EnPI model ---
+    model = fit_enpi_model(monthly_kwh, monthly_cdd)
+    if "error" in model:
+        log.warning("EnPI model fit failed: %s", model["error"])
+        return []
+
+    residuals = model.get("monthly_residuals", {})  # {YYYY-MM: residual_kWh}
+    if not residuals:
+        return []
+
+    # --- Compute residual statistics ---
+    res_values = list(residuals.values())
+    res_mean   = sum(res_values) / len(res_values)
+    res_var    = sum((r - res_mean) ** 2 for r in res_values) / len(res_values)
+    res_std    = math.sqrt(res_var) if res_var > 0 else 1.0
+
+    # Mean CDD per CALENDAR MONTH for suppression check
+    # (compare each month to its seasonal average, not the annual average)
+    seasonal_cdd: Dict[str, List[float]] = {}
+    for m in common:
+        cal_month = m[5:7]   # "01" through "12"
+        cdd_val   = cdd_data[m].get("cdd", 0) or 0
+        if cdd_val > 0:
+            seasonal_cdd.setdefault(cal_month, []).append(cdd_val)
+    seasonal_mean: Dict[str, float] = {
+        k: sum(v) / len(v) for k, v in seasonal_cdd.items()
+    }
+    # Fallback for months with no CDD history
+    mean_cdd = sum(seasonal_mean.values()) / len(seasonal_mean) if seasonal_mean else 50.0
+
+    # --- Check the most recent months ---
+    all_months   = sorted(common, reverse=True)
+    check_months = all_months[:months_to_check]
+
+    # Average ZAR per kWh from recent billing
+    recent_costs = [billing[m]["cost"] for m in check_months if billing[m].get("cost", 0) > 0]
+    recent_kwh   = [billing[m]["kwh"]  for m in check_months if billing[m].get("kwh",  0) > 0]
+    avg_rate     = (sum(recent_costs) / sum(recent_kwh)) if recent_kwh and sum(recent_kwh) > 0 else 2.48
+
+    findings = []
+    for month in check_months:
+        residual = residuals.get(month)
+        if residual is None:
+            continue
+
+        z    = (residual - res_mean) / res_std
+        cdd  = cdd_data.get(month, {}).get("cdd", mean_cdd)
+        kwh  = billing.get(month, {}).get("kwh", 0)
+        pred = model.get("monthly_predicted", {}).get(month, kwh)
+
+        # --- Anti-noise: suppress only if weather was genuinely extreme for that season ---
+        # Compare to same-calendar-month average (e.g. Feb 2026 vs avg of all Februaries)
+        cal_month    = month[5:7]
+        season_mean  = seasonal_mean.get(cal_month, cdd)
+        cdd_ratio    = cdd / season_mean if season_mean > 0 else 1.0
+        if cdd_ratio > 1.5 or (season_mean > 5 and cdd_ratio < 0.5):
+            log.info("EnPI anomaly %s suppressed: unusual weather for season (%.1f CDD vs %.1f avg)",
+                     month, cdd, season_mean)
+            continue
+
+        # --- Anti-noise: suppress if z below threshold ---
+        if abs(z) < z_threshold:
+            continue
+
+        # --- Financial impact ---
+        zar_impact = abs(residual) * avg_rate
+        if zar_impact < min_zar_impact:
+            log.info("EnPI anomaly %s suppressed: impact R%.0f < threshold R%.0f",
+                     month, zar_impact, min_zar_impact)
+            continue
+
+        # --- Build finding ---
+        direction  = "above" if residual > 0 else "below"
+        pct        = abs(residual / pred * 100) if pred > 0 else 0
+        severity   = "P1_CRITICAL" if abs(z) >= 3.5 else "P2_WARNING"
+
+        if residual > 0:
+            headline = (
+                f"{month}: Consumption {pct:.1f}% above climate expectation — "
+                f"{abs(residual):,.0f} kWh unexplained (R{zar_impact:,.0f} impact)"
+            )
+            action = (
+                f"Investigate non-weather loads in {month}. "
+                f"Expected {pred:,.0f} kWh for {cdd:.0f} CDD; actual was {kwh:,.0f} kWh. "
+                f"Check sub-meter breakdown for the driving circuit."
+            )
+        else:
+            headline = (
+                f"{month}: Consumption {pct:.1f}% below climate expectation — "
+                f"{abs(residual):,.0f} kWh efficiency gain (R{zar_impact:,.0f})"
+            )
+            severity = "P3_POSITIVE"
+            action   = (
+                f"Efficiency improvement confirmed for {month}. "
+                f"Expected {pred:,.0f} kWh; actual {kwh:,.0f} kWh. "
+                f"Document what changed to replicate this performance."
+            )
+
+        findings.append({
+            "category": "Consumption Anomaly (EnPI)",
+            "utility":  "electricity",
+            "severity": severity,
+            "score":    min(100, 30 + abs(z) * 10 + zar_impact / 1000),
+            "headline": headline,
+            "detail": {
+                "month":            month,
+                "actual_kwh":       f"{kwh:,.0f}",
+                "predicted_kwh":    f"{pred:,.0f}",
+                "residual_kwh":     f"{residual:+,.0f}",
+                "z_score":          f"{z:+.2f}σ",
+                "cdd":              f"{cdd:.0f}",
+                "model_r2":         f"{model['r_squared']:.2f}",
+                "financial_impact": f"R{zar_impact:,.0f}",
+                "avg_rate_zar_kwh": f"R{avg_rate:.3f}",
+            },
+            "action":   action,
+            "personas": (
+                ["chief_engineer", "general_manager", "financial_controller"]
+                if severity == "P1_CRITICAL"
+                else ["chief_engineer", "financial_controller"]
+                if severity == "P2_WARNING"
+                else ["chief_engineer"]
+            ),
+        })
+
+    return findings

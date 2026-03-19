@@ -32,6 +32,7 @@ from .anomaly_detection import (
     analyze_base_load,
     check_power_factor_risk,
     check_demand_overage,
+    detect_enpi_anomalies,
 )
 from .pattern_analysis import (
     analyze_consumption_patterns,
@@ -398,13 +399,23 @@ def run_full_analysis(point_id: int, persona: str = "chief_engineer") -> Dict[st
     except Exception as e:
         errors.append(f"base_load: {e}")
 
-    # 2. Anomaly detection (1-week window, all utilities)
-    checks_run.append("anomaly_detection_7d")
+    # 2a. EnPI residual anomaly detection (electricity — primary approach)
+    checks_run.append("enpi_anomaly_detection")
     try:
-        anomalies = detect_anomalies(point_id, utility="all", days=7)
-        all_findings.extend(_check_consumption_anomalies(point_id, anomalies))
+        enpi_findings = detect_enpi_anomalies(months_to_check=3)
+        all_findings.extend(enpi_findings)
     except Exception as e:
-        errors.append(f"anomaly_detection: {e}")
+        errors.append(f"enpi_anomaly: {e}")
+
+    # 2b. Rolling anomaly detection (water + gas only — electricity handled by EnPI)
+    checks_run.append("anomaly_detection_water_gas")
+    try:
+        anomalies = detect_anomalies(point_id, utility="water", days=7)
+        anomalies_gas = detect_anomalies(point_id, utility="gas", days=7)
+        all_findings.extend(_check_consumption_anomalies(point_id, anomalies))
+        all_findings.extend(_check_consumption_anomalies(point_id, anomalies_gas))
+    except Exception as e:
+        errors.append(f"anomaly_detection_wg: {e}")
 
     # 3. Power factor risk
     checks_run.append("power_factor_risk")
