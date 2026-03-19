@@ -12,10 +12,29 @@ anomaly:
   min_deviation_percent: 10.0
 
 electricity:
-  # Power Factor
-  power_factor_good: 0.95        # No action
-  power_factor_warning: 0.92     # P2 — Chief Engineer alert
-  power_factor_critical: 0.90    # P1 — Immediate, capacitor bank review
+  # Power Factor — MONITOR AT SWITCH LEVEL ONLY (not site 8323 which is a virtual meter)
+  # PFC systems: Main Switch 1 (8324) = PFC-A, Main Switch 2 (8336) = PFC-B
+  pf_switch_points:
+    - point_id: 8324
+      label: "Main Switch 1 (PFC-A)"
+      note: "Problem system — degrades during summer when AC load peaks (Nov–Mar)"
+    - point_id: 8336
+      label: "Main Switch 2 (PFC-B)"
+      note: "Reference system — consistently maintains PF 0.97+"
+  power_factor_good: 0.95          # No action
+  power_factor_watch: 0.97         # Monitor — flag if at high demand simultaneously
+  power_factor_warning: 0.95       # P2 — Contact Augos for PFC Assessment (<R5K/system)
+  power_factor_critical: 0.90      # P1 — Urgent: Contact Augos for PFC Assessment
+  high_demand_pct_for_pf_watch: 85 # Flag PF 0.95–0.97 when demand > 85% of historical peak
+
+  # Notified Maximum Demand (NMD) — find on CoCT electricity supply agreement
+  # All-time peak demand (Jan 2021–Mar 2026): 1,317 kVA (Jun 2023)
+  # Recent 24-month peak: 1,234 kVA (Jan 2026)
+  # Average monthly peak: 1,071 kVA
+  # ACTION: Obtain NMD from CoCT account — if NMD > 1,350, there is a case to reduce it
+  nmd_kva: null  # SET THIS when NMD is known from CoCT supply agreement
+  nmd_warning_percent: 95.0    # Alert when approaching NMD
+  nmd_critical_percent: 100.0  # Alert when NMD is exceeded
 
   # Base load window: 02:00–05:00
   base_load_window_start: 2      # hour (24h)
