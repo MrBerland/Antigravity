@@ -35,6 +35,8 @@ from utility_manager.tools.email_sender import (
     _send_raw_email,
     _html_wrapper,
 )
+from utility_manager.tools.kpi_engine import compute_kpis
+from utility_manager.tools.cdd_engine import get_current_month_cdd
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
@@ -116,7 +118,101 @@ def _finding_html(finding: dict) -> str:
     </div>"""
 
 
-def _format_report(persona: str, result: dict, cfg: dict) -> tuple[str, str, str]:
+# ─── KPI HTML Header ──────────────────────────────────────────────────────────
+
+def _trend_color(name: str, trend_str: str) -> str:
+    if "→" in trend_str or "No" in trend_str:
+        return "#6B7280"
+    down_is_good = name in ("energy_index", "cost_index", "demand_utilisation")
+    going_down   = "▼" in trend_str or "↓" in trend_str
+    if (down_is_good and going_down) or (not down_is_good and not going_down):
+        return "#16A34A"
+    return "#D97706"
+
+
+def _kpi_row(label: str, name: str, data: dict, unit: str) -> str:
+    curr   = data.get("current") if data.get("current") is not None else data.get("score")
+    prior  = data.get("prior", "—")
+    ly     = data.get("last_year", "—")
+    trend  = data.get("trend_vs_prior", "")
+    status = data.get("status", "")
+    color  = _trend_color(name, trend)
+
+    def _fmt(v, u):
+        if v is None or v == "—": return "—"
+        try: v = float(v)
+        except (ValueError, TypeError): return str(v)
+        if u == "R/CDD":     return f"R{v:,.0f}"
+        if u == "%":         return f"{v:.1f}%"
+        if u == "PF × 100": return f"{v:.1f}"
+        if u == "kWh/CDD":  return f"{v:,.0f}"
+        return str(round(v, 1))
+
+    dot = ""
+    if any(x in str(status) for x in ("🔴", "CRITICAL", "exceeded")): dot = "🔴"
+    elif any(x in str(status) for x in ("🟡", "WARNING", "below", "risk")): dot = "🟡"
+    elif "✓" in str(status) or "Good" in str(status): dot = "🟢"
+    elif "not conf" in str(status).lower() or "unknown" in str(status).lower(): dot = "⚪"
+
+    return f"""
+    <tr style="border-bottom:1px solid #1F2937;">
+      <td style="padding:8px 10px;font-size:12px;color:#D1D5DB;">{dot} {label}</td>
+      <td style="padding:8px 10px;font-size:13px;font-weight:700;color:#F9FAFB;text-align:right;">{_fmt(curr, unit)}</td>
+      <td style="padding:8px 10px;font-size:12px;color:#9CA3AF;text-align:right;">{_fmt(prior, unit)}</td>
+      <td style="padding:8px 10px;font-size:12px;color:#9CA3AF;text-align:right;">{_fmt(ly, unit)}</td>
+      <td style="padding:8px 10px;font-size:12px;color:{color};text-align:right;font-weight:600;">{trend}</td>
+    </tr>"""
+
+
+def _kpi_header_html(kpis_result: dict) -> str:
+    if not kpis_result or "error" in kpis_result:
+        return """<div style="background:#1F2937;border-radius:8px;padding:12px;margin-bottom:20px;
+             font-size:11px;color:#6B7280;text-align:center;">
+          Strategic KPIs unavailable — check API connectivity.</div>"""
+
+    kpis   = kpis_result.get("kpis", {})
+    period = kpis_result.get("period_months", [])
+    period_label = f"{period[-1]} – {period[0]}" if len(period) > 1 else (period[0] if period else "")
+
+    rows_cfg = [
+        ("Energy Index",       "energy_index",           "kWh/CDD"),
+        ("Cost Index",         "cost_index",              "R/CDD"),
+        ("Demand Utilisation", "demand_utilisation",      "%"),
+        ("Power Quality",      "power_quality_score",     "PF × 100"),
+        ("Load Shift",         "load_shift_index",        "%"),
+        ("Asset Compliance",   "asset_compliance_score",  "%"),
+    ]
+    rows_html = "".join(_kpi_row(lbl, nm, kpis.get(nm, {}), unit)
+                        for lbl, nm, unit in rows_cfg)
+
+    lsi_opp  = kpis.get("load_shift_index", {}).get("opportunity_zar_monthly")
+    opp_html = ""
+    if lsi_opp:
+        opp_html = f"""<tr><td colspan="5" style="padding:6px 10px;font-size:11px;
+            background:#052E16;color:#16A34A;text-align:center;">
+          ⚡ TOU Load Shift Opportunity: R{lsi_opp:,.0f}/month available</td></tr>"""
+
+    return f"""
+    <div style="margin-bottom:24px;">
+      <table style="width:100%;border-collapse:collapse;background:#111827;border-radius:8px;overflow:hidden;">
+        <tr style="background:#1F2937;">
+          <th style="padding:8px 10px;font-size:10px;color:#6B7280;font-weight:600;text-align:left;letter-spacing:0.08em;">STRATEGIC KPI</th>
+          <th style="padding:8px 10px;font-size:10px;color:#6B7280;font-weight:600;text-align:right;letter-spacing:0.08em;">CURRENT</th>
+          <th style="padding:8px 10px;font-size:10px;color:#6B7280;font-weight:600;text-align:right;letter-spacing:0.08em;">PRIOR</th>
+          <th style="padding:8px 10px;font-size:10px;color:#6B7280;font-weight:600;text-align:right;letter-spacing:0.08em;">LAST YEAR</th>
+          <th style="padding:8px 10px;font-size:10px;color:#6B7280;font-weight:600;text-align:right;letter-spacing:0.08em;">TREND</th>
+        </tr>
+        {rows_html}
+        {opp_html}
+      </table>
+      <div style="font-size:10px;color:#4B5563;text-align:right;margin-top:3px;">
+        Period: {period_label} · EI/CI/DU lower is better · PQ/LSI/Compliance higher is better
+      </div>
+    </div>"""
+
+
+def _format_report(persona: str, result: dict, cfg: dict,
+                   kpis_result: dict = None, cdd_context: dict = None) -> tuple:
     """Returns (subject, html_body, plain_text)."""
     now       = datetime.now()
     date_str  = now.strftime("%A, %-d %B %Y")
@@ -180,6 +276,24 @@ def _format_report(persona: str, result: dict, cfg: dict) -> tuple[str, str, str
           <div style="color:#9CA3AF;font-size:13px;">{badges}</div>
         </div>"""
 
+    # KPI header (all reports)
+    kpi_html = _kpi_header_html(kpis_result or {})
+
+    # CDD / demand forecast context (Chief Engineer daily brief)
+    cdd_html = ""
+    if persona == "chief_engineer" and cdd_context:
+        cdd_act  = cdd_context.get("cdd_actual", 0)
+        cdd_fore = cdd_context.get("cdd_forecast", 0)
+        cdd_tot  = cdd_context.get("cdd_total_estimate", 0)
+        days_rem = cdd_context.get("days_remaining", 0)
+        cdd_html = f"""
+        <div style="margin-bottom:16px;padding:12px;background:#0D1F2D;
+             border:1px solid #1E3A4C;border-radius:6px;font-size:12px;">
+          <span style="color:#38BDF8;font-weight:700;">☔ CDD This Month:</span>
+          <span style="color:#F9FAFB;"> {cdd_act:.1f} actual · {cdd_fore:.1f} forecast
+            ({days_rem} days remaining) — Month total estimate: {cdd_tot:.1f} CDD</span>
+        </div>"""
+
     # Findings
     findings_html = ""
     if findings:
@@ -227,17 +341,19 @@ def _format_report(persona: str, result: dict, cfg: dict) -> tuple[str, str, str
         {site_name.upper()}
       </div>
       <div style="font-size:18px;font-weight:700;color:#F9FAFB;margin:4px 0;">
-        {label} Utility Brief
+        {label} Brief
       </div>
       <div style="font-size:12px;color:#6B7280;">{date_str}</div>
     </div>
+    {kpi_html}
+    {cdd_html}
     {status_html}
     {findings_html}
     {weather_html}
     {error_html}
     <div style="margin-top:24px;padding:12px;border-top:1px solid #374151;
          font-size:11px;color:#6B7280;text-align:center;">
-      Utility Intelligence Manager · One &amp; Only Cape Town<br>
+      Augos Intelligence · One &amp; Only Cape Town<br>
       {checks_run} checks · Generated {now.strftime("%H:%M SAST")}
     </div>"""
 
@@ -245,7 +361,7 @@ def _format_report(persona: str, result: dict, cfg: dict) -> tuple[str, str, str
     return subject, html, plain
 
 
-def send_report(persona: str) -> dict:
+def send_report(persona: str, kpis_result: dict = None, cdd_ctx: dict = None) -> dict:
     """Run analysis and send email report for given persona."""
     cfg = PERSONAS.get(persona)
     if not cfg:
@@ -257,7 +373,7 @@ def send_report(persona: str) -> dict:
     except Exception as e:
         return {"status": "error", "persona": persona, "error": str(e)}
 
-    subject, html, plain = _format_report(persona, result, cfg)
+    subject, html, plain = _format_report(persona, result, cfg, kpis_result, cdd_ctx)
 
     # Recipient — always DEV_EMAIL in dev mode
     if DEV_MODE:
@@ -298,9 +414,23 @@ def main():
         parser.print_help()
         sys.exit(1)
 
+    # Compute KPIs ONCE, share across all reports (avoids 4× API calls)
+    log.info("📊 Computing strategic KPIs...")
+    try:
+        kpis_result = compute_kpis(months=3)
+        cdd_ctx     = get_current_month_cdd(
+            float(os.getenv("SITE_LAT", "-33.9249")),
+            float(os.getenv("SITE_LON", "18.4241")),
+        )
+        log.info("✅ KPIs computed: %s", list(kpis_result.get("kpis", {}).keys()))
+    except Exception as e:
+        log.warning("⚠️ KPI computation failed: %s", e)
+        kpis_result = {}
+        cdd_ctx     = {}
+
     results = []
     for p in personas_to_run:
-        r = send_report(p)
+        r = send_report(p, kpis_result, cdd_ctx)
         results.append(r)
         status = "✅" if r.get("status") == "sent" else "❌"
         print(f"{status} {p}: {r.get('subject','') or r.get('error','')}")
