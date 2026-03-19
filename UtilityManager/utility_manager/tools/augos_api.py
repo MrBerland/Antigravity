@@ -328,13 +328,6 @@ def get_power_factor(point_id: int, months: int = 12) -> Dict[str, Any]:
 
     PF < 0.95 = potential CoCT penalties. PF < 0.90 = P1 Critical — immediate action.
     Returns monthly PF trend, demand peaks, and reactive power data.
-
-    Args:
-        point_id: Augos Point ID
-        months: Months of PF history (default 12 for full seasonal cycle)
-
-    Returns:
-        PF trend, average, minimum, peak demand (kVA), and penalty risk assessment.
     """
     start, end = _months_range(months)
     data = _get("power-factor-demand", {"pointID": point_id, "startDateUTC": start, "endDateUTC": end})
@@ -342,12 +335,37 @@ def get_power_factor(point_id: int, months: int = 12) -> Dict[str, Any]:
     if isinstance(data, dict) and "error" in data:
         return data
 
-    pfs = [d.get("PFAtPeak", 0) for d in (data if isinstance(data, list) else []) if d.get("PFAtPeak")]
-    demands = [d.get("MaxDemandKVA", 0) for d in (data if isinstance(data, list) else []) if d.get("MaxDemandKVA")]
+    # API returns a pivot table: {"tariffReportID": ..., "details": [
+    #   {"itemsDescription": "actualPf",     "Mar 26": 0.969, "Feb 26": 0.957, ...},
+    #   {"itemsDescription": "actualDemand", "Mar 26": 1085,  "Feb 26": 1131,  ...},
+    #   {"itemsDescription": "actualkVAR",   "Mar 26": 267,   "Feb 26": 329,   ...},
+    # ]}
+    details = data.get("details", []) if isinstance(data, dict) else []
 
-    avg_pf = sum(pfs) / len(pfs) if pfs else 0
-    min_pf = min(pfs) if pfs else None
-    max_demand = max(demands) if demands else None
+    # Find the rows for each metric
+    pf_row      = next((r for r in details if r.get("itemsDescription") == "actualPf"), {})
+    demand_row  = next((r for r in details if r.get("itemsDescription") == "actualDemand"), {})
+    kvar_row    = next((r for r in details if r.get("itemsDescription") == "actualkVAR"), {})
+
+    # Month columns are any key that isn't a metadata field
+    _skip = {"index", "pointID", "point", "parentID", "itemsDescription", "total"}
+    month_keys = [k for k in pf_row if k not in _skip]
+
+    pfs     = [v for k, v in pf_row.items()     if k in month_keys and v]
+    demands = [v for k, v in demand_row.items() if k in month_keys and v]
+    kvars   = [v for k, v in kvar_row.items()   if k in month_keys and v]
+
+    if not pfs:
+        return {
+            "point_id": point_id, "data_points": 0,
+            "average_power_factor": 0, "minimum_power_factor": None,
+            "max_demand_kva": None, "status": "no_data",
+            "message": "Power factor data available in API but no monthly values parsed.",
+        }
+
+    avg_pf     = round(sum(pfs) / len(pfs), 3)
+    min_pf     = round(min(pfs), 3)
+    max_demand = round(max(demands), 1) if demands else None
 
     status = "Good" if avg_pf >= 0.95 else ("Warning" if avg_pf >= 0.92 else "Critical")
     reco = {
@@ -356,14 +374,20 @@ def get_power_factor(point_id: int, months: int = 12) -> Dict[str, Any]:
         "Critical": "PF critically low (<0.92) — utility penalties being incurred. Immediate capacitor bank review required.",
     }[status]
 
+    # Build per-month summary
+    monthly = {
+        k: {"pf": pf_row.get(k), "demand_kva": demand_row.get(k), "kvar": kvar_row.get(k)}
+        for k in month_keys
+    }
+
     return {
         "point_id": point_id, "period": {"start": start, "end": end, "months": months},
-        "data_points": len(data) if isinstance(data, list) else 0,
-        "average_power_factor": round(avg_pf, 3),
-        "minimum_power_factor": round(min_pf, 3) if min_pf else None,
-        "max_demand_kva": round(max_demand, 2) if max_demand else None,
+        "data_points": len(pfs),
+        "average_power_factor": avg_pf,
+        "minimum_power_factor": min_pf,
+        "max_demand_kva": max_demand,
         "status": status, "recommendation": reco,
-        "raw_data": data[:12] if isinstance(data, list) else data,
+        "monthly": monthly,
     }
 
 
